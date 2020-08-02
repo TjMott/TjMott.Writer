@@ -1,0 +1,173 @@
+﻿<UserControl x:Class="TjMott.Writer.Views.SearchView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TjMott.Writer.Views"
+             mc:Ignorable="d" Margin="3"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Text="Search Term:" VerticalAlignment="Center" />
+        <TextBox Grid.Column="1" Margin="5" Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}" />
+
+        <TabControl Grid.Row="1" Grid.ColumnSpan="2">
+            <TabItem Header="Scene Documents">
+                <ListBox ItemsSource="{Binding FlowDocumentResults}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="3,8">
+                                <Grid.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Open Editor" Command="{Binding OpenEditorCommand}" />
+                                    </ContextMenu>
+                                </Grid.ContextMenu>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Text="Result: " Margin="3" />
+                                <TextBlock Text="Item: " Margin="3" Grid.Row="1" />
+
+                                <TextBlock Grid.Column="1" Margin="3">
+                                    <Run Text="{Binding SnippetPre}" />
+                                    <Run Text="{Binding SnippetResult}" FontWeight="ExtraBold" />
+                                    <Run Text="{Binding SnippetPost}" />
+                                </TextBlock>
+                                <TextBlock Grid.Column="1" Grid.Row="1" Margin="3">
+                                    <Run Text="Story: " />
+                                    <Run Text="{Binding StoryName}" />
+                                    <Run Text=", Chapter: " />
+                                    <Run Text="{Binding ChapterName}" />
+                                    <Run Text=", Scene: " />
+                                    <Run Text="{Binding SceneName}" />
+                                </TextBlock>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </TabItem>
+
+            <TabItem Header="Story Titles">
+                <ListBox ItemsSource="{Binding StoryResults}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="3,8">
+                                <Grid.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Edit Properties" Command="{Binding RenameItemCommand}" />
+                                    </ContextMenu>
+                                </Grid.ContextMenu>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Text="Result: " Margin="3" />
+
+                                <TextBlock Grid.Column="1" Margin="3">
+                                    <Run Text="{Binding SnippetPre}" />
+                                    <Run Text="{Binding SnippetResult}" FontWeight="ExtraBold" />
+                                    <Run Text="{Binding SnippetPost}" />
+                                </TextBlock>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </TabItem>
+
+            <TabItem Header="Chapter Titles">
+                <ListBox ItemsSource="{Binding ChapterResults}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="3,8">
+                                <Grid.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Rename Item" Command="{Binding RenameItemCommand}" />
+                                    </ContextMenu>
+                                </Grid.ContextMenu>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Text="Result: " Margin="3" />
+                                <TextBlock Text="Item: " Margin="3" Grid.Row="1" />
+
+                                <TextBlock Grid.Column="1" Margin="3">
+                                    <Run Text="{Binding SnippetPre}" />
+                                    <Run Text="{Binding SnippetResult}" FontWeight="ExtraBold" />
+                                    <Run Text="{Binding SnippetPost}" />
+                                </TextBlock>
+                                <TextBlock Grid.Column="1" Grid.Row="1" Margin="3">
+                                    <Run Text="Story: " />
+                                    <Run Text="{Binding StoryName}" />
+                                </TextBlock>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </TabItem>
+
+            <TabItem Header="Scene Titles">
+                <ListBox ItemsSource="{Binding SceneResults}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="3,8">
+                                <Grid.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Rename Item" Command="{Binding RenameItemCommand}" />
+                                    </ContextMenu>
+                                </Grid.ContextMenu>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Text="Result: " Margin="3" />
+                                <TextBlock Text="Item: " Margin="3" Grid.Row="1" />
+
+                                <TextBlock Grid.Column="1" Margin="3">
+                                    <Run Text="{Binding SnippetPre}" />
+                                    <Run Text="{Binding SnippetResult}" FontWeight="ExtraBold" />
+                                    <Run Text="{Binding SnippetPost}" />
+                                </TextBlock>
+                                <TextBlock Grid.Column="1" Grid.Row="1" Margin="3">
+                                    <Run Text="Story: " />
+                                    <Run Text="{Binding StoryName}" />
+                                    <Run Text=", Chapter: " />
+                                    <Run Text="{Binding ChapterName}" />
+                                </TextBlock>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </TabItem>
+            
+        </TabControl>
+    </Grid>
+</UserControl>

@@ -1,0 +1,176 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Windows.Input;
+using TjMott.Writer.Dialogs;
+using TjMott.Writer.Model.SQLiteClasses;
+
+namespace TjMott.Writer.ViewModel
+{
+    public class MarkdownTree : ViewModelBase
+    {
+        #region ICommands
+        private ICommand _createCategoryCommand;
+        public ICommand CreateCategoryCommand
+        {
+            get
+            {
+                if (_createCategoryCommand == null)
+                {
+                    _createCategoryCommand = new RelayCommand(param => CreateCategory());
+                }
+                return _createCategoryCommand;
+            }
+        }
+        private ICommand _createDocumentCommand;
+        public ICommand CreateDocumentCommand
+        {
+            get
+            {
+                if (_createDocumentCommand == null)
+                {
+                    _createDocumentCommand = new RelayCommand(param => CreateDocument());
+                }
+                return _createDocumentCommand;
+            }
+        }
+        #endregion
+        public UniverseViewModel UniverseVm { get; private set; }
+
+        public BindingList<MarkdownTreeItem> Items { get; private set; }
+        public BindingList<MarkdownCategoryViewModel> Categories { get; private set; }
+
+        public MarkdownTree(UniverseViewModel universe)
+        {
+            UniverseVm = universe;
+            Items = new BindingList<MarkdownTreeItem>();
+            Categories = new BindingList<MarkdownCategoryViewModel>();
+        }
+
+        public void Load()
+        {
+            Items.Clear();
+
+            List<MarkdownCategory> dbCategories = MarkdownCategory.GetAllMarkdownDocuments(UniverseVm.Model.Connection).Where(i => i.UniverseId == UniverseVm.Model.id).ToList();
+            List<MarkdownCategoryDocument> dbCatDocs = MarkdownCategoryDocument.GetAllMarkdownDocuments(UniverseVm.Model.Connection).ToList();
+            List<MarkdownDocument> dbDocs = MarkdownDocument.GetAllMarkdownDocuments(UniverseVm.Model.Connection).Where(i => i.UniverseId == UniverseVm.Model.id).ToList();
+
+            List<MarkdownCategoryViewModel> categories = dbCategories.Select(i => new MarkdownCategoryViewModel(i, UniverseVm)).ToList();
+            List<MarkdownDocumentViewModel> docs = dbDocs.Select(i => new MarkdownDocumentViewModel(i, UniverseVm)).ToList();
+
+            // Link up categories.
+            foreach (var cat in categories)
+            {
+                Categories.Add(cat);
+                cat.UniverseVm = UniverseVm;
+                if (cat.Model.ParentId == null)
+                {
+                    Items.Add(cat);
+                }
+                else
+                {
+                    MarkdownCategoryViewModel parent = categories.Single(i => i.Model.id == cat.Model.ParentId);
+                    cat.Parent = parent;
+                    parent.Children.Add(cat);
+                }
+
+                // Find any documents that belong to this category.
+                var catDocs = dbCatDocs.Where(i => i.MarkdownCategoryId == cat.Model.id).ToList();
+                foreach (var item in catDocs)
+                {
+                    MarkdownDocumentViewModel doc = docs.Single(i => i.Model.id == item.MarkdownDocumentId);
+                    doc.Parent = cat;
+                    cat.Children.Add(doc);
+                }
+            }
+
+            // Find any documents that are not in a category.
+            foreach (var doc in docs.Where(i => i.Parent == null).ToList())
+            {
+                Items.Add(doc);
+            }
+        }
+
+        public void CreateCategory()
+        {
+            MarkdownCategory category = new MarkdownCategory(UniverseVm.Model.Connection);
+            category.Name = "New Category";
+            category.UniverseId = UniverseVm.Model.id;
+            MarkdownCategoryDialog dialog = new MarkdownCategoryDialog(DialogOwner, Categories, category);
+            bool? result = dialog.ShowDialog();
+            if (result.HasValue && result.Value)
+            {
+                category.Create();
+                MarkdownCategoryViewModel vm = new MarkdownCategoryViewModel(category, UniverseVm);
+                Categories.Add(vm);
+                if (category.ParentId != null)
+                {
+                    vm.Parent = Categories.Single(i => i.Model.id == category.ParentId);
+                    vm.Parent.Children.Add(vm);
+                }
+                else
+                {
+                    Items.Add(vm);
+                }
+            }
+        }
+
+        public void CreateDocument(MarkdownCategoryViewModel parent = null)
+        {
+            NameItemDialog dialog = new NameItemDialog(DialogOwner, "New Note");
+            bool? dialogResult = dialog.ShowDialog();
+            if (dialogResult.HasValue && dialogResult.Value)
+            {
+                MarkdownDocument doc = new MarkdownDocument(UniverseVm.Model.Connection);
+                doc.UniverseId = UniverseVm.Model.id;
+                doc.MarkdownText = "# New Note\r\nThis is a new note document.";
+                doc.PlainText = Markdig.Markdown.ToPlainText(doc.MarkdownText);
+                doc.Name = dialog.UserInput;
+                doc.Create();
+
+                MarkdownDocumentViewModel docVm = new MarkdownDocumentViewModel(doc, UniverseVm);
+
+                if (parent != null)
+                {
+                    MarkdownCategoryDocument link = new MarkdownCategoryDocument(UniverseVm.Model.Connection);
+                    link.MarkdownDocumentId = doc.id;
+                    link.MarkdownCategoryId = parent.Model.id;
+                    link.Create();
+
+                    docVm.Parent = parent;
+                    parent.Children.Add(docVm);
+                }
+                else
+                {
+                    Items.Add(docVm);
+                }
+            }
+        }
+
+        public void UpdateCategory(MarkdownCategoryViewModel vm)
+        {
+            if (vm.Model.ParentId == null)
+            {
+                vm.Parent = null;
+                if (!Items.Contains(vm))
+                    Items.Add(vm);
+            }
+            else
+            {
+                MarkdownCategoryViewModel newParent = Categories.Single(i => i.Model.id == vm.Model.ParentId);
+                if (!newParent.Children.Contains(vm))
+                {
+                    if (vm.Parent != null)
+                    {
+                        vm.Parent.Children.Remove(vm);
+                    }
+                    newParent.Children.Add(vm);
+                    vm.Parent = newParent;
+                }
+                if (Items.Contains(vm))
+                    Items.Remove(vm);
+            }
+        }
+    }
+}
