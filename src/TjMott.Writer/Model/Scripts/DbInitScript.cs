@@ -21,7 +21,8 @@ CREATE TABLE Universe
     id INTEGER PRIMARY KEY,
     Name TEXT,
     SortIndex INTEGER,
-    MarkdownCss TEXT
+    MarkdownCss TEXT,
+    DefaultTemplateId INTEGER
 );
 
 CREATE TABLE FlowDocument

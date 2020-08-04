@@ -5,6 +5,7 @@ using System.Windows.Input;
 using TjMott.Writer.Dialogs;
 using TjMott.Writer.Model;
 using TjMott.Writer.Model.SQLiteClasses;
+using Docx = Xceed.Words.NET;
 
 namespace TjMott.Writer.ViewModel
 {
@@ -140,6 +141,30 @@ namespace TjMott.Writer.ViewModel
             {
                 Scenes[i].Model.SortIndex = i;
                 Scenes[i].Save();
+            }
+        }
+
+        public void ExportToWord(Docx.DocX doc)
+        {
+            // Export chapter name.
+            Xceed.Document.NET.Paragraph chapterHeader = doc.InsertParagraph();
+            chapterHeader.StyleName = "Heading1";
+            chapterHeader.Append(Model.Name);
+
+            doc.InsertParagraph();
+            doc.InsertParagraph();
+            doc.InsertParagraph();
+
+            for (int i = 0; i < Scenes.Count; i++)
+            {
+                SceneViewModel scene = Scenes[i];
+                scene.ExportToWord(doc);
+                if (i < Scenes.Count - 1)
+                {
+                    Xceed.Document.NET.Paragraph p = doc.InsertParagraph();
+                    p.StyleName = "SceneBreak";
+                    p.Append("\n*\t\t*\t\t*\n");
+                }
             }
         }
     }

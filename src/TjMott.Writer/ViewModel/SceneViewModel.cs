@@ -1,9 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Windows.Documents;
 using System.Windows.Input;
 using TjMott.Writer.Dialogs;
 using TjMott.Writer.Model;
 using TjMott.Writer.Model.SQLiteClasses;
+using Docx = Xceed.Words.NET;
 
 namespace TjMott.Writer.ViewModel
 {
@@ -82,6 +84,23 @@ namespace TjMott.Writer.ViewModel
             {
                 Model.Delete();
                 ChapterVm.DeleteScene(this);
+            }
+        }
+
+        public void ExportToWord(Docx.DocX doc)
+        {
+            Model.SQLiteClasses.FlowDocument flowDoc = new Model.SQLiteClasses.FlowDocument(Model.Connection);
+            flowDoc.id = Model.FlowDocumentId;
+            flowDoc.Load();
+
+            FlowDocumentViewModel vm = new FlowDocumentViewModel(flowDoc, DialogOwner);
+
+            foreach (Block block in vm.Document.Blocks)
+            {
+                if (block is Paragraph)
+                {
+                    FlowDocumentExporter.AddParagraph((Paragraph)block, doc);
+                }
             }
         }
     }

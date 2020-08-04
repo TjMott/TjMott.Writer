@@ -172,5 +172,71 @@ namespace TjMott.Writer.ViewModel
                     Items.Remove(vm);
             }
         }
+
+        public void UpdateDocumentCategories(MarkdownDocumentViewModel doc, IEnumerable<MarkdownCategoryViewModel> newCategories)
+        {
+            // First, load all document/category links from the database.
+            var currentCategories = MarkdownCategoryDocument.GetCategoriesForDocument(doc.Model.Connection, doc.Model.id);
+
+            // Delete any that were removed.
+            foreach (var cat in currentCategories)
+            {
+                MarkdownCategoryViewModel vm = Categories.SingleOrDefault(i => i.Model.id == cat.MarkdownCategoryId);
+                if (vm != null)
+                {
+                    cat.Delete();
+                    vm.Children.Remove(doc);
+                }
+            }
+
+            // Add new ones.
+            foreach (var cat in newCategories)
+            {
+                MarkdownCategoryDocument dbLink = currentCategories.SingleOrDefault(i => i.MarkdownCategoryId == cat.Model.id);
+                if (dbLink == null)
+                {
+                    dbLink = new MarkdownCategoryDocument(doc.Model.Connection);
+                    dbLink.MarkdownCategoryId = cat.Model.id;
+                    dbLink.MarkdownDocumentId = doc.Model.id;
+                    dbLink.Create();
+                }
+
+                if (!cat.Children.Contains(doc))
+                {
+                    cat.Children.Add(doc);
+                }
+            }
+
+            // Add/Remove from uncategoried as necessary.
+            if (newCategories.Count() == 0)
+            {
+                if (!Items.Contains(doc))
+                {
+                    Items.Add(doc);
+                }
+            }
+            else
+            {
+                if (Items.Contains(doc))
+                {
+                    Items.Remove(doc);
+                }
+            }
+        }
+
+        public void RemoveFromTree(MarkdownDocumentViewModel doc)
+        {
+            if (Items.Contains(doc))
+            {
+                Items.Remove(doc);
+            }
+            foreach (var c in Categories)
+            {
+                if (c.Children.Contains(doc))
+                {
+                    c.Children.Remove(doc);
+                }
+            }
+        }
     }
 }

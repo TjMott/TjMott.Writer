@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.SQLite;
+using System.Linq;
 using System.Text;
 using TjMott.Writer.Model.Attributes;
 
@@ -105,6 +106,12 @@ namespace TjMott.Writer.Model.SQLiteClasses
                 item.Load();
                 items.Add(item);
             }
+            return items;
+        }
+
+        public static List<MarkdownCategoryDocument> GetCategoriesForDocument(SQLiteConnection connection, long docId)
+        {
+            List<MarkdownCategoryDocument> items = GetAllMarkdownDocuments(connection).Where(i => i.MarkdownDocumentId == docId).ToList();
             return items;
         }
     }

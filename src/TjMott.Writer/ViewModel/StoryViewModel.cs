@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows.Input;
 using TjMott.Writer.Dialogs;
 using TjMott.Writer.Model.SQLiteClasses;
+using Docx = Xceed.Words.NET;
 
 namespace TjMott.Writer.ViewModel
 {
@@ -131,6 +132,67 @@ namespace TjMott.Writer.ViewModel
             {
                 Chapters[i].Model.SortIndex = i;
                 Chapters[i].Save();
+            }
+        }
+
+        public void ExportToWord(Docx.DocX doc)
+        {
+            // Format title page of the document.
+            Xceed.Document.NET.Paragraph p = doc.InsertParagraph();
+            p.Append("\n\n" + Model.Name);
+            p.StyleName = "Title";
+
+            if (!string.IsNullOrWhiteSpace(Model.Subtitle))
+            {
+                p = doc.InsertParagraph();
+                p.Append(Model.Subtitle);
+                p.StyleName = "Subtitle";
+            }
+            if (!string.IsNullOrWhiteSpace(Model.Author))
+            {
+                p = doc.InsertParagraph();
+                p.Append("\n\n" + Model.Author);
+                p.StyleName = "Subtitle";
+            }
+            p.InsertPageBreakAfterSelf();
+
+            // Insert copyright page.
+            p = doc.InsertParagraph();
+            p.Append("This is a work of fiction. All characters and events portrayed in this book are fictional, and any resemblance to real people or incidents is purely coincidental.\n");
+            p.StyleName = "Copyright";
+
+            p = doc.InsertParagraph();
+            p.Append(string.Format("Copyright © {0} by {1}. All rights reserved.\n", DateTime.Now.Year, Model.Author));
+            p.StyleName = "Copyright";
+
+
+            if (!string.IsNullOrWhiteSpace(Model.ISBN))
+            {
+                p = doc.InsertParagraph();
+                p.Append(string.Format("ISBN: {0}\n", Model.ISBN));
+                p.StyleName = "Copyright";
+            }
+
+            if (!string.IsNullOrWhiteSpace(Model.Edition))
+            {
+                p = doc.InsertParagraph();
+                p.Append(Model.Edition + "\n");
+                p.StyleName = "Copyright";
+            }
+
+
+            p.InsertPageBreakAfterSelf();
+
+            // Insert eBook table of contents.
+            Xceed.Document.NET.TableOfContents toc = doc.InsertTableOfContents("Table of Contents", Xceed.Document.NET.TableOfContentsSwitches.H | Xceed.Document.NET.TableOfContentsSwitches.N | Xceed.Document.NET.TableOfContentsSwitches.Z | Xceed.Document.NET.TableOfContentsSwitches.U);
+            doc.InsertSectionPageBreak();
+
+            for (int i = 0; i < Chapters.Count; i++)
+            {
+                ChapterViewModel chapter = Chapters[i];
+                chapter.ExportToWord(doc);
+                doc.InsertSectionPageBreak();
+                doc.Paragraphs.Last().InsertPageBreakAfterSelf();
             }
         }
     }

@@ -121,7 +121,13 @@ namespace TjMott.Writer.ViewModel
 
         public void Delete()
         {
-
+            ConfirmDeleteDialog dialog = new ConfirmDeleteDialog(DialogOwner, string.Format("Note Document: {0}", Model.Name));
+            bool? result = dialog.ShowDialog();
+            if (result.HasValue && result.Value)
+            {
+                Model.Delete();
+                UniverseVm.MarkdownTree.RemoveFromTree(this);
+            }
         }
 
         public void Save()

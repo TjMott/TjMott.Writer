@@ -25,6 +25,7 @@
 
                 <ContextMenu x:Key="documentContextMenu">
                     <MenuItem Header="Open in New Window" Command="{Binding OpenInWindowCommand}" />
+                    <MenuItem Header="Set Categories" Command="{Binding EditCategoriesCommand}" />
                     <MenuItem Header="Delete" Command="{Binding DeleteCommand}" />
                 </ContextMenu>
                 

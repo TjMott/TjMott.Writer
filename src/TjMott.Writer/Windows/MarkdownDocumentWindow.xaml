@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="clr-namespace:TjMott.Writer.Views"
         xmlns:local="clr-namespace:TjMott.Writer.Windows"
-        UseLayoutRounding="True"
+        UseLayoutRounding="True" WindowStartupLocation="CenterScreen"
         Loaded="Window_Loaded" Closing="Window_Closing"
         mc:Ignorable="d"
         Title="Note Browser" Height="450" Width="800">

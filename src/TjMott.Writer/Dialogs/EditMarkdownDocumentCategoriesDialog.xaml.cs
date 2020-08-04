@@ -21,6 +21,7 @@ namespace TjMott.Writer.Dialogs
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            DialogUtility.HideCloseButton(this);
             DataContext = _viewModel;
         }
     }

@@ -24,6 +24,7 @@ namespace TjMott.Writer.Model.SQLiteClasses
         private long _sortIndex;
         private string _name;
         private string _markdownCss;
+        private long? _defaultTemplateId;
         #endregion
 
         #region Database Properties
@@ -49,7 +50,17 @@ namespace TjMott.Writer.Model.SQLiteClasses
                 OnPropertyChanged("SortIndex");
             }
         }
-        
+        [DbField]
+        public long? DefaultTemplateId
+        {
+            get { return _defaultTemplateId; }
+            set
+            {
+                _defaultTemplateId = value;
+                OnPropertyChanged("DefaultTemplateId");
+            }
+        }
+
         [DbField]
         public string Name
         {
@@ -85,6 +96,7 @@ namespace TjMott.Writer.Model.SQLiteClasses
                 _dbHelper = new DbHelper<Universe>(Connection);
 
             id = -1;
+            DefaultTemplateId = null;
             SortIndex = 0;
             Name = "New Universe";
             MarkdownCss = DefaultMarkdownCss.DefaultCss;

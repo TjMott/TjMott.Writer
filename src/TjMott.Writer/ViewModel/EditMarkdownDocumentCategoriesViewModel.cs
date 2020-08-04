@@ -63,6 +63,30 @@ namespace TjMott.Writer.ViewModel
                 return _deselectCategoryCommand;
             }
         }
+        private ICommand _saveCommand;
+        public ICommand SaveCommand
+        {
+            get
+            {
+                if (_saveCommand == null)
+                {
+                    _saveCommand = new RelayCommand(param => Save());
+                }
+                return _saveCommand;
+            }
+        }
+        private ICommand _cancelCommand;
+        public ICommand CancelCommand
+        {
+            get
+            {
+                if (_cancelCommand == null)
+                {
+                    _cancelCommand = new RelayCommand(param => Cancel());
+                }
+                return _cancelCommand;
+            }
+        }
         #region ICommands
 
         #endregion
@@ -110,6 +134,17 @@ namespace TjMott.Writer.ViewModel
         public bool CanDeselectCategory()
         {
             return SelectedUsedCategory != null;
+        }
+
+        public void Save()
+        {
+            MarkdownTree.UpdateDocumentCategories(Document, SelectedCategories);
+            Owner.Close();
+        }
+
+        public void Cancel()
+        {
+            Owner.Close();
         }
     }
 }

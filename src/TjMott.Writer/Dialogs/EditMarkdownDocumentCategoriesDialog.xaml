@@ -6,9 +6,10 @@
         xmlns:local="clr-namespace:TjMott.Writer.Dialogs"
         mc:Ignorable="d" ResizeMode="NoResize" WindowStartupLocation="CenterOwner"
         Loaded="Window_Loaded"
-        Title="Set Note Document Categories" Height="450" Width="800">
+        Title="Set Note Document Categories" Height="450" Width="600">
     <Grid Margin="5">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
@@ -18,10 +19,13 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <ListBox Name="availableListBox" ItemsSource="{Binding AvailableCategories}" 
+        <TextBlock Text="Available Categories" FontSize="16" />
+        <TextBlock Grid.Column="2" Text="Selected Categories" FontSize="16" />
+
+        <ListBox Grid.Row="1" Name="availableListBox" ItemsSource="{Binding AvailableCategories}" 
                  DisplayMemberPath="Model.Name" SelectedItem="{Binding SelectedAvailableCategory}" />
 
-        <StackPanel Grid.Column="1" Style="{StaticResource graphicButtonPanel}">
+        <StackPanel Grid.Row="1" Grid.Column="1" Style="{StaticResource graphicButtonPanel}">
             <Button ToolTip="Add Category" Command="{Binding SelectCategoryCommand}">
                 <Image Source="/Images/icons8-right-50.png" />
             </Button>
@@ -30,12 +34,12 @@
             </Button>
         </StackPanel>
 
-        <ListBox Name="usedListBox" Grid.Column="2" ItemsSource="{Binding SelectedCategories}" 
+        <ListBox Grid.Row="1" Name="usedListBox" Grid.Column="2" ItemsSource="{Binding SelectedCategories}" 
                  DisplayMemberPath="Model.Name" SelectedItem="{Binding SelectedUsedCategory}" />
 
         <StackPanel Grid.Row="2" Grid.ColumnSpan="3" Style="{StaticResource dialogButtonPanel}" HorizontalAlignment="Right">
-            <Button Content="OK" />
-            <Button Content="Cancel" />
+            <Button Content="OK" Command="{Binding SaveCommand}" />
+            <Button Content="Cancel" Command="{Binding CancelCommand}" />
         </StackPanel>
     </Grid>
 </Window>

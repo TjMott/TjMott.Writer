@@ -36,6 +36,7 @@ namespace TjMott.Writer.Dialogs
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            DialogUtility.HideCloseButton(this);
             itemInfoTextBlock.Text = _message;
             updateDeleteText();
             _timer = new DispatcherTimer();
