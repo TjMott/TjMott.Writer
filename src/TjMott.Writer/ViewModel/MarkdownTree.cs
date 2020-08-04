@@ -123,10 +123,10 @@ namespace TjMott.Writer.ViewModel
             if (dialogResult.HasValue && dialogResult.Value)
             {
                 MarkdownDocument doc = new MarkdownDocument(UniverseVm.Model.Connection);
-                doc.UniverseId = UniverseVm.Model.id;
-                doc.MarkdownText = "# New Note\r\nThis is a new note document.";
-                doc.PlainText = Markdig.Markdown.ToPlainText(doc.MarkdownText);
                 doc.Name = dialog.UserInput;
+                doc.UniverseId = UniverseVm.Model.id;
+                doc.MarkdownText = string.Format("# {0}\r\nThis is a new note document.", doc.Name);
+                doc.PlainText = Markdig.Markdown.ToPlainText(doc.MarkdownText);
                 doc.Create();
 
                 MarkdownDocumentViewModel docVm = new MarkdownDocumentViewModel(doc, UniverseVm);

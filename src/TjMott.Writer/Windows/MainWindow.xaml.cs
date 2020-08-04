@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using TjMott.Writer.Dialogs;
 using TjMott.Writer.Properties;
 using TjMott.Writer.ViewModel;
 
@@ -56,5 +57,12 @@ namespace TjMott.Writer.Windows
             MarkdownDocumentWindow.CloseAllWindows();
         }
         #endregion
+
+        private void aboutMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            AboutDialog about = new AboutDialog();
+            about.Owner = this;
+            about.ShowDialog();
+        }
     }
 }

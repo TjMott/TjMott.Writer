@@ -1,13 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup />
+  <PropertyGroup>
+    <_LastSelectedProfileId>C:\Users\TJ Mott\Desktop\TjMott.Writer\src\TjMott.Writer\Properties\PublishProfiles\Windows-x64-Profile.pubxml</_LastSelectedProfileId>
+    <ShowAllFiles>false</ShowAllFiles>
+  </PropertyGroup>
   <ItemGroup>
     <ApplicationDefinition Update="App.xaml">
       <SubType>Designer</SubType>
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Dialogs\AboutDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Dialogs\ConfirmDeleteDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Dialogs\EditMarkdownDocumentCategoriesDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Dialogs\MarkdownCategoryDialog.xaml.cs">
@@ -17,6 +26,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Dialogs\StoryPropertiesDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\FileBrowserView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Views\MarkdownDocumentView.xaml.cs">
@@ -42,7 +54,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Page Update="Dialogs\AboutDialog.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Dialogs\ConfirmDeleteDialog.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Dialogs\EditMarkdownDocumentCategoriesDialog.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Dialogs\MarkdownCategoryDialog.xaml">
@@ -52,6 +70,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Dialogs\StoryPropertiesDialog.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\FileBrowserView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\MarkdownDocumentView.xaml">

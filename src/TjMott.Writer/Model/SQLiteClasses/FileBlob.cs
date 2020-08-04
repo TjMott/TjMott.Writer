@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.SQLite;
 using System.IO;
-using System.Text;
 using TjMott.Writer.Model.Attributes;
 
 namespace TjMott.Writer.Model.SQLiteClasses
@@ -24,6 +23,8 @@ namespace TjMott.Writer.Model.SQLiteClasses
         private long _id;
         private long _universeId;
         private string _name;
+        private string _fileName;
+        private string _fileType;
         private long _sortIndex;
         #endregion
 
@@ -58,6 +59,26 @@ namespace TjMott.Writer.Model.SQLiteClasses
             {
                 _name = value;
                 OnPropertyChanged("Name");
+            }
+        }
+        [DbField]
+        public string FileName
+        {
+            get { return _fileName; }
+            set
+            {
+                _fileName = value;
+                OnPropertyChanged("FileName");
+            }
+        }
+        [DbField]
+        public string FileType
+        {
+            get { return _fileType; }
+            set
+            {
+                _fileType = value;
+                OnPropertyChanged("FileType");
             }
         }
 
@@ -98,6 +119,13 @@ namespace TjMott.Writer.Model.SQLiteClasses
                 _zeroBlobCmd.AddParameter("@blobSize");
             }
         }
+        #endregion
+
+        #region File types enum
+        public const string FILE_TYPE_PNG = "PNG";
+        public const string FILE_TYPE_JPEG = "JPG";
+        public const string FILE_TYPE_TEMPLATE = "TEMPLATE";
+        public const string FILE_TYPE_OTHER = "OTHER";
         #endregion
 
         public FileBlob(SQLiteConnection connection)
@@ -221,8 +249,7 @@ namespace TjMott.Writer.Model.SQLiteClasses
 
         public static List<FileBlob> GetAllFileBlobs(SQLiteConnection connection)
         {
-            if (_dbHelper == null)
-                _dbHelper = new DbHelper<FileBlob>(connection);
+            initSql(connection);
 
             List<FileBlob> retval = new List<FileBlob>();
             List<long> ids = _dbHelper.GetAllIds();

@@ -74,6 +74,17 @@ namespace TjMott.Writer.ViewModel
                 OnPropertyChanged("MarkdownTree");
             }
         }
+
+        private FileBrowserViewModel _fileBrowserVm;
+        public FileBrowserViewModel FileBrowserViewModel
+        {
+            get { return _fileBrowserVm; }
+            set
+            {
+                _fileBrowserVm = value;
+                OnPropertyChanged("FileBrowserViewModel");
+            }
+        }
         #endregion
 
         #region ISortable implementation - pass through to model
@@ -196,6 +207,18 @@ namespace TjMott.Writer.ViewModel
                 return _showWordCountCommand;
             }
         }
+        private ICommand _renameCommand;
+        public ICommand RenameCommand
+        {
+            get
+            {
+                if (_renameCommand == null)
+                {
+                    _renameCommand = new RelayCommand(param => Rename());
+                }
+                return _renameCommand;
+            }
+        }
         #endregion
 
         public UniverseViewModel(Universe model, Database database)
@@ -215,6 +238,8 @@ namespace TjMott.Writer.ViewModel
 
             MarkdownTree = new MarkdownTree(this);
             MarkdownTree.Load();
+            FileBrowserViewModel = new FileBrowserViewModel(this);
+            FileBrowserViewModel.Load();
         }
 
         public void UpdateSubItemSortIndices()
@@ -471,6 +496,17 @@ namespace TjMott.Writer.ViewModel
             {
                 SceneViewModel vm = SelectedTreeViewItem as SceneViewModel;
                 vm.ChapterVm.Scenes.MoveItemDown(vm);
+            }
+        }
+
+        public void Rename()
+        {
+            NameItemDialog dialog = new NameItemDialog(DialogOwner, Model.Name);
+            bool? result = dialog.ShowDialog();
+            if (result.HasValue && result.Value)
+            {
+                Model.Name = dialog.UserInput;
+                Model.Save();
             }
         }
 

@@ -29,11 +29,13 @@
     <None Remove="Images\icons8-export-40.png" />
     <None Remove="Images\icons8-increase-font.png" />
     <None Remove="Images\icons8-italic.png" />
+    <None Remove="Images\icons8-left-50.png" />
     <None Remove="Images\icons8-note-40.png" />
     <None Remove="Images\icons8-numbered-list.png" />
     <None Remove="Images\icons8-paste.png" />
     <None Remove="Images\icons8-plus.png" />
     <None Remove="Images\icons8-redo.png" />
+    <None Remove="Images\icons8-right-50.png" />
     <None Remove="Images\icons8-scissors.png" />
     <None Remove="Images\icons8-search.png" />
     <None Remove="Images\icons8-statistics-40.png" />
@@ -72,11 +74,13 @@
     <Resource Include="Images\icons8-export-40.png" />
     <Resource Include="Images\icons8-increase-font.png" />
     <Resource Include="Images\icons8-italic.png" />
+    <Resource Include="Images\icons8-left-50.png" />
     <Resource Include="Images\icons8-note-40.png" />
     <Resource Include="Images\icons8-numbered-list.png" />
     <Resource Include="Images\icons8-paste.png" />
     <Resource Include="Images\icons8-plus.png" />
     <Resource Include="Images\icons8-redo.png" />
+    <Resource Include="Images\icons8-right-50.png" />
     <Resource Include="Images\icons8-scissors.png" />
     <Resource Include="Images\icons8-search.png" />
     <Resource Include="Images\icons8-statistics-40.png" />

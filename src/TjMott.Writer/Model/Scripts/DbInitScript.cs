@@ -108,6 +108,8 @@ CREATE TABLE File
     id INTEGER PRIMARY KEY,
     UniverseId INTEGER,
     Name TEXT,
+    FileName TEXT,
+    FileType TEXT,
     Data BLOB,
     SortIndex INTEGER,
 

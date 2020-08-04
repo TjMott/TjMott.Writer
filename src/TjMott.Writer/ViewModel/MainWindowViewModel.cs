@@ -3,7 +3,6 @@ using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
-using TjMott.Writer.Dialogs;
 using TjMott.Writer.Properties;
 using TjMott.Writer.Windows;
 

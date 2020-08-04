@@ -8,6 +8,7 @@ namespace TjMott.Writer.ViewModel
     {
         private bool _ignoreSortIndexChanged = false;
 
+
         public new void Add(T item)
         {
             item.PropertyChanged += Item_PropertyChanged;

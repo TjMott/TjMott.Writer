@@ -19,8 +19,8 @@
             <MenuItem Header="Edit">
                 <MenuItem Header="Save Changes" Command="{Binding SaveCommand}" />
                 <MenuItem Header="Revert Changes" Command="{Binding RevertCommand}" />
-                <MenuItem Header="Rename" />
-                <MenuItem Header="Set Categories" />
+                <MenuItem Header="Rename" Command="{Binding RenameCommand}" />
+                <MenuItem Header="Set Categories" Command="{Binding EditCategoriesCommand}" />
                 <MenuItem Header="Delete" Command="{Binding DeleteCommand}" />
                 <MenuItem Header="Close" Click="closeMenuItem_Click" />
             </MenuItem>

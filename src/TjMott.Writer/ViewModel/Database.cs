@@ -186,11 +186,14 @@ namespace TjMott.Writer.ViewModel
             foreach (var u in Universes)
                 u.SpellcheckDictionary.Close();
 
-            // Compact the database.
-            using (SQLiteCommand cmd = new SQLiteCommand(Connection))
+            if (Connection != null)
             {
-                cmd.CommandText = "VACUUM;";
-                cmd.ExecuteNonQuery();
+                // Compact the database.
+                using (SQLiteCommand cmd = new SQLiteCommand(Connection))
+                {
+                    cmd.CommandText = "VACUUM;";
+                    cmd.ExecuteNonQuery();
+                }
             }
 
             _connection.Close();
