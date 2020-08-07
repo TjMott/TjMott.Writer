@@ -58,7 +58,9 @@
             <TabItem Header="File Browser">
                 <views:FileBrowserView DataContext="{Binding Database.SelectedUniverse.FileBrowserViewModel}" />
             </TabItem>
-            <TabItem Header="Ticket Tracker" />
+            <TabItem Header="Ticket Tracker">
+                <views:TicketTrackerView DataContext="{Binding Database.SelectedUniverse.TicketTrackerViewModel}" />
+            </TabItem>
             <TabItem Header="Search">
                 <views:SearchView DataContext="{Binding Database.SelectedUniverse.SearchViewModel}" />
             </TabItem>

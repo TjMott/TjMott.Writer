@@ -89,6 +89,17 @@ namespace TjMott.Writer.ViewModel
                 OnPropertyChanged("FileBrowserViewModel");
             }
         }
+
+        private TicketTrackerViewModel _ticketTracker;
+        public TicketTrackerViewModel TicketTrackerViewModel
+        {
+            get { return _ticketTracker; }
+            set
+            {
+                _ticketTracker = value;
+                OnPropertyChanged("TicketTrackerViewModel");
+            }
+        }
         #endregion
 
         #region ISortable implementation - pass through to model
@@ -244,6 +255,9 @@ namespace TjMott.Writer.ViewModel
             MarkdownTree.Load();
             FileBrowserViewModel = new FileBrowserViewModel(this);
             FileBrowserViewModel.Load();
+
+            TicketTrackerViewModel = new TicketTrackerViewModel(this);
+            TicketTrackerViewModel.Load();
         }
 
         public void UpdateSubItemSortIndices()

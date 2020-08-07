@@ -46,6 +46,9 @@
     <Compile Update="Views\StoriesView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\TicketTrackerView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Windows\FlowDocumentEditorWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -91,6 +94,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\StoriesView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\TicketTrackerView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Windows\FlowDocumentEditorWindow.xaml">

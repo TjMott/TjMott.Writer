@@ -148,6 +148,24 @@ CREATE TRIGGER Scene_FlowDoc_ad AFTER DELETE ON Scene BEGIN
   DELETE FROM FlowDocument WHERE id = (old.FlowDocumentId);
 END;
 
+CREATE TABLE Ticket
+(
+    id INTEGER PRIMARY KEY,
+    UniverseId INTEGER,
+    Priority INTEGER,
+    Name TEXT,
+    Status TEXT,
+    MarkdownDocumentId INTEGER,
+    DueDate TEXT,
+
+    FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE,
+    FOREIGN KEY(MarkdownDocumentId) REFERENCES MarkdownDocument(id)
+);
+
+-- Delete FlowDocument after its ticket is deleted.
+CREATE TRIGGER Ticket_FlowDoc_ad AFTER DELETE ON Ticket BEGIN
+  DELETE FROM FlowDocument WHERE id = (old.FlowDocumentId);
+END;
 
 
 -- Full-Text Search stuff
