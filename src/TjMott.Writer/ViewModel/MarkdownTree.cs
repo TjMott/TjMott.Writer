@@ -54,7 +54,9 @@ namespace TjMott.Writer.ViewModel
 
             List<MarkdownCategory> dbCategories = MarkdownCategory.GetAllMarkdownDocuments(UniverseVm.Model.Connection).Where(i => i.UniverseId == UniverseVm.Model.id).ToList();
             List<MarkdownCategoryDocument> dbCatDocs = MarkdownCategoryDocument.GetAllMarkdownDocuments(UniverseVm.Model.Connection).ToList();
-            List<MarkdownDocument> dbDocs = MarkdownDocument.GetAllMarkdownDocuments(UniverseVm.Model.Connection).Where(i => i.UniverseId == UniverseVm.Model.id).ToList();
+
+            // Filter out "special" docs (attached to tickets or files)
+            List<MarkdownDocument> dbDocs = MarkdownDocument.GetAllMarkdownDocuments(UniverseVm.Model.Connection).Where(i => i.UniverseId == UniverseVm.Model.id && !i.IsSpecial).ToList();
 
             List<MarkdownCategoryViewModel> categories = dbCategories.Select(i => new MarkdownCategoryViewModel(i, UniverseVm)).ToList();
             List<MarkdownDocumentViewModel> docs = dbDocs.Select(i => new MarkdownDocumentViewModel(i, UniverseVm)).ToList();

@@ -17,8 +17,17 @@
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
-        <GroupBox Header="Filters" Grid.ColumnSpan="2">
+        <GroupBox Header="Filters">
             <Grid>
+                <Grid.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Margin" Value="5" />
+                        <Setter Property="VerticalAlignment" Value="Center" />
+                    </Style>
+                    <Style TargetType="ComboBox">
+                        <Setter Property="Margin" Value="5" />
+                    </Style>
+                </Grid.Resources>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
                     <RowDefinition Height="*" />
@@ -27,12 +36,12 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-
+                
                 <TextBlock Text="Priority" />
                 <TextBlock Text="Status" Grid.Row="1" />
 
-                <ComboBox Grid.Column="1" ItemsSource="{Binding Priorities}" DisplayMemberPath="Name" />
-                <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Statuses}" />
+                <ComboBox Grid.Column="1" ItemsSource="{Binding Priorities}" DisplayMemberPath="Name" SelectedItem="{Binding PriorityFilter}" />
+                <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Statuses}" SelectedItem="{Binding StatusFilter}" />
 
             </Grid>
         </GroupBox>
@@ -42,7 +51,7 @@
                 <DataGridTextColumn Header="id" Binding="{Binding Model.id}" />
                 <DataGridTextColumn Header="Name" Binding="{Binding Model.Name}" />
                 <DataGridTextColumn Header="Status" Binding="{Binding Model.Status}" />
-                <DataGridTextColumn Header="Priority" Binding="{Binding Model.Priority}" />
+                <DataGridTextColumn Header="Priority" Binding="{Binding Priority}" />
             </DataGrid.Columns>
         </DataGrid>
 
@@ -53,9 +62,12 @@
             <Button ToolTip="Delete Ticket">
                 <Image Source="../Images/icons8-cancel.png" />
             </Button>
+            <Button ToolTip="Edit Ticket" Command="{Binding SelectedTicket.EditCommand}">
+                <Image Source="../Images/icons8-edit-40.png" />
+            </Button>
         </StackPanel>
 
-        <local:MarkdownDocumentView Grid.Row="2" Grid.ColumnSpan="2" DataContext="{Binding SelectedTicket.MarkdownDocument}" />
+        <local:MarkdownDocumentView Grid.Row="2" DataContext="{Binding SelectedTicket.MarkdownDocument}" />
 
     </Grid>
 </UserControl>

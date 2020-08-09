@@ -22,6 +22,7 @@ namespace TjMott.Writer.Model.SQLiteClasses
         #region Private variables
         private long _id;
         private long _universeId;
+        private long? _markdownDocumentId;
         private string _name;
         private string _fileName;
         private string _fileType;
@@ -48,6 +49,16 @@ namespace TjMott.Writer.Model.SQLiteClasses
             {
                 _universeId = value;
                 OnPropertyChanged("UniverseId");
+            }
+        }
+        [DbField]
+        public long? MarkdownDocumentId
+        {
+            get { return _markdownDocumentId; }
+            set
+            {
+                _markdownDocumentId = value;
+                OnPropertyChanged("MarkdownDocumentId");
             }
         }
 

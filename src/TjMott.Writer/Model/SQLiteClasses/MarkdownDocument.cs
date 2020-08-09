@@ -25,6 +25,7 @@ namespace TjMott.Writer.Model.SQLiteClasses
         private string _name;
         private string _markdownText;
         private string _plainText;
+        private bool _isSpecial;
         #endregion
 
         #region Database Properties
@@ -82,6 +83,16 @@ namespace TjMott.Writer.Model.SQLiteClasses
                 OnPropertyChanged("Name");
             }
         }
+        [DbField]
+        public bool IsSpecial
+        {
+            get { return _isSpecial; }
+            set
+            {
+                _isSpecial = value;
+                OnPropertyChanged("IsSpecial");
+            }
+        }
         #endregion
 
         #region Properties
@@ -94,6 +105,7 @@ namespace TjMott.Writer.Model.SQLiteClasses
             if (_dbHelper == null)
                 _dbHelper = new DbHelper<MarkdownDocument>(connection);
             Connection = connection;
+            IsSpecial = false;
         }
 
         public void Load()

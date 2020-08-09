@@ -1,0 +1,34 @@
+﻿<Window x:Class="TjMott.Writer.Dialogs.EditTicketDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TjMott.Writer.Dialogs"
+        mc:Ignorable="d" Loaded="Window_Loaded"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
+        Title="Edit Ticket" Height="450" Width="800">
+    <Grid Margin="5">
+        <Grid.Resources>
+            
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Text="Name" />
+        <TextBlock Grid.Row="1" Text="Status" />
+        <TextBlock Grid.Row="2" Text="Priority" />
+
+        <TextBox Grid.Column="1" Text="{Binding Model.Name, UpdateSourceTrigger=PropertyChanged}" />
+        <ComboBox Grid.Column="1" Grid.Row="1" ItemsSource="{Binding Statuses}" SelectedItem="{Binding Model.Status}" />
+        <ComboBox Grid.Column="1" Grid.Row="2" ItemsSource="{Binding Priorities}" DisplayMemberPath="Name"
+                  SelectedValue="{Binding Model.Priority}" SelectedValuePath="Priority" />
+    </Grid>
+</Window>

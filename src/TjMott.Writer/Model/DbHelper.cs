@@ -193,12 +193,13 @@ namespace TjMott.Writer.Model
 
         public void Update(T item, IEnumerable<string> propsToSave = null)
         {
+            _updateCommand.Parameters["@id"].Value = item.id;
             for (int i = 0; i < _allProperties.Count; i++)
             {
                 if (propsToSave == null || propsToSave.Contains(_allProperties[i].Name))
                     _updateCommand.Parameters["@" + _allProperties[i].Name].Value = _allProperties[i].GetValue(item);
             }
-            _updateCommand.Command.ExecuteNonQuery();
+            int affected = _updateCommand.Command.ExecuteNonQuery();
         }
     }
 }

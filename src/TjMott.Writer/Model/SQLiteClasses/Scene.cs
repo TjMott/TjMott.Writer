@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.SQLite;
-using System.Text;
-using System.Windows.Media;
 using TjMott.Writer.Model.Attributes;
 
 namespace TjMott.Writer.Model.SQLiteClasses
@@ -26,6 +24,7 @@ namespace TjMott.Writer.Model.SQLiteClasses
         private string _name;
         private long _sortIndex;
         private long _flowDocumentId;
+        private long? _markdownDocumentId;
         private byte _colorA;
         private byte _colorR;
         private byte _colorG;
@@ -126,6 +125,17 @@ namespace TjMott.Writer.Model.SQLiteClasses
             {
                 _flowDocumentId = value;
                 OnPropertyChanged("FlowDocumentId");
+            }
+        }
+
+        [DbField]
+        public long? MarkdownDocumentId
+        {
+            get { return _markdownDocumentId; }
+            set
+            {
+                _markdownDocumentId = value;
+                OnPropertyChanged("MarkdownDocumentId");
             }
         }
         #endregion

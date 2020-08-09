@@ -43,6 +43,7 @@ CREATE TABLE MarkdownDocument
     MarkdownText TEXT,
     PlainText TEXT,
     Name TEXT,
+    IsSpecial INTEGER,
 
     FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE
 );
@@ -83,9 +84,16 @@ CREATE TABLE Category
     UniverseId INTEGER,
     Name TEXT,
     SortIndex INTEGER,
+    MarkdownDocumentId INTEGER,
 
-    FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE
+    FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE,
+    FOREIGN KEY(MarkdownDocumentId) REFERENCES MarkdownDocument(id)
 );
+
+-- Delete MarkdownDocument after its category is deleted.
+CREATE TRIGGER Category_MarkdownDoc_ad AFTER DELETE ON Category BEGIN
+  DELETE FROM MarkdownDocument WHERE id = (old.MarkdownDocumentId);
+END;
 
 CREATE TABLE Story
 (
@@ -99,10 +107,17 @@ CREATE TABLE Story
     ISBN TEXT,
     ASIN TEXT,
     SortIndex INTEGER,
+    MarkdownDocumentId INTEGER,
 
     FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE,
-    FOREIGN KEY(CategoryId) REFERENCES Category(id) ON DELETE SET NULL
+    FOREIGN KEY(CategoryId) REFERENCES Category(id) ON DELETE SET NULL,
+    FOREIGN KEY(MarkdownDocumentId) REFERENCES MarkdownDocument(id)
 );
+
+-- Delete MarkdownDocument after its Story is deleted.
+CREATE TRIGGER Story_MarkdownDoc_ad AFTER DELETE ON Story BEGIN
+  DELETE FROM MarkdownDocument WHERE id = (old.MarkdownDocumentId);
+END;
 
 CREATE TABLE File
 (
@@ -113,9 +128,16 @@ CREATE TABLE File
     FileType TEXT,
     Data BLOB,
     SortIndex INTEGER,
+    MarkdownDocumentId INTEGER,
 
-    FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE
+    FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE,
+    FOREIGN KEY(MarkdownDocumentId) REFERENCES MarkdownDocument(id) ON DELETE CASCADE
 );
+
+-- Delete MarkdownDocument after its file is deleted.
+CREATE TRIGGER File_MarkdownDoc_ad AFTER DELETE ON File BEGIN
+  DELETE FROM MarkdownDocument WHERE id = (old.MarkdownDocumentId);
+END;
 
 CREATE TABLE Chapter
 (
@@ -123,9 +145,16 @@ CREATE TABLE Chapter
     StoryId INTEGER,
     Name TEXT,
     SortIndex INTEGER,
+    MarkdownDocumentId INTEGER,
 
-    FOREIGN KEY(StoryId) REFERENCES Story(id) ON DELETE CASCADE
+    FOREIGN KEY(StoryId) REFERENCES Story(id) ON DELETE CASCADE,
+    FOREIGN KEY(MarkdownDocumentId) REFERENCES MarkdownDocument(id)
 );
+
+-- Delete MarkdownDocument after its chapter is deleted.
+CREATE TRIGGER Chapter_MarkdownDoc_ad AFTER DELETE ON Chapter BEGIN
+  DELETE FROM MarkdownDocument WHERE id = (old.MarkdownDocumentId);
+END;
 
 CREATE TABLE Scene
 (
@@ -138,14 +167,21 @@ CREATE TABLE Scene
     ColorG INTEGER,
     ColorB INTEGER,
     FlowDocumentId INTEGER,
+    MarkdownDocumentId INTEGER,
 
     FOREIGN KEY(ChapterId) REFERENCES Chapter(id) ON DELETE CASCADE,
-    FOREIGN KEY(FlowDocumentId) REFERENCES FlowDocument(id)
+    FOREIGN KEY(FlowDocumentId) REFERENCES FlowDocument(id),
+    FOREIGN KEY(MarkdownDocumentId) REFERENCES MarkdownDocument(id)
 );
 
 -- Delete FlowDocument after its scene is deleted.
 CREATE TRIGGER Scene_FlowDoc_ad AFTER DELETE ON Scene BEGIN
   DELETE FROM FlowDocument WHERE id = (old.FlowDocumentId);
+END;
+
+-- Delete MarkdownDocument after its scene is deleted.
+CREATE TRIGGER Scene_MarkdownDoc_ad AFTER DELETE ON Scene BEGIN
+  DELETE FROM MarkdownDocument WHERE id = (old.MarkdownDocumentId);
 END;
 
 CREATE TABLE Ticket
@@ -162,9 +198,9 @@ CREATE TABLE Ticket
     FOREIGN KEY(MarkdownDocumentId) REFERENCES MarkdownDocument(id)
 );
 
--- Delete FlowDocument after its ticket is deleted.
-CREATE TRIGGER Ticket_FlowDoc_ad AFTER DELETE ON Ticket BEGIN
-  DELETE FROM FlowDocument WHERE id = (old.FlowDocumentId);
+-- Delete MarkdownDocument after its ticket is deleted.
+CREATE TRIGGER Ticket_MarkdownDoc_ad AFTER DELETE ON Ticket BEGIN
+  DELETE FROM MarkdownDocument WHERE id = (old.MarkdownDocumentId);
 END;
 
 

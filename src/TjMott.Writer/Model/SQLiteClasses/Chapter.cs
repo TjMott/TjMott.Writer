@@ -25,6 +25,7 @@ namespace TjMott.Writer.Model.SQLiteClasses
         private long _storyId;
         private long _sortIndex;
         private string _name;
+        private long? _markdownDocumentId;
         #endregion
 
         #region Database Properties
@@ -69,6 +70,17 @@ namespace TjMott.Writer.Model.SQLiteClasses
             {
                 _name = value;
                 OnPropertyChanged("Name");
+            }
+        }
+
+        [DbField]
+        public long? MarkdownDocumentId
+        {
+            get { return _markdownDocumentId; }
+            set
+            {
+                _markdownDocumentId = value;
+                OnPropertyChanged("MarkdownDocumentId");
             }
         }
         #endregion
