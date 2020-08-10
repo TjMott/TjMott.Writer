@@ -35,6 +35,16 @@
 
                 <ContextMenu x:Key="sceneContextMenu">
                     <MenuItem Header="Rename Scene" Command="{Binding RenameCommand}" />
+                    <MenuItem Header="Color">
+                        <MenuItem Click="sceneColorMenuItem_Click" Background="Black" />
+                        <MenuItem Click="sceneColorMenuItem_Click" Background="Gray" />
+                        <MenuItem Click="sceneColorMenuItem_Click" Background="Red" />
+                        <MenuItem Click="sceneColorMenuItem_Click" Background="Orange" />
+                        <MenuItem Click="sceneColorMenuItem_Click" Background="Yellow" />
+                        <MenuItem Click="sceneColorMenuItem_Click" Background="Green" />
+                        <MenuItem Click="sceneColorMenuItem_Click" Background="Blue" />
+                        <MenuItem Click="sceneColorMenuItem_Click" Background="Violet" />
+                    </MenuItem>
                     <MenuItem Header="Delete Scene" Command="{Binding DeleteCommand}" />
                 </ContextMenu>
 
@@ -59,7 +69,7 @@
                 <HierarchicalDataTemplate DataType="{x:Type viewModels:SceneViewModel}">
                     <TextBlock Margin="3" ContextMenu="{StaticResource sceneContextMenu}">
                         <Run Text="Scene: " />
-                        <Run Text="{Binding Model.Name}" />
+                        <Run Text="{Binding Model.Name}" Foreground="{Binding TextColorBrush}" />
                     </TextBlock>
                 </HierarchicalDataTemplate>
                 

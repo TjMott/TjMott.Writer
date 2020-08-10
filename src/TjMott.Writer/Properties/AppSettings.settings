@@ -32,5 +32,11 @@
     <Setting Name="wikiPageWindowHeight" Type="System.Double" Scope="User">
       <Value Profile="(Default)">1024</Value>
     </Setting>
+    <Setting Name="ticketDialogWidth" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">500</Value>
+    </Setting>
+    <Setting Name="ticketDialogHeight" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">500</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

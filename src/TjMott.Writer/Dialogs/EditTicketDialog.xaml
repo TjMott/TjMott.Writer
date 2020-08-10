@@ -4,10 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TjMott.Writer.Dialogs"
-        mc:Ignorable="d" Loaded="Window_Loaded"
-        WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
-        Title="Edit Ticket" Height="450" Width="800">
-    <Grid Margin="5">
+        mc:Ignorable="d" Loaded="Window_Loaded" Closing="Window_Closing"
+        WindowStartupLocation="CenterOwner" ResizeMode="CanResizeWithGrip"
+        Title="Edit Ticket" Height="500" Width="500">
+    <Grid Style="{StaticResource gridRoot}">
         <Grid.Resources>
             
         </Grid.Resources>
@@ -15,6 +15,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -22,13 +23,21 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <TextBlock Text="Name" />
-        <TextBlock Grid.Row="1" Text="Status" />
-        <TextBlock Grid.Row="2" Text="Priority" />
+        <TextBlock Style="{StaticResource fieldLabel}" Text="Name" />
+        <TextBlock Style="{StaticResource fieldLabel}" Grid.Row="1" Text="Status" />
+        <TextBlock Style="{StaticResource fieldLabel}" Grid.Row="2" Text="Priority" />
 
-        <TextBox Grid.Column="1" Text="{Binding Model.Name, UpdateSourceTrigger=PropertyChanged}" />
-        <ComboBox Grid.Column="1" Grid.Row="1" ItemsSource="{Binding Statuses}" SelectedItem="{Binding Model.Status}" />
-        <ComboBox Grid.Column="1" Grid.Row="2" ItemsSource="{Binding Priorities}" DisplayMemberPath="Name"
+        <TextBox Style="{StaticResource fieldInput}" Grid.Column="1" Text="{Binding Model.Name, UpdateSourceTrigger=PropertyChanged}" />
+        <ComboBox Style="{StaticResource fieldInput}" Grid.Column="1" Grid.Row="1" ItemsSource="{Binding Statuses}" SelectedItem="{Binding Model.Status}" />
+        <ComboBox Style="{StaticResource fieldInput}" Grid.Column="1" Grid.Row="2" ItemsSource="{Binding Priorities}" DisplayMemberPath="Name"
                   SelectedValue="{Binding Model.Priority}" SelectedValuePath="Priority" />
+
+        <TextBox AcceptsReturn="True" AcceptsTab="True"  Grid.Row="3" Grid.ColumnSpan="2"
+                    Text="{Binding MarkdownDocument.Model.MarkdownText, UpdateSourceTrigger=PropertyChanged}" />
+
+        <StackPanel Grid.Row="5" Style="{StaticResource dialogButtonPanel}" Grid.ColumnSpan="2" VerticalAlignment="Bottom">
+            <Button Content="OK" Command="{Binding SaveCommand}" />
+            <Button Content="Cancel" Command="{Binding CancelCommand}" />
+        </StackPanel>
     </Grid>
 </Window>

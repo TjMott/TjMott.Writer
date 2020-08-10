@@ -46,6 +46,10 @@ namespace TjMott.Writer.ViewModel
         }
         #endregion
 
+        #region Private variables
+        private EditTicketDialog _editTicketDialog;
+        #endregion
+
         #region ICommands
         private ICommand _editCommand;
         public ICommand EditCommand
@@ -57,6 +61,30 @@ namespace TjMott.Writer.ViewModel
                     _editCommand = new RelayCommand(param => Edit());
                 }
                 return _editCommand;
+            }
+        }
+        private ICommand _saveCommand;
+        public ICommand SaveCommand
+        {
+            get
+            {
+                if (_saveCommand == null)
+                {
+                    _saveCommand = new RelayCommand(param => Save());
+                }
+                return _saveCommand;
+            }
+        }
+        private ICommand _cancelCommand;
+        public ICommand CancelCommand
+        {
+            get
+            { 
+                if (_cancelCommand == null)
+                {
+                    _cancelCommand = new RelayCommand(param => Cancel());
+                }
+                return _cancelCommand;
             }
         }
         #endregion
@@ -92,8 +120,30 @@ namespace TjMott.Writer.ViewModel
 
         public void Edit()
         {
-            EditTicketDialog dialog = new EditTicketDialog(DialogOwner, this);
-            dialog.ShowDialog();
+            _editTicketDialog = new EditTicketDialog(DialogOwner, this);
+            _editTicketDialog.ShowDialog();
+        }
+
+        public void Save()
+        {
+            Model.Save();
+            MarkdownDocument.Save();
+            if (_editTicketDialog != null)
+            {
+                _editTicketDialog.Close();
+                _editTicketDialog = null;
+            }
+        }
+
+        public void Cancel()
+        {
+            Model.Load();
+            MarkdownDocument.Model.Load();
+            if (_editTicketDialog != null)
+            {
+                _editTicketDialog.Close();
+                _editTicketDialog = null;
+            }
         }
     }
 }

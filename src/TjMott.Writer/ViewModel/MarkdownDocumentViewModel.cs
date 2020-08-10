@@ -2,6 +2,7 @@
 using System;
 using System.Windows.Input;
 using TjMott.Writer.Dialogs;
+using TjMott.Writer.Model;
 using TjMott.Writer.Model.SQLiteClasses;
 using TjMott.Writer.Windows;
 
@@ -160,6 +161,19 @@ namespace TjMott.Writer.ViewModel
         public bool CanEditCategories()
         {
             return UniverseVm.MarkdownTree.Categories.Count > 0;
+        }
+
+        public static MarkdownDocument CreateDocForItem(IHasMarkdownDocument item, long universeId, bool isSpecial, string name)
+        {
+            MarkdownDocument doc = new MarkdownDocument(item.Connection);
+            doc.UniverseId = universeId;
+            doc.IsSpecial = isSpecial;
+            doc.Name = name;
+            doc.Create();
+
+            item.MarkdownDocumentId = doc.id;
+            item.Save();
+            return doc;
         }
     }
 }

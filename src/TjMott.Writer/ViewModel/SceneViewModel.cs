@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
 using TjMott.Writer.Dialogs;
 using TjMott.Writer.Model;
 using TjMott.Writer.Model.SQLiteClasses;
@@ -58,6 +59,29 @@ namespace TjMott.Writer.ViewModel
 
         public Scene Model { get; private set; }
         public ChapterViewModel ChapterVm { get; set; }
+
+        private SolidColorBrush _textColorBrush;
+        public SolidColorBrush TextColorBrush
+        {
+            get 
+            { 
+                if (_textColorBrush == null)
+                {
+                    _textColorBrush = new SolidColorBrush(Color.FromArgb(Model.ColorA, Model.ColorR, Model.ColorG, Model.ColorB));
+                }
+                return _textColorBrush; 
+            }
+            set
+            {
+                _textColorBrush = value;
+                Model.ColorA = _textColorBrush.Color.A;
+                Model.ColorR = _textColorBrush.Color.R;
+                Model.ColorG = _textColorBrush.Color.G;
+                Model.ColorB = _textColorBrush.Color.B;
+                Model.Save();
+                OnPropertyChanged("TextColorBrush");
+            }
+        }
 
         public SceneViewModel(Scene model)
         {

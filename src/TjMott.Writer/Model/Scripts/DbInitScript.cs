@@ -9,8 +9,8 @@ namespace TjMott.Writer.Model.Scripts
 CREATE TABLE Metadata
 (
     id INTEGER PRIMARY KEY,
-    Key TEXT UNIQUE,
-    Value TEXT
+    Key TEXT UNIQUE NOT NULL,
+    Value TEXT NOT NULL
 );
 
 INSERT INTO Metadata(Key, Value) VALUES ('DbVersion', 1);
@@ -19,10 +19,10 @@ INSERT INTO Metadata(Key, Value) VALUES ('DefaultUniverse', 0);
 CREATE TABLE Universe
 (
     id INTEGER PRIMARY KEY,
-    Name TEXT,
-    SortIndex INTEGER,
-    MarkdownCss TEXT,
-    DefaultTemplateId INTEGER
+    Name TEXT DEFAULT 'New Universe',
+    SortIndex INTEGER DEFAULT 0,
+    MarkdownCss TEXT DEFAULT '',
+    DefaultTemplateId INTEGER DEFAULT 0
 );
 
 CREATE TABLE FlowDocument
@@ -31,7 +31,7 @@ CREATE TABLE FlowDocument
     UniverseId INTEGER,
     Xml TEXT,
     PlainText TEXT,
-    WordCount INTEGER,
+    WordCount INTEGER DEFAULT 0,
 
     FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE
 );
@@ -40,10 +40,10 @@ CREATE TABLE MarkdownDocument
 (
     id INTEGER PRIMARY KEY,
     UniverseId INTEGER,
-    MarkdownText TEXT,
-    PlainText TEXT,
-    Name TEXT,
-    IsSpecial INTEGER,
+    MarkdownText TEXT DEFAULT '',
+    PlainText TEXT DEFAULT '',
+    Name TEXT DEFAULT 'New Document',
+    IsSpecial INTEGER DEFAULT 0,
 
     FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE
 );
@@ -53,7 +53,7 @@ CREATE TABLE MarkdownCategory
     id INTEGER PRIMARY KEY,
     UniverseId INTEGER,
     ParentId INTEGER,
-    Name TEXT,
+    Name TEXT DEFAULT 'New Category',
 
     FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE,
     FOREIGN KEY(ParentId) REFERENCES MarkdownCategory(id) ON DELETE SET NULL
@@ -82,9 +82,9 @@ CREATE TABLE Category
 (
     id INTEGER PRIMARY KEY,
     UniverseId INTEGER,
-    Name TEXT,
-    SortIndex INTEGER,
-    MarkdownDocumentId INTEGER,
+    Name TEXT DEFAULT 'New Category',
+    SortIndex INTEGER DEFAULT 0,
+    MarkdownDocumentId INTEGER DEFAULT NULL,
 
     FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE,
     FOREIGN KEY(MarkdownDocumentId) REFERENCES MarkdownDocument(id)
@@ -99,15 +99,15 @@ CREATE TABLE Story
 (
     id INTEGER PRIMARY KEY,
     UniverseId INTEGER,
-    CategoryId INTEGER,
-    Name TEXT,
-    Subtitle TEXT,
-    Author TEXT,
-    Edition TEXT,
-    ISBN TEXT,
-    ASIN TEXT,
-    SortIndex INTEGER,
-    MarkdownDocumentId INTEGER,
+    CategoryId INTEGER DEFAULT NULL,
+    Name TEXT DEFAULT 'New Story',
+    Subtitle TEXT DEFAULT '',
+    Author TEXT DEFAULT '',
+    Edition TEXT DEFAULT '',
+    ISBN TEXT DEFAULT '',
+    ASIN TEXT DEFAULT '',
+    SortIndex INTEGER DEFAULT 0,
+    MarkdownDocumentId INTEGER DEFAULT NULL,
 
     FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE,
     FOREIGN KEY(CategoryId) REFERENCES Category(id) ON DELETE SET NULL,
@@ -123,12 +123,12 @@ CREATE TABLE File
 (
     id INTEGER PRIMARY KEY,
     UniverseId INTEGER,
-    Name TEXT,
-    FileName TEXT,
-    FileType TEXT,
+    Name TEXT DEFAULT 'New File',
+    FileName TEXT DEFAULT '',
+    FileType TEXT DEFAULT '',
     Data BLOB,
-    SortIndex INTEGER,
-    MarkdownDocumentId INTEGER,
+    SortIndex INTEGER DEFAULT 0,
+    MarkdownDocumentId INTEGER DEFAULT NULL,
 
     FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE,
     FOREIGN KEY(MarkdownDocumentId) REFERENCES MarkdownDocument(id) ON DELETE CASCADE
@@ -143,9 +143,9 @@ CREATE TABLE Chapter
 (
     id INTEGER PRIMARY KEY,
     StoryId INTEGER,
-    Name TEXT,
-    SortIndex INTEGER,
-    MarkdownDocumentId INTEGER,
+    Name TEXT DEFAULT 'New Chapter',
+    SortIndex INTEGER DEFAULT 0,
+    MarkdownDocumentId INTEGER DEFAULT NULL,
 
     FOREIGN KEY(StoryId) REFERENCES Story(id) ON DELETE CASCADE,
     FOREIGN KEY(MarkdownDocumentId) REFERENCES MarkdownDocument(id)
@@ -160,14 +160,14 @@ CREATE TABLE Scene
 (
     id INTEGER PRIMARY KEY,
     ChapterId INTEGER,
-    Name TEXT,
-    SortIndex INTEGER,
-    ColorA INTEGER,
-    ColorR INTEGER,
-    ColorG INTEGER,
-    ColorB INTEGER,
-    FlowDocumentId INTEGER,
-    MarkdownDocumentId INTEGER,
+    Name TEXT DEFAULT 'New Scene',
+    SortIndex INTEGER DEFAULT 0,
+    ColorA INTEGER DEFAULT 0,
+    ColorR INTEGER DEFAULT 0,
+    ColorG INTEGER DEFAULT 0,
+    ColorB INTEGER DEFAULT 0,
+    FlowDocumentId INTEGER DEFAULT NULL,
+    MarkdownDocumentId INTEGER DEFAULT NULL,
 
     FOREIGN KEY(ChapterId) REFERENCES Chapter(id) ON DELETE CASCADE,
     FOREIGN KEY(FlowDocumentId) REFERENCES FlowDocument(id),
@@ -188,11 +188,11 @@ CREATE TABLE Ticket
 (
     id INTEGER PRIMARY KEY,
     UniverseId INTEGER,
-    Priority INTEGER,
-    Name TEXT,
-    Status TEXT,
-    MarkdownDocumentId INTEGER,
-    DueDate TEXT,
+    Priority INTEGER DEFAULT 2,
+    Name TEXT DEFAULT 'New Ticket',
+    Status TEXT DEFAULT 'Not Started',
+    MarkdownDocumentId INTEGER DEFAULT NULL,
+    DueDate TEXT DEFAULT '',
 
     FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE,
     FOREIGN KEY(MarkdownDocumentId) REFERENCES MarkdownDocument(id)

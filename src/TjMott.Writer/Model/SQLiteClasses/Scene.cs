@@ -7,7 +7,7 @@ using TjMott.Writer.Model.Attributes;
 namespace TjMott.Writer.Model.SQLiteClasses
 {
     [DbTableName("Scene")]
-    public class Scene : IDbType, INotifyPropertyChanged, ISortable, IHasNameProperty
+    public class Scene : IDbType, INotifyPropertyChanged, ISortable, IHasNameProperty, IHasMarkdownDocument
     {
         #region INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
@@ -157,6 +157,10 @@ namespace TjMott.Writer.Model.SQLiteClasses
             id = -1;
             Name = "New Scene";
             SortIndex = 0;
+            ColorA = 255;
+            ColorR = 0;
+            ColorG = 0;
+            ColorB = 0;
         }
 
         public void Create()

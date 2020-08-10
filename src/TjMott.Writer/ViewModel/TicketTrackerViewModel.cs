@@ -138,19 +138,17 @@ namespace TjMott.Writer.ViewModel
             ticket.Create();
 
             // Create MarkdownDocument for ticket.
-            MarkdownDocument doc = new MarkdownDocument(UniverseVm.Model.Connection);
-            doc.Name = string.Format("Ticket {0}", ticket.id);
-            doc.UniverseId = UniverseVm.Model.id;
+            MarkdownDocument doc = MarkdownDocumentViewModel.CreateDocForItem(ticket, ticket.UniverseId, true, string.Format("Ticket {0}", ticket.id));
             doc.MarkdownText = "New Ticket.";
             doc.PlainText = Markdig.Markdown.ToPlainText(doc.MarkdownText);
-            doc.IsSpecial = true;
-            doc.Create();
-            ticket.MarkdownDocumentId = doc.id;
-            ticket.Save();
+            doc.Save();
 
             // Add to list.
             TicketViewModel vm = new TicketViewModel(ticket, this);
             Tickets.Add(vm);
+
+            // Show edit dialog.
+            vm.Edit();
         }
     }
 }

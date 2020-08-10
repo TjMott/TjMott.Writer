@@ -8,7 +8,7 @@ using TjMott.Writer.Model.Attributes;
 namespace TjMott.Writer.Model.SQLiteClasses
 {
     [DbTableName("Chapter")]
-    public class Chapter : IDbType, INotifyPropertyChanged, ISortable, IHasNameProperty
+    public class Chapter : IDbType, INotifyPropertyChanged, ISortable, IHasNameProperty, IHasMarkdownDocument
     {
 
         #region INotifyPropertyChanged

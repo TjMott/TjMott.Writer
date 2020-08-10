@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Controls;
+using System.Windows.Media;
 using TjMott.Writer.ViewModel;
 
 namespace TjMott.Writer.Views
@@ -21,6 +22,13 @@ namespace TjMott.Writer.Views
             {
                 vm.SelectedTreeViewItem = (sender as TreeView).SelectedItem;
             }
+        }
+
+        private void sceneColorMenuItem_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            MenuItem menuItem = (MenuItem)sender;
+            SceneViewModel scene = (SceneViewModel)menuItem.DataContext;
+            scene.TextColorBrush = (SolidColorBrush)menuItem.Background;
         }
     }
 }

@@ -8,7 +8,7 @@ using TjMott.Writer.Model.Attributes;
 namespace TjMott.Writer.Model.SQLiteClasses
 {
     [DbTableName("File")]
-    public class FileBlob : IDbType, INotifyPropertyChanged, ISortable, IHasNameProperty
+    public class FileBlob : IDbType, INotifyPropertyChanged, ISortable, IHasNameProperty, IHasMarkdownDocument
     {
         #region INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
