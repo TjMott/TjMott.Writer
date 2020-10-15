@@ -4,45 +4,70 @@ using System.Windows.Input;
 
 namespace TjMott.Writer.ViewModel.Search
 {
-    public class StorySearchResult : ViewModelBase
+    public class StorySearchResult : SearchResult
     {
-        private ICommand _renameItemCommand;
-        public ICommand RenameItemCommand
+        #region ICommands
+        public override ICommand RenameCommand
         {
             get
             {
-                if (_renameItemCommand == null)
+                if (_renameCommand == null)
                 {
-                    _renameItemCommand = new RelayCommand(param => RenameItem());
+                    _renameCommand = new RelayCommand(param => Rename(), param => CanRename());
                 }
-                return _renameItemCommand;
+                return _renameCommand;
             }
         }
-
-        #region Properties
-        public StoryViewModel Owner { get; set; }
-        public long rowid { get; set; }
-        public string Snippet { get; set; }
-        public string SnippetPre { get; set; }
-        public string SnippetResult { get; set; }
-        public string SnippetPost { get; set; }
+        public override ICommand EditCommand
+        {
+            get
+            {
+                if (_editCommand == null)
+                {
+                    _editCommand = new RelayCommand(param => Rename(), param => CanOpenEditor());
+                }
+                return _editCommand;
+            }
+        }
         #endregion
 
-        public StorySearchResult(SQLiteDataReader reader)
+        #region Properties
+        private StoryViewModel _owner;
+        public StoryViewModel Owner
         {
-            rowid = reader.GetInt64(0);
-            Snippet = reader.GetString(1);
+            get { return _owner; }
+            set
+            {
+                _owner = value;
+                OnPropertyChanged("Owner");
+                Name = _owner.Model.Name;
+                Context = "";
+                if (_owner.Category != null)
+                    Context = _owner.Category.Model.Name + " -> ";
+                Context += _owner.Model.Name;
+            }
+        }
+        #endregion
 
-            int resultStart = Snippet.IndexOf("<FTSSearchResult>");
-            int resultEnd = Snippet.IndexOf("</FTSSearchResult>");
-            SnippetPre = SearchViewModel.ProcessSnippet(Snippet.Substring(0, resultStart));
-            SnippetResult = SearchViewModel.ProcessSnippet(Snippet.Substring(resultStart, resultEnd - resultStart));
-            SnippetPost = SearchViewModel.ProcessSnippet(Snippet.Substring(resultEnd));
+        public StorySearchResult(SQLiteDataReader sqlReader) : base(sqlReader)
+        {
+            ResultType = "Story Title";
         }
 
-        public void RenameItem()
+        public void Rename()
         {
             Owner.EditProperties();
+            Name = Owner.Model.Name;
+        }
+
+        public bool CanRename()
+        {
+            return true;
+        }
+
+        public bool CanOpenEditor()
+        {
+            return false;
         }
     }
 }

@@ -9,7 +9,9 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -19,155 +21,37 @@
         <TextBlock Text="Search Term:" VerticalAlignment="Center" />
         <TextBox Grid.Column="1" Margin="5" Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}" />
 
-        <TabControl Grid.Row="1" Grid.ColumnSpan="2">
-            <TabItem Header="Scene Documents">
-                <ListBox ItemsSource="{Binding FlowDocumentResults}">
-                    <ListBox.ItemTemplate>
+        <TextBlock Text="{Binding Status}" Grid.Row="1" Grid.ColumnSpan="2" />
+
+        <DataGrid x:Name="searchResultsGrid" Grid.Row="2" Grid.ColumnSpan="2" ItemsSource="{Binding SearchResults}" AutoGenerateColumns="False" IsReadOnly="True">
+            <DataGrid.ContextMenu>
+                <ContextMenu DataContext="{Binding RelativeSource={RelativeSource Mode=Self}, Path=PlacementTarget}">
+                    <MenuItem Header="Rename" Command="{Binding SelectedItem.RenameCommand}" />
+                    <MenuItem Header="Open Editor" Command="{Binding SelectedItem.EditCommand}" />
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Item Type">
+                    <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Grid Margin="3,8">
-                                <Grid.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem Header="Open Editor" Command="{Binding OpenEditorCommand}" />
-                                    </ContextMenu>
-                                </Grid.ContextMenu>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*" />
-                                    <RowDefinition Height="*" />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock Text="Result: " Margin="3" />
-                                <TextBlock Text="Item: " Margin="3" Grid.Row="1" />
-
-                                <TextBlock Grid.Column="1" Margin="3">
-                                    <Run Text="{Binding SnippetPre}" />
-                                    <Run Text="{Binding SnippetResult}" FontWeight="ExtraBold" />
-                                    <Run Text="{Binding SnippetPost}" />
-                                </TextBlock>
-                                <TextBlock Grid.Column="1" Grid.Row="1" Margin="3">
-                                    <Run Text="Story: " />
-                                    <Run Text="{Binding StoryName}" />
-                                    <Run Text=", Chapter: " />
-                                    <Run Text="{Binding ChapterName}" />
-                                    <Run Text=", Scene: " />
-                                    <Run Text="{Binding SceneName}" />
-                                </TextBlock>
-                            </Grid>
+                            <TextBlock Text="{Binding ResultType}" Margin="3" />
                         </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </TabItem>
-
-            <TabItem Header="Story Titles">
-                <ListBox ItemsSource="{Binding StoryResults}">
-                    <ListBox.ItemTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Found Text">
+                    <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Grid Margin="3,8">
-                                <Grid.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem Header="Edit Properties" Command="{Binding RenameItemCommand}" />
-                                    </ContextMenu>
-                                </Grid.ContextMenu>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*" />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock Text="Result: " Margin="3" />
-
-                                <TextBlock Grid.Column="1" Margin="3">
-                                    <Run Text="{Binding SnippetPre}" />
-                                    <Run Text="{Binding SnippetResult}" FontWeight="ExtraBold" />
-                                    <Run Text="{Binding SnippetPost}" />
-                                </TextBlock>
-                            </Grid>
+                            <TextBlock Margin="3">
+                                <Run Text="{Binding SnippetPre}" />
+                                <Run Text="{Binding SnippetResult}" FontWeight="Bold" />
+                                <Run Text="{Binding SnippetPost}" />
+                            </TextBlock>
                         </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </TabItem>
-
-            <TabItem Header="Chapter Titles">
-                <ListBox ItemsSource="{Binding ChapterResults}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Margin="3,8">
-                                <Grid.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem Header="Rename Item" Command="{Binding RenameItemCommand}" />
-                                    </ContextMenu>
-                                </Grid.ContextMenu>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*" />
-                                    <RowDefinition Height="*" />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock Text="Result: " Margin="3" />
-                                <TextBlock Text="Item: " Margin="3" Grid.Row="1" />
-
-                                <TextBlock Grid.Column="1" Margin="3">
-                                    <Run Text="{Binding SnippetPre}" />
-                                    <Run Text="{Binding SnippetResult}" FontWeight="ExtraBold" />
-                                    <Run Text="{Binding SnippetPost}" />
-                                </TextBlock>
-                                <TextBlock Grid.Column="1" Grid.Row="1" Margin="3">
-                                    <Run Text="Story: " />
-                                    <Run Text="{Binding StoryName}" />
-                                </TextBlock>
-                            </Grid>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </TabItem>
-
-            <TabItem Header="Scene Titles">
-                <ListBox ItemsSource="{Binding SceneResults}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Margin="3,8">
-                                <Grid.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem Header="Rename Item" Command="{Binding RenameItemCommand}" />
-                                    </ContextMenu>
-                                </Grid.ContextMenu>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*" />
-                                    <RowDefinition Height="*" />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock Text="Result: " Margin="3" />
-                                <TextBlock Text="Item: " Margin="3" Grid.Row="1" />
-
-                                <TextBlock Grid.Column="1" Margin="3">
-                                    <Run Text="{Binding SnippetPre}" />
-                                    <Run Text="{Binding SnippetResult}" FontWeight="ExtraBold" />
-                                    <Run Text="{Binding SnippetPost}" />
-                                </TextBlock>
-                                <TextBlock Grid.Column="1" Grid.Row="1" Margin="3">
-                                    <Run Text="Story: " />
-                                    <Run Text="{Binding StoryName}" />
-                                    <Run Text=", Chapter: " />
-                                    <Run Text="{Binding ChapterName}" />
-                                </TextBlock>
-                            </Grid>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </TabItem>
-            
-        </TabControl>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
+                <DataGridTextColumn Header="Context" Binding="{Binding Context}" />
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </UserControl>

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.SQLite;
-using System.Windows.Documents;
 using TjMott.Writer.Model.Attributes;
 
 namespace TjMott.Writer.Model.SQLiteClasses
@@ -121,6 +120,7 @@ namespace TjMott.Writer.Model.SQLiteClasses
 
         public void Save()
         {
+            
             _dbHelper.Update(this);
         }
 

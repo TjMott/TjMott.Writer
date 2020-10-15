@@ -70,6 +70,17 @@ namespace TjMott.Writer.ViewModel
 
         public Story Model { get; private set; }
         public UniverseViewModel UniverseVm { get; set; }
+        public CategoryViewModel Category
+        {
+            get
+            {
+                if (Model.CategoryId.HasValue)
+                {
+                    return UniverseVm.Categories.SingleOrDefault(i => i.Model.id == Model.CategoryId.Value);
+                }
+                return null;
+            }
+        }
         public SortBySortIndexBindingList<ChapterViewModel> Chapters { get; private set; }
         public StoryViewModel(Story model)
         {

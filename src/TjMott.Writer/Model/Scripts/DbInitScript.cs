@@ -43,6 +43,8 @@ CREATE TABLE MarkdownDocument
     MarkdownText TEXT DEFAULT '',
     PlainText TEXT DEFAULT '',
     Name TEXT DEFAULT 'New Document',
+
+    -- If IsSpecial is true, this is attached to an item (ticket, scene, chapter, etc.). If false, it's on its own.
     IsSpecial INTEGER DEFAULT 0,
 
     FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE
@@ -95,6 +97,13 @@ CREATE TRIGGER Category_MarkdownDoc_ad AFTER DELETE ON Category BEGIN
   DELETE FROM MarkdownDocument WHERE id = (old.MarkdownDocumentId);
 END;
 
+-- Update MarkdownDocument when category is renamed.
+CREATE TRIGGER Category_MarkdownDoc_au AFTER UPDATE ON Category BEGIN
+  UPDATE MarkdownDocument
+  SET Name = new.Name
+  WHERE id = new.id;
+END;
+
 CREATE TABLE Story
 (
     id INTEGER PRIMARY KEY,
@@ -117,6 +126,13 @@ CREATE TABLE Story
 -- Delete MarkdownDocument after its Story is deleted.
 CREATE TRIGGER Story_MarkdownDoc_ad AFTER DELETE ON Story BEGIN
   DELETE FROM MarkdownDocument WHERE id = (old.MarkdownDocumentId);
+END;
+
+-- Update MarkdownDocument when category is renamed.
+CREATE TRIGGER Story_MarkdownDoc_au AFTER UPDATE ON Story BEGIN
+  UPDATE MarkdownDocument
+  SET Name = new.Name
+  WHERE id = new.id;
 END;
 
 CREATE TABLE File

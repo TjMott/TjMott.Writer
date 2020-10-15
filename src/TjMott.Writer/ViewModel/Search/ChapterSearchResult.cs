@@ -1,49 +1,81 @@
 ﻿using System;
 using System.Data.SQLite;
 using System.Windows.Input;
+using TjMott.Writer.Dialogs;
 
 namespace TjMott.Writer.ViewModel.Search
 {
-    public class ChapterSearchResult : ViewModelBase
+    public class ChapterSearchResult : SearchResult
     {
-        private ICommand _renameItemCommand;
-        public ICommand RenameItemCommand
+        #region ICommands
+        public override ICommand RenameCommand
         {
             get
             {
-                if (_renameItemCommand == null)
+                if (_renameCommand == null)
                 {
-                    _renameItemCommand = new RelayCommand(param => RenameItem());
+                    _renameCommand = new RelayCommand(param => Rename(), param => CanRename());
                 }
-                return _renameItemCommand;
+                return _renameCommand;
+            }
+        }
+        public override ICommand EditCommand
+        {
+            get
+            {
+                if (_editCommand == null)
+                {
+                    _editCommand = new RelayCommand(param => Rename(), param => CanOpenEditor());
+                }
+                return _editCommand;
+            }
+        }
+        #endregion
+
+        #region Properties
+        private ChapterViewModel _owner;
+        public ChapterViewModel Owner
+        {
+            get { return _owner; }
+            set
+            {
+                _owner = value;
+                OnPropertyChanged("Owner");
+                Name = Owner.Model.Name;
+                Context = "";
+                if (_owner.StoryVm.Category != null)
+                    Context = _owner.StoryVm.Category.Model.Name + " -> ";
+                Context += _owner.StoryVm.Model.Name + " -> ";
+                Context += _owner.Model.Name;
+            }
+        }
+        #endregion
+
+        public ChapterSearchResult(SQLiteDataReader sqlReader) : base(sqlReader)
+        {
+            ResultType = "Chapter Title";
+        }
+
+        public void Rename()
+        {
+            NameItemDialog dialog = new NameItemDialog(ViewModelBase.DialogOwner, Owner.Model.Name);
+            bool? dialogResult = dialog.ShowDialog();
+            if (dialogResult.Value)
+            {
+                Owner.Model.Name = dialog.UserInput;
+                Owner.Model.Save();
+                Name = Owner.Model.Name;
             }
         }
 
-        #region Properties
-        public string StoryName { get; set; }
-        public ChapterViewModel Owner { get; set; }
-        public long rowid { get; set; }
-        public string Snippet { get; set; }
-        public string SnippetPre { get; set; }
-        public string SnippetResult { get; set; }
-        public string SnippetPost { get; set; }
-        #endregion
-
-        public ChapterSearchResult(SQLiteDataReader reader)
+        public bool CanRename()
         {
-            rowid = reader.GetInt64(0);
-            Snippet = reader.GetString(1);
-
-            int resultStart = Snippet.IndexOf("<FTSSearchResult>");
-            int resultEnd = Snippet.IndexOf("</FTSSearchResult>");
-            SnippetPre = SearchViewModel.ProcessSnippet(Snippet.Substring(0, resultStart));
-            SnippetResult = SearchViewModel.ProcessSnippet(Snippet.Substring(resultStart, resultEnd - resultStart));
-            SnippetPost = SearchViewModel.ProcessSnippet(Snippet.Substring(resultEnd));
+            return true;
         }
 
-        public void RenameItem()
+        public bool CanOpenEditor()
         {
-            Owner.Rename();
+            return false;
         }
     }
 }

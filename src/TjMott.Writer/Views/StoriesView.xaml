@@ -15,7 +15,16 @@
 
         <TreeView ItemsSource="{Binding SubItems}" SelectedItemChanged="TreeView_SelectedItemChanged">
             <TreeView.Resources>
-
+                <views:NoteIconVisibilityConverter x:Key="noteIconVisibilityConverter" />
+                <Style x:Key="noteFlagStyle" TargetType="Image">
+                    <Setter Property="Margin" Value="3" />
+                    <Setter Property="Height" Value="18" />
+                    <Setter Property="Width" Value="18" />
+                    <Setter Property="ToolTip" Value="Has Note Document" />
+                    <Setter Property="Source" Value="/Images/icons8-note-40.png" />
+                    <Setter Property="Visibility" Value="{Binding Path=Model.MarkdownDocumentId, Converter={StaticResource noteIconVisibilityConverter}}" />
+                </Style>
+                
                 <ContextMenu x:Key="categoryContextMenu">
                     <MenuItem Header="Rename Category" Command="{Binding RenameCommand}" />
                     <MenuItem Header="Delete Category" Command="{Binding DeleteCommand}" />
@@ -49,28 +58,40 @@
                 </ContextMenu>
 
                 <HierarchicalDataTemplate DataType="{x:Type viewModels:CategoryViewModel}" ItemsSource="{Binding Stories}">
-                    <TextBlock Margin="3" ContextMenu="{StaticResource categoryContextMenu}">
-                        <Run Text="Category: "/>
-                        <Run Text="{Binding Model.Name}" />
-                    </TextBlock>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Style="{StaticResource noteFlagStyle}" />
+                        <TextBlock Margin="3" ContextMenu="{StaticResource categoryContextMenu}">
+                            <Run Text="Category: "/>
+                            <Run Text="{Binding Model.Name}" />
+                        </TextBlock>
+                    </StackPanel>
                 </HierarchicalDataTemplate>
                 <HierarchicalDataTemplate DataType="{x:Type viewModels:StoryViewModel}" ItemsSource="{Binding Chapters}">
-                    <TextBlock Margin="3" ContextMenu="{StaticResource storyContextMenu}">
-                        <Run Text="Story: " />
-                        <Run Text="{Binding Model.Name}" />
-                    </TextBlock>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Style="{StaticResource noteFlagStyle}" />
+                        <TextBlock Margin="3" ContextMenu="{StaticResource storyContextMenu}">
+                            <Run Text="Story: " />
+                            <Run Text="{Binding Model.Name}" />
+                        </TextBlock>
+                    </StackPanel>
                 </HierarchicalDataTemplate>
                 <HierarchicalDataTemplate DataType="{x:Type viewModels:ChapterViewModel}" ItemsSource="{Binding Scenes}">
-                    <TextBlock Margin="3" ContextMenu="{StaticResource chapterContextMenu}">
-                        <Run Text="Chapter: " />
-                        <Run Text="{Binding Model.Name}" />
-                    </TextBlock>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Style="{StaticResource noteFlagStyle}" />
+                        <TextBlock Margin="3" ContextMenu="{StaticResource chapterContextMenu}">
+                            <Run Text="Chapter: " />
+                            <Run Text="{Binding Model.Name}" />
+                        </TextBlock>
+                    </StackPanel>
                 </HierarchicalDataTemplate>
                 <HierarchicalDataTemplate DataType="{x:Type viewModels:SceneViewModel}">
-                    <TextBlock Margin="3" ContextMenu="{StaticResource sceneContextMenu}">
-                        <Run Text="Scene: " />
-                        <Run Text="{Binding Model.Name}" Foreground="{Binding TextColorBrush}" />
-                    </TextBlock>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Style="{StaticResource noteFlagStyle}" />
+                        <TextBlock Margin="3" ContextMenu="{StaticResource sceneContextMenu}">
+                            <Run Text="Scene: " />
+                            <Run Text="{Binding Model.Name}" Foreground="{Binding TextColorBrush}" />
+                        </TextBlock>
+                    </StackPanel>
                 </HierarchicalDataTemplate>
                 
             </TreeView.Resources>
@@ -78,7 +99,10 @@
 
         <StackPanel Grid.Column="1" Style="{StaticResource graphicButtonPanel}">
             <Button ToolTip="Open Editor" Command="{Binding OpenEditorCommand}">
-                <Image Source="../Images/icons8-typewriter-with-paper-40.png" />
+                <Image Source="/Images/icons8-typewriter-with-paper-40.png" />
+            </Button>
+            <Button ToolTip="Open Notes" Command="{Binding OpenNoteCommand}">
+                <Image Source="/Images/icons8-note-40.png" />
             </Button>
             <Button ToolTip="Move Up" Command="{Binding MoveItemUpCommand}">
                 <Image Source="/Images/icons8-up.png" />

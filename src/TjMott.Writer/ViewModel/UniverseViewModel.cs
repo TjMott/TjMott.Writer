@@ -234,6 +234,18 @@ namespace TjMott.Writer.ViewModel
                 return _renameCommand;
             }
         }
+        private ICommand _openNoteCommand;
+        public ICommand OpenNoteCommand
+        {
+            get
+            {
+                if (_openNoteCommand == null)
+                {
+                    _openNoteCommand = new RelayCommand(param => OpenOrCreateNoteForItem());
+                }
+                return _openNoteCommand;
+            }
+        }
         #endregion
 
         public UniverseViewModel(Universe model, Database database)
@@ -610,6 +622,46 @@ namespace TjMott.Writer.ViewModel
         public void ShowWordCount()
         {
             IGetWordCount item = SelectedTreeViewItem as IGetWordCount;
+        }
+
+        public void OpenOrCreateNoteForItem()
+        {
+            if (SelectedTreeViewItem == null)
+                return;
+
+            IHasMarkdownDocument item = null;
+
+            if (SelectedTreeViewItem is CategoryViewModel)
+                item = (SelectedTreeViewItem as CategoryViewModel).Model;
+            else if (SelectedTreeViewItem is StoryViewModel)
+                item = (SelectedTreeViewItem as StoryViewModel).Model;
+            else if (SelectedTreeViewItem is ChapterViewModel)
+                item = (SelectedTreeViewItem as ChapterViewModel).Model;
+            else if (SelectedTreeViewItem is SceneViewModel)
+                item = (SelectedTreeViewItem as SceneViewModel).Model;
+
+            if (item == null)
+                return;
+
+            MarkdownDocument doc = null;
+
+            if (item.MarkdownDocumentId.HasValue)
+            {
+                doc = new MarkdownDocument(Model.Connection);
+                doc.id = item.MarkdownDocumentId.Value;
+                doc.Load();
+            }
+            else
+            {
+                doc = MarkdownDocumentViewModel.CreateDocForItem(item, Model.id, true, (item as IHasNameProperty).Name);
+            }
+
+            if (doc != null)
+            {
+                MarkdownDocumentViewModel vm = new MarkdownDocumentViewModel(doc, this);
+                vm.OpenInWindow();
+            }
+            
         }
     }
 }

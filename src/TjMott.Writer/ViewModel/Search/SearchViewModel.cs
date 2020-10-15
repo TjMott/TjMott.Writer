@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.SQLite;
 using System.Linq;
 using TjMott.Writer.Model;
+using TjMott.Writer.Model.SQLiteClasses;
 
 namespace TjMott.Writer.ViewModel.Search
 {
@@ -13,6 +15,7 @@ namespace TjMott.Writer.ViewModel.Search
         private static DbCommandHelper _cmdSearchSceneNames;
         private static DbCommandHelper _cmdSearchChapterNames;
         private static DbCommandHelper _cmdSearchStoryNames;
+        private static DbCommandHelper _cmdSearchMarkdownDocuments;
 
         private static void initSql(SQLiteConnection con)
         {
@@ -21,46 +24,57 @@ namespace TjMott.Writer.ViewModel.Search
                 _cmdSearchFlowDocuments = new DbCommandHelper(con);
                 _cmdSearchFlowDocuments.Command.CommandText = @"SELECT 
                                                                     FlowDocument_fts.rowid, 
-                                                                    snippet(FlowDocument_fts, -1, '<FTSSearchResult>', '</FTSSearchResult>', '', 25)
+                                                                    snippet(FlowDocument_fts, -1, '<FTSSearchResult>', '</FTSSearchResult>', '', 25),
+                                                                    rank
                                                                 FROM 
                                                                     FlowDocument_fts
                                                                 WHERE 
-                                                                    FlowDocument_fts MATCH @searchTerm
-                                                                ORDER BY rank;";
+                                                                    FlowDocument_fts MATCH @searchTerm;";
                 _cmdSearchFlowDocuments.AddParameter("@searchTerm");
 
                 _cmdSearchSceneNames = new DbCommandHelper(con);
                 _cmdSearchSceneNames.Command.CommandText = @"SELECT
                                                                 Scene_fts.rowid, 
-                                                                snippet(Scene_fts, -1, '<FTSSearchResult>', '</FTSSearchResult>', '', 25)
+                                                                snippet(Scene_fts, -1, '<FTSSearchResult>', '</FTSSearchResult>', '', 25),
+                                                                rank
                                                              FROM 
                                                                 Scene_fts
                                                              WHERE 
-                                                                Scene_fts MATCH @searchTerm
-                                                             ORDER BY rank;";
+                                                                Scene_fts MATCH @searchTerm;";
                 _cmdSearchSceneNames.AddParameter("@searchTerm");
 
                 _cmdSearchChapterNames = new DbCommandHelper(con);
                 _cmdSearchChapterNames.Command.CommandText = @"SELECT
                                                                 Chapter_fts.rowid, 
-                                                                snippet(Chapter_fts, -1, '<FTSSearchResult>', '</FTSSearchResult>', '', 25)
+                                                                snippet(Chapter_fts, -1, '<FTSSearchResult>', '</FTSSearchResult>', '', 25),
+                                                                rank
                                                              FROM 
                                                                 Chapter_fts
                                                              WHERE 
-                                                                Chapter_fts MATCH @searchTerm
-                                                             ORDER BY rank;";
+                                                                Chapter_fts MATCH @searchTerm;";
                 _cmdSearchChapterNames.AddParameter("@searchTerm");
 
                 _cmdSearchStoryNames = new DbCommandHelper(con);
                 _cmdSearchStoryNames.Command.CommandText = @"SELECT
                                                                 Story_fts.rowid, 
-                                                                snippet(Story_fts, -1, '<FTSSearchResult>', '</FTSSearchResult>', '', 25)
+                                                                snippet(Story_fts, -1, '<FTSSearchResult>', '</FTSSearchResult>', '', 25),
+                                                                rank
                                                              FROM 
                                                                 Story_fts
                                                              WHERE 
-                                                                Story_fts MATCH @searchTerm
-                                                             ORDER BY rank;";
+                                                                Story_fts MATCH @searchTerm;";
                 _cmdSearchStoryNames.AddParameter("@searchTerm");
+
+                _cmdSearchMarkdownDocuments = new DbCommandHelper(con);
+                _cmdSearchMarkdownDocuments.Command.CommandText = @"SELECT
+                                                                        MarkdownDocument_fts.rowid, 
+                                                                        snippet(MarkdownDocument_fts, -1, '<FTSSearchResult>', '</FTSSearchResult>', '', 25),
+                                                                        rank
+                                                                    FROM 
+                                                                        MarkdownDocument_fts
+                                                                    WHERE 
+                                                                        MarkdownDocument_fts MATCH @searchTerm;";
+                _cmdSearchMarkdownDocuments.AddParameter("@searchTerm");
             }
         }
         #endregion
@@ -88,58 +102,79 @@ namespace TjMott.Writer.ViewModel.Search
             }
         }
 
-        public BindingList<FlowDocumentSearchResult> FlowDocumentResults { get; private set; }
-        public BindingList<SceneSearchResult> SceneResults { get; private set; }
-        public BindingList<ChapterSearchResult> ChapterResults { get; private set; }
-        public BindingList<StorySearchResult> StoryResults { get; private set; }
+        private string _status = "";
+        public string Status
+        {
+            get { return _status; }
+            private set
+            {
+                _status = value;
+                OnPropertyChanged("Status");
+            }
+        }
+
+        public BindingList<SearchResult> SearchResults { get; private set; }
 
         public SearchViewModel()
         {
-            FlowDocumentResults = new BindingList<FlowDocumentSearchResult>();
-            SceneResults = new BindingList<SceneSearchResult>();
-            ChapterResults = new BindingList<ChapterSearchResult>();
-            StoryResults = new BindingList<StorySearchResult>();
+            SearchResults = new BindingList<SearchResult>();
+            Status = "No Results.";
         }
 
         public void DoSearch()
         {
-            doFlowDocumentSearch();
-            doSceneTitleSearch();
-            doChapterTitleSearch();
-            doStoryTitleSearch();
+            Status = "Performing Search...";
+            SearchResults.Clear();
+            List<SearchResult> results = new List<SearchResult>();
+
+            if (!string.IsNullOrWhiteSpace(SearchTerm))
+            {
+                
+                doFlowDocumentSearch(results);
+                doSceneTitleSearch(results);
+                doChapterTitleSearch(results);
+                doStoryTitleSearch(results);
+                doMarkdownDocumentSearch(results);
+
+                results = results.OrderBy(i => i.Rank).ToList();
+                foreach (var r in results)
+                    SearchResults.Add(r);
+            }
+            if (results.Count == 0)
+                Status = "No results found.";
+            else if (results.Count == 1)
+                Status = "Found 1 search result:";
+            else
+                Status = string.Format("Found {0} search results:", results.Count);
         }
 
-        private void doFlowDocumentSearch()
+        private void doFlowDocumentSearch(List<SearchResult> results)
         {
-            FlowDocumentResults.Clear();
             _cmdSearchFlowDocuments.Parameters["@searchTerm"].Value = _searchTerm;
             using (SQLiteDataReader reader = _cmdSearchFlowDocuments.Command.ExecuteReader())
             {
                 while (reader.Read())
                 {
-                    FlowDocumentSearchResult result = new FlowDocumentSearchResult(reader);
+                    FlowDocumentSearchResult result = new FlowDocumentSearchResult(reader); ;
 
                     // Search scenes for owner.
                     SceneViewModel scene = _selectedUniverse.Stories.SelectMany(i => i.Chapters.SelectMany(i => i.Scenes).Where(i => i.Model.FlowDocumentId == result.rowid)).SingleOrDefault();
                     if (scene != null)
                     {
                         result.Owner = scene;
-                        result.SceneName = scene.Model.Name;
-                        result.ChapterName = scene.ChapterVm.Model.Name;
-                        result.StoryName = scene.ChapterVm.StoryVm.Model.Name;
                     }
 
                     if (result.Owner != null)
                     {
-                        FlowDocumentResults.Add(result);
+                        results.Add(result);
                     }
                 }
             }
         }
 
-        private void doSceneTitleSearch()
+        private void doSceneTitleSearch(List<SearchResult> results)
         {
-            SceneResults.Clear();
+
             _cmdSearchSceneNames.Parameters["@searchTerm"].Value = _searchTerm;
 
             using (SQLiteDataReader reader = _cmdSearchSceneNames.Command.ExecuteReader())
@@ -153,21 +188,18 @@ namespace TjMott.Writer.ViewModel.Search
                     if (scene != null)
                     {
                         result.Owner = scene;
-                        result.ChapterName = scene.ChapterVm.Model.Name;
-                        result.StoryName = scene.ChapterVm.StoryVm.Model.Name;
                     }
 
                     if (result.Owner != null)
                     {
-                        SceneResults.Add(result);
+                        results.Add(result);
                     }
                 }
             }
         }
 
-        private void doChapterTitleSearch()
+        private void doChapterTitleSearch(List<SearchResult> results)
         {
-            ChapterResults.Clear();
             _cmdSearchChapterNames.Parameters["@searchTerm"].Value = _searchTerm;
 
             using (SQLiteDataReader reader = _cmdSearchChapterNames.Command.ExecuteReader())
@@ -181,20 +213,18 @@ namespace TjMott.Writer.ViewModel.Search
                     if (chapter != null)
                     {
                         result.Owner = chapter;
-                        result.StoryName = chapter.StoryVm.Model.Name;
                     }
 
                     if (result.Owner != null)
                     {
-                        ChapterResults.Add(result);
+                        results.Add(result);
                     }
                 }
             }
         }
 
-        private void doStoryTitleSearch()
+        private void doStoryTitleSearch(List<SearchResult> results)
         {
-            StoryResults.Clear();
             _cmdSearchStoryNames.Parameters["@searchTerm"].Value = _searchTerm;
 
             using (SQLiteDataReader reader = _cmdSearchStoryNames.Command.ExecuteReader())
@@ -203,28 +233,94 @@ namespace TjMott.Writer.ViewModel.Search
                 {
                     StorySearchResult result = new StorySearchResult(reader);
 
-                    // Search scenes for owner.
-                    StoryViewModel chapter = _selectedUniverse.Stories.SingleOrDefault(i => i.Model.id == result.rowid);
-                    if (chapter != null)
+                    // Search for owner.
+                    StoryViewModel story = _selectedUniverse.Stories.SingleOrDefault(i => i.Model.id == result.rowid);
+                    if (story != null)
                     {
-                        result.Owner = chapter;
+                        result.Owner = story;
                     }
 
                     if (result.Owner != null)
                     {
-                        StoryResults.Add(result);
+                        results.Add(result);
                     }
                 }
             }
         }
 
-        public static string ProcessSnippet(string s)
+        private void doMarkdownDocumentSearch(List<SearchResult> results)
         {
-            return s.Replace("<FTSSearchResult>", "")
-                    .Replace("</FTSSearchResult>", "")
-                    .Replace("\r\n", " ")
-                    .Replace("\r", "")
-                    .Replace("\n", "");
+            _cmdSearchMarkdownDocuments.Parameters["@searchTerm"].Value = _searchTerm;
+
+            using (SQLiteDataReader reader = _cmdSearchMarkdownDocuments.Command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    MarkdownDocumentSearchResult result = new MarkdownDocumentSearchResult(reader);
+
+                    MarkdownDocumentViewModel mdvm = _selectedUniverse.MarkdownTree.Items.SingleOrDefault(i => i is MarkdownDocumentViewModel && (i as MarkdownDocumentViewModel).Model.id == result.rowid) as MarkdownDocumentViewModel;
+                    if (mdvm == null)
+                    {
+                        // "Special" documents don't have a viewmodel loaded at all times.
+                        MarkdownDocument doc = new MarkdownDocument(_cmdSearchMarkdownDocuments.Connection);
+                        doc.id = result.rowid;
+                        doc.Load();
+                        mdvm = new MarkdownDocumentViewModel(doc, this.SelectedUniverse);
+                    }
+
+                    if (mdvm != null)
+                    {
+                        // If the document is "special", it is attached to an item such as a ticket, chapter, scene, etc.
+                        if (mdvm.Model.IsSpecial)
+                        {
+                            // Ticket search.
+                            TicketViewModel ticketVm = _selectedUniverse.TicketTrackerViewModel.Tickets.SingleOrDefault(i => i.Model.MarkdownDocumentId == mdvm.Model.id);
+                            if (ticketVm != null)
+                            {
+                                result.Owner = ticketVm;
+                            }
+
+                            // Category search.
+                            CategoryViewModel catVm = _selectedUniverse.Categories.SingleOrDefault(i => i.Model.MarkdownDocumentId == mdvm.Model.id);
+                            if (catVm != null)
+                            {
+                                result.Owner = catVm;
+                            }
+
+                            // Story search.
+                            StoryViewModel storyVm = _selectedUniverse.Stories.SingleOrDefault(i => i.Model.MarkdownDocumentId == mdvm.Model.id);
+                            if (storyVm != null)
+                            {
+                                result.Owner = storyVm;
+                            }
+
+                            // Chapter search.
+                            ChapterViewModel chapterVm = _selectedUniverse.Stories.SelectMany(i => i.Chapters).SingleOrDefault(i => i.Model.MarkdownDocumentId == mdvm.Model.id);
+                            if (chapterVm != null)
+                            {
+                                result.Owner = chapterVm;
+                            }
+
+                            // Scene search.
+                            SceneViewModel sceneVm = _selectedUniverse.Stories.SelectMany(i => i.Chapters).SelectMany(i => i.Scenes).SingleOrDefault(i => i.Model.MarkdownDocumentId == mdvm.Model.id);
+                            if (sceneVm != null)
+                            {
+                                result.Owner = sceneVm;
+                            }
+                        }
+                        else
+                        {
+                            // Not special. This is a normal note in the universe's tree of markdown documents.
+                            result.Owner = mdvm;
+                        }
+
+                        if (result.Owner != null)
+                        {
+                            results.Add(result);
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -115,8 +115,14 @@ namespace TjMott.Writer.ViewModel
             }
         }
 
-        public void OpenInWindow()
+        public void OpenInWindow(IHasMarkdownDocument parent = null)
         {
+            // Synchronize item names if necessary.
+            if (parent != null && Model.IsSpecial)
+            {
+                Model.Name = (parent as IHasNameProperty).Name;
+                Model.Save();
+            }
             MarkdownDocumentWindow.ShowMarkdownDocument(this);
         }
 
@@ -133,6 +139,7 @@ namespace TjMott.Writer.ViewModel
 
         public void Save()
         {
+            Model.PlainText = Markdig.Markdown.ToPlainText(Model.MarkdownText, _markdownPipeline);
             Model.Save();
             OnPropertyChanged("Html");
         }
@@ -169,6 +176,8 @@ namespace TjMott.Writer.ViewModel
             doc.UniverseId = universeId;
             doc.IsSpecial = isSpecial;
             doc.Name = name;
+            doc.MarkdownText = "";
+            doc.PlainText = "";
             doc.Create();
 
             item.MarkdownDocumentId = doc.id;
