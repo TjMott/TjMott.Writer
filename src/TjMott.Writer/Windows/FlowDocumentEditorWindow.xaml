@@ -32,12 +32,15 @@
         </Grid.ColumnDefinitions>
 
         <Ribbon Grid.ColumnSpan="2">
+            <Ribbon.ApplicationMenu>
+                <RibbonApplicationMenu Visibility="Collapsed" />
+            </Ribbon.ApplicationMenu>
             <RibbonTab Header="Home">
                 <RibbonGroup Header="File">
-                    <RibbonButton Label="Save" Command="{Binding SaveCommand}" />
-                    <RibbonButton Label="Revert" Command="{Binding RevertCommand}" />
+                    <RibbonButton Label="Save" Command="{Binding SaveCommand}" SmallImageSource="/Images/icons8-save-40.png" />
+                    <RibbonButton Label="Revert" Command="{Binding RevertCommand}" SmallImageSource="/Images/icons8-undo.png" />
                     <RibbonButton Label="Export" Command="{Binding ExportCommand}" SmallImageSource="/Images/icons8-word-40.png" />
-                    <RibbonButton Label="Close" Command="{Binding CloseCommand}" />
+                    <RibbonButton Label="Close" Command="{Binding CloseCommand}" SmallImageSource="/Images/icons8-close-window-40.png"  />
                 </RibbonGroup>
                 <RibbonGroup Header="Clipboard">
                     <RibbonButton Label="Cut" SmallImageSource="/Images/icons8-scissors.png" Command="ApplicationCommands.Cut" />
@@ -62,7 +65,7 @@
                 <RibbonGroup Header="Editing">
                     <RibbonButton Label="Undo" SmallImageSource="/Images/icons8-undo.png" Command="ApplicationCommands.Undo" />
                     <RibbonButton Label="Redo" SmallImageSource="/Images/icons8-redo.png" Command="ApplicationCommands.Redo" />
-                    <RibbonCheckBox Label="Enable Spellcheck" IsChecked="{Binding ElementName=MainTextBox, Path=SpellCheck.IsEnabled, Mode=TwoWay}" />
+                    <RibbonCheckBox Label="Enable Spellcheck" Checked="SpellCheckCheckBox_Checked" Unchecked="SpellCheckCheckBox_Checked" IsChecked="True" />
                 </RibbonGroup>
             </RibbonTab>
         </Ribbon>

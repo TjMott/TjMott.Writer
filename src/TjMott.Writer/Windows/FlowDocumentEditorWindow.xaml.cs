@@ -5,6 +5,7 @@ using System.Data.SQLite;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Ribbon;
 using System.Windows.Documents;
 using System.Windows.Input;
 using TjMott.Writer.Properties;
@@ -204,6 +205,12 @@ namespace TjMott.Writer.Windows
         }
 
         #region Spellchecker & Thesaurus
+        private void SpellCheckCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            RibbonCheckBox checkbox = sender as RibbonCheckBox;
+            if (checkbox != null && MainTextBox != null) // Can happen on initial XAML load.
+                SpellCheck.SetIsEnabled(MainTextBox, checkbox.IsChecked.Value);
+        }
         private void MainTextBox_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
             MainTextBox.ContextMenu.Items.Clear();
@@ -249,5 +256,7 @@ namespace TjMott.Writer.Windows
             }
         }
         #endregion
+
+        
     }
 }
