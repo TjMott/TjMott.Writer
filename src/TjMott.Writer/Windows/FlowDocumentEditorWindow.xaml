@@ -48,6 +48,17 @@
                     <RibbonButton Label="Paste" SmallImageSource="/Images/icons8-paste.png" Command="ApplicationCommands.Paste" />
                 </RibbonGroup>
                 <RibbonGroup Header="Font">
+                    <RibbonComboBox Label="Font Family">
+                        <RibbonGallery x:Name="fontFamilyComboBox" SelectionChanged="fontFamilyComboBox_SelectionChanged">
+                            <RibbonGalleryCategory x:Name="fontGalleryCategory">
+                                <RibbonGalleryCategory.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding}" FontFamily="{Binding}" />
+                                    </DataTemplate>
+                                </RibbonGalleryCategory.ItemTemplate>
+                            </RibbonGalleryCategory>
+                        </RibbonGallery>
+                    </RibbonComboBox>
                     <RibbonButton Label="Bold" SmallImageSource="/Images/icons8-bold.png" Command="EditingCommands.ToggleBold" />
                     <RibbonButton Label="Italic" SmallImageSource="/Images/icons8-italic.png" Command="EditingCommands.ToggleItalic" />
                     <RibbonButton Label="Underline" SmallImageSource="/Images/icons8-underline.png" Command="EditingCommands.ToggleUnderline" />
@@ -65,7 +76,7 @@
                 <RibbonGroup Header="Editing">
                     <RibbonButton Label="Undo" SmallImageSource="/Images/icons8-undo.png" Command="ApplicationCommands.Undo" />
                     <RibbonButton Label="Redo" SmallImageSource="/Images/icons8-redo.png" Command="ApplicationCommands.Redo" />
-                    <RibbonCheckBox Label="Enable Spellcheck" Checked="SpellCheckCheckBox_Checked" Unchecked="SpellCheckCheckBox_Checked" IsChecked="True" />
+                    <RibbonCheckBox Label="Spellcheck" Checked="SpellCheckCheckBox_Checked" Unchecked="SpellCheckCheckBox_Checked" IsChecked="True" />
                 </RibbonGroup>
             </RibbonTab>
         </Ribbon>
@@ -73,7 +84,7 @@
         <ScrollViewer Name="mainScrollViewer" Grid.Row="1" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Disabled">
             <RichTextBox Name="MainTextBox" SpellCheck.IsEnabled="True" 
                          TextChanged="MainTextBox_TextChanged" KeyDown="MainTextBox_KeyDown"
-                         ContextMenuOpening="MainTextBox_ContextMenuOpening"
+                         ContextMenuOpening="MainTextBox_ContextMenuOpening" SelectionChanged="MainTextBox_SelectionChanged"
                          FontFamily="Garamond" FontSize="12" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Disabled">
                 <RichTextBox.ContextMenu>
                     <ContextMenu />

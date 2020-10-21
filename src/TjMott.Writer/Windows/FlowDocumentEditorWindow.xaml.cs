@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Ribbon;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
 using TjMott.Writer.Properties;
 using TjMott.Writer.ViewModel;
 using sql = TjMott.Writer.Model.SQLiteClasses;
@@ -48,7 +49,7 @@ namespace TjMott.Writer.Windows
         private FlowDocumentViewModel _viewModel;
         public FlowDocumentEditorWindow(sql.FlowDocument doc)
         {
-            InitializeComponent();
+            InitializeComponent(); 
             _viewModel = new FlowDocumentViewModel(doc, this);
             _viewModel.PropertyChanged += _viewModel_PropertyChanged;
         }
@@ -63,6 +64,8 @@ namespace TjMott.Writer.Windows
             MainTextBox.Document = _viewModel.Document;
             MainTextBox.SpellCheck.CustomDictionaries.Add(_spellcheckDictionary.GetDictionaryUri());
             _spellcheckDictionary.DictionaryModified += _spellcheckDictionary_DictionaryModified;
+
+            fontGalleryCategory.ItemsSource = Fonts.SystemFontFamilies;
         }
 
         private void _spellcheckDictionary_DictionaryModified(object sender, EventArgs e)
@@ -217,7 +220,6 @@ namespace TjMott.Writer.Windows
             SpellingError spellingError = MainTextBox.GetSpellingError(MainTextBox.CaretPosition);
             if (spellingError != null && spellingError.Suggestions.Count() > 0)
             {
-
                 foreach (string suggestion in spellingError.Suggestions)
                 {
                     MenuItem menuItem = new MenuItem();
@@ -255,8 +257,19 @@ namespace TjMott.Writer.Windows
                 e.Handled = true;
             }
         }
+
         #endregion
 
-        
+        private void fontFamilyComboBox_SelectionChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            FontFamily font = (FontFamily)e.NewValue;
+            MainTextBox.Selection.ApplyPropertyValue(TextElement.FontFamilyProperty, font);
+        }
+
+        private void MainTextBox_SelectionChanged(object sender, RoutedEventArgs e)
+        {
+            FontFamily font = (FontFamily)MainTextBox.Selection.GetPropertyValue(TextElement.FontFamilyProperty);
+            fontFamilyComboBox.SelectedItem = font;
+        }
     }
 }
