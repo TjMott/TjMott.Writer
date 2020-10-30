@@ -65,6 +65,31 @@ namespace TjMott.Writer.Windows
             MainTextBox.SpellCheck.CustomDictionaries.Add(_spellcheckDictionary.GetDictionaryUri());
             _spellcheckDictionary.DictionaryModified += _spellcheckDictionary_DictionaryModified;
 
+            initFontCombos();
+        }
+
+        private void initFontCombos()
+        {
+            List<double> fontSizes = new List<double>();
+            fontSizes.Add(8);
+            fontSizes.Add(9);
+            fontSizes.Add(10);
+            fontSizes.Add(11);
+            fontSizes.Add(12);
+            fontSizes.Add(14);
+            fontSizes.Add(16);
+            fontSizes.Add(18);
+            fontSizes.Add(20);
+            fontSizes.Add(22);
+            fontSizes.Add(24);
+            fontSizes.Add(26);
+            fontSizes.Add(28);
+            fontSizes.Add(36);
+            fontSizes.Add(48);
+            fontSizes.Add(72);
+            fontSizes.Add(96);
+            fontSizeGalleryCategory.ItemsSource = fontSizes;
+
             fontGalleryCategory.ItemsSource = Fonts.SystemFontFamilies;
         }
 
@@ -266,10 +291,19 @@ namespace TjMott.Writer.Windows
             MainTextBox.Selection.ApplyPropertyValue(TextElement.FontFamilyProperty, font);
         }
 
+        private void fontSizeComboBox_SelectionChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            double fontSize = (double)e.NewValue;
+            MainTextBox.Selection.ApplyPropertyValue(TextElement.FontSizeProperty, fontSize);
+        }
+
         private void MainTextBox_SelectionChanged(object sender, RoutedEventArgs e)
         {
             FontFamily font = (FontFamily)MainTextBox.Selection.GetPropertyValue(TextElement.FontFamilyProperty);
             fontFamilyComboBox.SelectedItem = font;
+
+            double fontSize = (double)MainTextBox.Selection.GetPropertyValue(TextElement.FontSizeProperty);
+            fontSizeComboBox.SelectedItem = fontSize;
         }
     }
 }

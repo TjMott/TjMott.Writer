@@ -59,6 +59,17 @@
                             </RibbonGalleryCategory>
                         </RibbonGallery>
                     </RibbonComboBox>
+                    <RibbonComboBox Label="Font Size">
+                        <RibbonGallery x:Name="fontSizeComboBox" SelectionChanged="fontSizeComboBox_SelectionChanged">
+                            <RibbonGalleryCategory x:Name="fontSizeGalleryCategory">
+                                <RibbonGalleryCategory.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel />
+                                    </ItemsPanelTemplate>
+                                </RibbonGalleryCategory.ItemsPanel>
+                            </RibbonGalleryCategory>
+                        </RibbonGallery>
+                    </RibbonComboBox>
                     <RibbonButton Label="Bold" SmallImageSource="/Images/icons8-bold.png" Command="EditingCommands.ToggleBold" />
                     <RibbonButton Label="Italic" SmallImageSource="/Images/icons8-italic.png" Command="EditingCommands.ToggleItalic" />
                     <RibbonButton Label="Underline" SmallImageSource="/Images/icons8-underline.png" Command="EditingCommands.ToggleUnderline" />
