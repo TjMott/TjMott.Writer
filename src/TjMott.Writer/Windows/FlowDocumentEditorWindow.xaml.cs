@@ -289,12 +289,14 @@ namespace TjMott.Writer.Windows
         {
             FontFamily font = (FontFamily)e.NewValue;
             MainTextBox.Selection.ApplyPropertyValue(TextElement.FontFamilyProperty, font);
+            _viewModel.HasChanges = true;
         }
 
         private void fontSizeComboBox_SelectionChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             double fontSize = (double)e.NewValue;
             MainTextBox.Selection.ApplyPropertyValue(TextElement.FontSizeProperty, fontSize);
+            _viewModel.HasChanges = true;
         }
 
         private void MainTextBox_SelectionChanged(object sender, RoutedEventArgs e)
