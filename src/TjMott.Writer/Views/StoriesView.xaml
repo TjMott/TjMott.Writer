@@ -55,6 +55,8 @@
                         <MenuItem Click="sceneColorMenuItem_Click" Background="Violet" />
                     </MenuItem>
                     <MenuItem Header="Delete Scene" Command="{Binding DeleteCommand}" />
+                    <MenuItem Header="Encrypt" Command="{Binding EncryptCommand}" />
+                    <MenuItem Header="Decrypt" Command="{Binding DecryptCommand}" />
                 </ContextMenu>
 
                 <HierarchicalDataTemplate DataType="{x:Type viewModels:CategoryViewModel}" ItemsSource="{Binding Stories}">

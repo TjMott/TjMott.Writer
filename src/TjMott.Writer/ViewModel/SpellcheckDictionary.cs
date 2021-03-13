@@ -3,13 +3,30 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Text;
+using System.Windows.Input;
 using TjMott.Writer.Model.SQLiteClasses;
+using TjMott.Writer.Windows;
 
 namespace TjMott.Writer.ViewModel
 {
     public class SpellcheckDictionary : ViewModelBase
     {
         public event EventHandler DictionaryModified;
+
+        #region ICommands
+        private ICommand _editDictionaryCommand;
+        public ICommand EditDictionaryCommand
+        {
+            get
+            {
+                if (_editDictionaryCommand == null)
+                {
+                    _editDictionaryCommand = new RelayCommand(param => EditDictionary());
+                }
+                return _editDictionaryCommand;
+            }
+        }
+        #endregion
 
         private void onDictionaryModified()
         {
@@ -99,6 +116,11 @@ namespace TjMott.Writer.ViewModel
                 if (w.UniverseId == UniverseVm.Model.id)
                     Words.Add(w);
             }
+        }
+
+        public void EditDictionary()
+        {
+            SpellcheckDictionaryWindow.ShowSpellcheckDictionaryWindow(this);
         }
     }
 }

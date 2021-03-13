@@ -79,6 +79,8 @@
                 <RibbonGroup Header="Paragraph">
                     <RibbonButton Label="Bullet List" SmallImageSource="/Images/icons8-bulleted-list.png" Command="EditingCommands.ToggleBullets" />
                     <RibbonButton Label="Numbered List" SmallImageSource="/Images/icons8-numbered-list.png" Command="EditingCommands.ToggleNumbering" />
+                    <RibbonButton Label="Increase Indent" SmallImageSource="/Images/icons8-indent-40.png" Command="EditingCommands.IncreaseIndentation" />
+                    <RibbonButton Label="Decrease Indent" SmallImageSource="/Images/icons8-outdent-40.png" Command="EditingCommands.DecreaseIndentation" />
                     <RibbonButton Label="Align Left" SmallImageSource="/Images/icons8-align-left.png" Command="EditingCommands.AlignLeft" />
                     <RibbonButton Label="Align Center" SmallImageSource="/Images/icons8-align-center.png" Command="EditingCommands.AlignCenter" />
                     <RibbonButton Label="Align Right"  SmallImageSource="/Images/icons8-align-right.png" Command="EditingCommands.AlignRight" />

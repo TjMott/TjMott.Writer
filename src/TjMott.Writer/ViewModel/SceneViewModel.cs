@@ -1,12 +1,14 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Windows.Documents;
+using WinDoc = System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using TjMott.Writer.Dialogs;
 using TjMott.Writer.Model;
 using TjMott.Writer.Model.SQLiteClasses;
 using Docx = Xceed.Words.NET;
+using System.Windows;
+using System.Security.Cryptography;
 
 namespace TjMott.Writer.ViewModel
 {
@@ -53,6 +55,31 @@ namespace TjMott.Writer.ViewModel
                     _deleteCommand = new RelayCommand(param => Delete());
                 }
                 return _deleteCommand;
+            }
+        }
+        private ICommand _encryptCommand;
+        public ICommand EncryptCommand
+        {
+            get
+            {
+                if (_encryptCommand == null)
+                {
+                    _encryptCommand = new RelayCommand(param => Encrypt(), param => CanEncrypt());
+                }
+                return _encryptCommand;
+            }
+        }
+
+        private ICommand _decryptCommand;
+        public ICommand DecryptCommand
+        {
+            get
+            {
+                if (_decryptCommand == null)
+                {
+                    _decryptCommand = new RelayCommand(param => Decrypt(), param => CanDecrypt());
+                }
+                return _decryptCommand;
             }
         }
         #endregion
@@ -119,13 +146,62 @@ namespace TjMott.Writer.ViewModel
 
             FlowDocumentViewModel vm = new FlowDocumentViewModel(flowDoc, DialogOwner);
 
-            foreach (Block block in vm.Document.Blocks)
+            foreach (WinDoc.Block block in vm.Document.Blocks)
             {
-                if (block is Paragraph)
+                if (block is WinDoc.Paragraph)
                 {
-                    FlowDocumentExporter.AddParagraph((Paragraph)block, doc);
+                    FlowDocumentExporter.AddParagraph((WinDoc.Paragraph)block, doc);
                 }
             }
+        }
+
+        public void Encrypt()
+        {
+            FlowDocument fd = new FlowDocument(Model.Connection);
+            fd.id = Model.FlowDocumentId;
+            fd.Load();
+            FlowDocumentViewModel vm = new FlowDocumentViewModel(fd, DialogOwner);
+            fd.IsEncrypted = true;
+            vm.GetAesPassword(true);
+            vm.Save();
+        }
+
+        public bool CanEncrypt()
+        {
+            FlowDocument fd = new FlowDocument(Model.Connection);
+            fd.id = Model.FlowDocumentId;
+            fd.Load();
+            return !fd.IsEncrypted;
+        }
+
+        public void Decrypt()
+        {
+            try
+            {
+                FlowDocument fd = new FlowDocument(Model.Connection);
+                fd.id = Model.FlowDocumentId;
+                fd.Load();
+                FlowDocumentViewModel vm = new FlowDocumentViewModel(fd, DialogOwner);
+                fd.IsEncrypted = false;
+                fd.Save();
+                vm.Save();
+            }
+            catch (CryptographicException)
+            {
+                MessageBox.Show("Invalid password. Decryption operation canceled.", "Invalid password", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch (ApplicationException)
+            {
+                MessageBox.Show("Invalid password. Decryption operation canceled.", "Invalid password", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        public bool CanDecrypt()
+        {
+            FlowDocument fd = new FlowDocument(Model.Connection);
+            fd.id = Model.FlowDocumentId;
+            fd.Load();
+            return fd.IsEncrypted;
         }
     }
 }

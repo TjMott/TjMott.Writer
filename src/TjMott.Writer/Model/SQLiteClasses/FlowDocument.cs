@@ -23,6 +23,7 @@ namespace TjMott.Writer.Model.SQLiteClasses
         private long _wordCount;
         private string _xml;
         private string _plainText;
+        private bool _isEncrypted;
         #endregion
 
         #region Database Properties
@@ -78,6 +79,16 @@ namespace TjMott.Writer.Model.SQLiteClasses
             {
                 _plainText = value;
                 OnPropertyChanged("PlainText");
+            }
+        }
+        [DbField]
+        public bool IsEncrypted
+        {
+            get { return _isEncrypted; }
+            set
+            {
+                _isEncrypted = value;
+                OnPropertyChanged("IsEncrypted");
             }
         }
         #endregion

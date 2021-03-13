@@ -101,7 +101,7 @@ namespace TjMott.Writer.Windows
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (_viewModel.HasChanges)
+            if (_viewModel != null && _viewModel.HasChanges)
             {
                 try
                 {
@@ -119,12 +119,15 @@ namespace TjMott.Writer.Windows
                 catch (ObjectDisposedException)
                 { }
             }
-            AppSettings.Default.editorHeight = ActualHeight;
-            AppSettings.Default.editorWidth = ActualWidth;
-            AppSettings.Default.editorZoom = zoomSlider.Value;
-            AppSettings.Default.Save();
-
-            _windows.Remove(_viewModel.Model.id);
+            // _viewModel may be null if this was an encrypted entry and the wrong password was entered.
+            if (_viewModel != null)
+            {
+                AppSettings.Default.editorHeight = ActualHeight;
+                AppSettings.Default.editorWidth = ActualWidth;
+                AppSettings.Default.editorZoom = zoomSlider.Value;
+                AppSettings.Default.Save();
+                _windows.Remove(_viewModel.Model.id);
+            }
         }
 
         private void MainTextBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -194,6 +197,7 @@ namespace TjMott.Writer.Windows
             if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.S)
             {
                 _viewModel.Save();
+                //System.Windows.Documents.EditingCommands.IncreaseIndentation;
             }
             else if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.F)
             {

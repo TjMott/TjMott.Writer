@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <Authors>TJ Mott</Authors>
     <Copyright>Copyright (C) 2020, TJ Mott</Copyright>
@@ -29,10 +29,12 @@
     <None Remove="Images\icons8-edit-40.png" />
     <None Remove="Images\icons8-export-40.png" />
     <None Remove="Images\icons8-increase-font.png" />
+    <None Remove="Images\icons8-indent-40.png" />
     <None Remove="Images\icons8-italic.png" />
     <None Remove="Images\icons8-left-50.png" />
     <None Remove="Images\icons8-note-40.png" />
     <None Remove="Images\icons8-numbered-list.png" />
+    <None Remove="Images\icons8-outdent-40.png" />
     <None Remove="Images\icons8-paste.png" />
     <None Remove="Images\icons8-plus.png" />
     <None Remove="Images\icons8-redo.png" />
@@ -53,10 +55,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DocX" Version="1.7.0" />
+    <PackageReference Include="DocX" Version="1.7.1" />
     <PackageReference Include="HtmlRenderer.WPF" Version="1.5.1-beta1" />
-    <PackageReference Include="Markdig" Version="0.20.0" />
-    <PackageReference Include="System.Data.SQLite" Version="1.0.113.1" />
+    <PackageReference Include="Markdig" Version="0.23.0" />
+    <PackageReference Include="System.Data.SQLite" Version="1.0.113.7" />
   </ItemGroup>
 
   <ItemGroup>
@@ -76,10 +78,12 @@
     <Resource Include="Images\icons8-edit-40.png" />
     <Resource Include="Images\icons8-export-40.png" />
     <Resource Include="Images\icons8-increase-font.png" />
+    <Resource Include="Images\icons8-indent-40.png" />
     <Resource Include="Images\icons8-italic.png" />
     <Resource Include="Images\icons8-left-50.png" />
     <Resource Include="Images\icons8-note-40.png" />
     <Resource Include="Images\icons8-numbered-list.png" />
+    <Resource Include="Images\icons8-outdent-40.png" />
     <Resource Include="Images\icons8-paste.png" />
     <Resource Include="Images\icons8-plus.png" />
     <Resource Include="Images\icons8-redo.png" />

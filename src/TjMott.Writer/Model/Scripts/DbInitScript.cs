@@ -32,6 +32,7 @@ CREATE TABLE FlowDocument
     Xml TEXT,
     PlainText TEXT,
     WordCount INTEGER DEFAULT 0,
+    IsEncrypted INTEGER DEFAULT 0,
 
     FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE
 );

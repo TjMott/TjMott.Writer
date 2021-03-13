@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Windows;
 using System.Windows.Input;
 using TjMott.Writer.Dialogs;
@@ -549,7 +550,18 @@ namespace TjMott.Writer.ViewModel
         public void OpenEditor()
         {
             SceneViewModel vm = SelectedTreeViewItem as SceneViewModel;
-            FlowDocumentEditorWindow.ShowEditorWindow(vm.Model.FlowDocumentId, vm.Model.Connection, SpellcheckDictionary, string.Format("Scene: {0}", vm.Model.Name));
+            try
+            {
+                FlowDocumentEditorWindow.ShowEditorWindow(vm.Model.FlowDocumentId, vm.Model.Connection, SpellcheckDictionary, string.Format("Scene: {0}", vm.Model.Name));
+            }
+            catch (CryptographicException)
+            {
+                MessageBox.Show("Invalid password", "Invalid password", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch (ApplicationException)
+            {
+                MessageBox.Show("This entry is encrypted. A password is required to open it.", "Password Required", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         public bool CanExportToWord()

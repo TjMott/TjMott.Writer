@@ -42,6 +42,8 @@
                 <Separator />
                 <MenuItem Header="Create New Notes Category" Command="{Binding Database.SelectedUniverse.MarkdownTree.CreateCategoryCommand}" />
                 <MenuItem Header="Create New Note Document" Command="{Binding Database.SelectedUniverse.MarkdownTree.CreateDocumentCommand}" />
+                <Separator />
+                <MenuItem Header="Spellcheck Dictionary" Command="{Binding Database.SelectedUniverse.SpellcheckDictionary.EditDictionaryCommand}" />
             </MenuItem>
             <MenuItem Header="Help">
                 <MenuItem Header="About" Click="aboutMenuItem_Click" />

@@ -8,6 +8,7 @@ using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Threading;
 using System.Xml;
+using TjMott.Writer.Windows;
 using sql = TjMott.Writer.Model.SQLiteClasses;
 
 namespace TjMott.Writer.ViewModel
@@ -19,6 +20,7 @@ namespace TjMott.Writer.ViewModel
         private string _status = "";
         private bool _hasChanges = false;
         private long _wordCount;
+        private string _aesPassword = "";
         private string _searchTerm = "";
         private string _currentKeyword = "";
         private TextRange _selectedSearchResult;
@@ -259,9 +261,27 @@ namespace TjMott.Writer.ViewModel
 
         public void Save()
         {
-            Model.Xml = XamlWriter.Save(Document);
-            Model.PlainText = getRawText(Document);
-            Model.WordCount = WordCounter.GetWordCount(Document);
+            string xml = XamlWriter.Save(Document);
+            if (Model.IsEncrypted)
+            {
+                if (string.IsNullOrEmpty(_aesPassword))
+                {
+                    if (!GetAesPassword())
+                        return;
+                }
+                xml = AESHelper.AesEncrypt(xml, _aesPassword);
+            }
+            Model.Xml = xml;
+            if (!Model.IsEncrypted)
+            {
+                Model.PlainText = getRawText(Document);
+                Model.WordCount = WordCounter.GetWordCount(Document);
+            }
+            else
+            {
+                Model.PlainText = "";
+                Model.WordCount = 0;
+            }
             Model.Save();
             Status = "Document saved.";
             DispatcherTimer timer = new DispatcherTimer();
@@ -393,9 +413,39 @@ namespace TjMott.Writer.ViewModel
             return SearchResults.IndexOf(SelectedSearchResult) < SearchResults.Count - 1;
         }
 
+        public bool GetAesPassword(bool showConfirm = false)
+        {
+            PasswordDialog d = new PasswordDialog(showConfirm);
+            d.Owner = DialogOwner;
+            bool? dialogResult = d.ShowDialog();
+            if (dialogResult.Value)
+            {
+                _aesPassword = d.Password;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         private void loadFlowDocument()
         {
-            using (StringReader stringReader = new StringReader(Model.Xml))
+            string xml;
+            if (Model.IsEncrypted)
+            {
+                if (string.IsNullOrEmpty(_aesPassword))
+                {
+                    if (!GetAesPassword())
+                        throw new ApplicationException("Password required.");
+                }
+                xml = AESHelper.AesDecrypt(Model.Xml, _aesPassword);
+            }
+            else
+            {
+                xml = Model.Xml;
+            }
+            using (StringReader stringReader = new StringReader(xml))
             {
                 using (XmlTextReader xmlReader = new XmlTextReader(stringReader))
                 {
