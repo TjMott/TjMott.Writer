@@ -68,6 +68,11 @@ namespace TjMott.Writer.ViewModel
         }
         #endregion
 
+        public long GetWordCount()
+        {
+            return Chapters.Sum(i => i.GetWordCount());
+        }
+
         public Story Model { get; private set; }
         public UniverseViewModel UniverseVm { get; set; }
         public CategoryViewModel Category

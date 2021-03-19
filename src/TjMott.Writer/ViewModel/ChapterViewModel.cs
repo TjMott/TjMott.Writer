@@ -69,6 +69,10 @@ namespace TjMott.Writer.ViewModel
         }
         #endregion
 
+        public long GetWordCount()
+        {
+            return Scenes.Sum(i => i.GetWordCount());
+        }
         public Chapter Model { get; private set; }
         public StoryViewModel StoryVm { get; set; }
         public SortBySortIndexBindingList<SceneViewModel> Scenes { get; private set; }

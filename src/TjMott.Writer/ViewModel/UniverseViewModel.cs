@@ -249,6 +249,11 @@ namespace TjMott.Writer.ViewModel
         }
         #endregion
 
+        public long GetWordCount()
+        {
+            return Stories.Sum(i => i.GetWordCount());
+        }
+
         public UniverseViewModel(Universe model, Database database)
         {
             Model = model;
@@ -634,6 +639,7 @@ namespace TjMott.Writer.ViewModel
         public void ShowWordCount()
         {
             IGetWordCount item = SelectedTreeViewItem as IGetWordCount;
+            MessageBox.Show(string.Format("Word Count: {0}", item.GetWordCount()), "Word Count", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         public void OpenOrCreateNoteForItem()

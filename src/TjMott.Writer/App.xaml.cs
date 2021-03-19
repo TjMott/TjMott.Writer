@@ -41,6 +41,8 @@ namespace TjMott.Writer
             }
             MainWindow wnd = new MainWindow();
             wnd.Show();
+            //DbConverter.Convert();
+            //Shutdown(0);
         }
 
         private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)

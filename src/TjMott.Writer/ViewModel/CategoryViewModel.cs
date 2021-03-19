@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows.Input;
 using TjMott.Writer.Dialogs;
 using TjMott.Writer.Model.SQLiteClasses;
@@ -59,6 +60,10 @@ namespace TjMott.Writer.ViewModel
         public SortBySortIndexBindingList<StoryViewModel> Stories { get; private set; }
         #endregion
 
+        public long GetWordCount()
+        {
+            return Stories.Sum(i => i.GetWordCount());
+        }
         public CategoryViewModel(Category model)
         {
             Model = model;

@@ -84,6 +84,16 @@ namespace TjMott.Writer.ViewModel
         }
         #endregion
 
+        public long GetWordCount()
+        {
+            FlowDocument fd = new FlowDocument(Model.Connection);
+            fd.id = Model.FlowDocumentId;
+            fd.Load();
+            if (fd.IsEncrypted)
+                return 0;
+            else
+                return fd.WordCount;
+        }
         public Scene Model { get; private set; }
         public ChapterViewModel ChapterVm { get; set; }
 

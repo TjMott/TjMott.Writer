@@ -13,6 +13,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="DbConverter.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Images\icons8-abacus-40.png" />
     <None Remove="Images\icons8-align-center.png" />
     <None Remove="Images\icons8-align-justify.png" />

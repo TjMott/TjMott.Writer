@@ -6,5 +6,6 @@ namespace TjMott.Writer.ViewModel
 {
     public interface IGetWordCount
     {
+        long GetWordCount();
     }
 }

@@ -89,7 +89,7 @@
                 <RibbonGroup Header="Editing">
                     <RibbonButton Label="Undo" SmallImageSource="/Images/icons8-undo.png" Command="ApplicationCommands.Undo" />
                     <RibbonButton Label="Redo" SmallImageSource="/Images/icons8-redo.png" Command="ApplicationCommands.Redo" />
-                    <RibbonCheckBox Label="Spellcheck" Checked="SpellCheckCheckBox_Checked" Unchecked="SpellCheckCheckBox_Checked" IsChecked="True" />
+                    <RibbonCheckBox Label="Spellcheck" Checked="SpellCheckCheckBox_Checked" Unchecked="SpellCheckCheckBox_Checked" IsChecked="False" />
                 </RibbonGroup>
             </RibbonTab>
         </Ribbon>
