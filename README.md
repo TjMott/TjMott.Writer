@@ -8,4 +8,4 @@ NOTE: This software is incomplete! Use at your own risk. The file format is subj
 
 # PLATFORM
 
-This application runs on .NET Core 3.1 with a WPF GUI. It requires Visual Studio 2019 (Community Edition is fine) to compile.
+This application runs on .NET 5.0 with a WPF GUI. It requires Visual Studio 2019 (Community Edition is fine) to compile.
