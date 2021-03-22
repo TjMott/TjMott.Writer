@@ -150,25 +150,32 @@ namespace TjMott.Writer.ViewModel
 
         public void ExportToWord(Docx.DocX doc)
         {
-            // Export chapter name.
-            Xceed.Document.NET.Paragraph chapterHeader = doc.InsertParagraph();
-            chapterHeader.StyleName = "Heading1";
-            chapterHeader.Append(Model.Name);
+            // Skip encrypted scenes.
+            var scenes = Scenes.Where(i => !i.IsEncrypted).OrderBy(i => i.SortIndex).ToList();
 
-            doc.InsertParagraph();
-            doc.InsertParagraph();
-            doc.InsertParagraph();
-
-            for (int i = 0; i < Scenes.Count; i++)
+            if (scenes.Count > 0)
             {
-                SceneViewModel scene = Scenes[i];
-                scene.ExportToWord(doc);
-                if (i < Scenes.Count - 1)
+                // Export chapter name.
+                Xceed.Document.NET.Paragraph chapterHeader = doc.InsertParagraph();
+                chapterHeader.StyleId = "Heading1";
+                chapterHeader.Append(Model.Name);
+
+                doc.InsertParagraph();
+                doc.InsertParagraph();
+                doc.InsertParagraph();
+
+                for (int i = 0; i < scenes.Count; i++)
                 {
-                    Xceed.Document.NET.Paragraph p = doc.InsertParagraph();
-                    p.StyleName = "SceneBreak";
-                    p.Append("\n*\t\t*\t\t*\n");
+                    SceneViewModel scene = scenes[i];
+                    scene.ExportToWord(doc);
+                    if (i < Scenes.Count - 1)
+                    {
+                        Xceed.Document.NET.Paragraph p = doc.InsertParagraph();
+                        p.StyleId = "SceneBreak";
+                        p.Append("\n*\t\t*\t\t*\n");
+                    }
                 }
+                doc.Paragraphs.Last().InsertPageBreakAfterSelf();
             }
         }
     }

@@ -39,6 +39,7 @@
     <None Remove="Images\icons8-note-40.png" />
     <None Remove="Images\icons8-numbered-list.png" />
     <None Remove="Images\icons8-outdent-40.png" />
+    <None Remove="Images\icons8-password-40.png" />
     <None Remove="Images\icons8-paste.png" />
     <None Remove="Images\icons8-plus.png" />
     <None Remove="Images\icons8-redo.png" />
@@ -65,6 +66,12 @@
     <PackageReference Include="System.Data.SQLite" Version="1.0.113.7" />
   </ItemGroup>
 
+  <!--<ItemGroup>
+    <Reference Include="WpfApp1">
+      <HintPath>D:\fd\Personal\Development\Writer_SQLite\WpfApp1\WpfApp1\bin\Debug\WpfApp1.exe</HintPath>
+    </Reference>
+  </ItemGroup>-->
+
   <ItemGroup>
     <Resource Include="Images\icons8-abacus-40.png" />
     <Resource Include="Images\icons8-align-center.png" />
@@ -88,6 +95,7 @@
     <Resource Include="Images\icons8-note-40.png" />
     <Resource Include="Images\icons8-numbered-list.png" />
     <Resource Include="Images\icons8-outdent-40.png" />
+    <Resource Include="Images\icons8-password-40.png" />
     <Resource Include="Images\icons8-paste.png" />
     <Resource Include="Images\icons8-plus.png" />
     <Resource Include="Images\icons8-redo.png" />

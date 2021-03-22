@@ -16,6 +16,7 @@
         <TreeView ItemsSource="{Binding SubItems}" SelectedItemChanged="TreeView_SelectedItemChanged">
             <TreeView.Resources>
                 <views:NoteIconVisibilityConverter x:Key="noteIconVisibilityConverter" />
+                <views:BoolToVisibilityConverter x:Key="boolToVisibilityConverter" />
                 <Style x:Key="noteFlagStyle" TargetType="Image">
                     <Setter Property="Margin" Value="3" />
                     <Setter Property="Height" Value="18" />
@@ -24,7 +25,16 @@
                     <Setter Property="Source" Value="/Images/icons8-note-40.png" />
                     <Setter Property="Visibility" Value="{Binding Path=Model.MarkdownDocumentId, Converter={StaticResource noteIconVisibilityConverter}}" />
                 </Style>
-                
+
+                <Style x:Key="padlockStyle" TargetType="Image">
+                    <Setter Property="Margin" Value="3" />
+                    <Setter Property="Height" Value="18" />
+                    <Setter Property="Width" Value="18" />
+                    <Setter Property="ToolTip" Value="Encrypted" />
+                    <Setter Property="Source" Value="/Images/icons8-password-40.png" />
+                    <Setter Property="Visibility" Value="{Binding Path=IsEncrypted, Converter={StaticResource boolToVisibilityConverter}}" />
+                </Style>
+
                 <ContextMenu x:Key="categoryContextMenu">
                     <MenuItem Header="Rename Category" Command="{Binding RenameCommand}" />
                     <MenuItem Header="Delete Category" Command="{Binding DeleteCommand}" />
@@ -33,6 +43,7 @@
                 <ContextMenu x:Key="storyContextMenu">
                     <MenuItem Header="Add New Chapter" Command="{Binding CreateChapterCommand}" />
                     <MenuItem Header="Edit Story Properties" Command="{Binding EditPropertiesCommand}" />
+                    <MenuItem Header="Edit Copyright Page" Command="{Binding EditCopyrightPageCommand}" />
                     <MenuItem Header="Delete Story" Command="{Binding DeleteCommand}" />
                 </ContextMenu>
 
@@ -88,6 +99,7 @@
                 </HierarchicalDataTemplate>
                 <HierarchicalDataTemplate DataType="{x:Type viewModels:SceneViewModel}">
                     <StackPanel Orientation="Horizontal">
+                        <Image Style="{StaticResource padlockStyle}" />
                         <Image Style="{StaticResource noteFlagStyle}" />
                         <TextBlock Margin="3" ContextMenu="{StaticResource sceneContextMenu}">
                             <Run Text="Scene: " />

@@ -118,8 +118,10 @@ CREATE TABLE Story
     ASIN TEXT DEFAULT '',
     SortIndex INTEGER DEFAULT 0,
     MarkdownDocumentId INTEGER DEFAULT NULL,
+    FlowDocumentId INTEGER DEFAULT NULL,
 
     FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE,
+    FOREIGN KEY(FlowDocumentId) REFERENCES FlowDocument(id),
     FOREIGN KEY(CategoryId) REFERENCES Category(id) ON DELETE SET NULL,
     FOREIGN KEY(MarkdownDocumentId) REFERENCES MarkdownDocument(id)
 );
@@ -127,6 +129,11 @@ CREATE TABLE Story
 -- Delete MarkdownDocument after its Story is deleted.
 CREATE TRIGGER Story_MarkdownDoc_ad AFTER DELETE ON Story BEGIN
   DELETE FROM MarkdownDocument WHERE id = (old.MarkdownDocumentId);
+END;
+
+-- Delete FlowDocument after its Story is deleted.
+CREATE TRIGGER Story_FlowDoc_ad AFTER DELETE ON Story BEGIN
+  DELETE FROM FlowDocument WHERE id = (old.FlowDocumentId);
 END;
 
 -- Update MarkdownDocument when category is renamed.

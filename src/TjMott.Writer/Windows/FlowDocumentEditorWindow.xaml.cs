@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Ribbon;
@@ -25,23 +26,34 @@ namespace TjMott.Writer.Windows
 
         public static void ShowEditorWindow(long flowDocId, SQLiteConnection connection, SpellcheckDictionary spellcheckDictionary, string title, string search = null)
         {
-            if (!_windows.ContainsKey(flowDocId))
+            try
             {
-                sql.FlowDocument flowDoc = new sql.FlowDocument(connection);
-                flowDoc.id = flowDocId;
-                flowDoc.Load();
-                FlowDocumentEditorWindow wnd = new FlowDocumentEditorWindow(flowDoc);
-                wnd._spellcheckDictionary = spellcheckDictionary;
+                if (!_windows.ContainsKey(flowDocId))
+                {
+                    sql.FlowDocument flowDoc = new sql.FlowDocument(connection);
+                    flowDoc.id = flowDocId;
+                    flowDoc.Load();
+                    FlowDocumentEditorWindow wnd = new FlowDocumentEditorWindow(flowDoc);
+                    wnd._spellcheckDictionary = spellcheckDictionary;
 
-                _windows[flowDocId] = wnd;
+                    _windows[flowDocId] = wnd;
+                }
+                _windows[flowDocId].Title = title;
+                _windows[flowDocId].Show();
+                _windows[flowDocId].Activate();
+                _windows[flowDocId].Focus();
+
+                if (!string.IsNullOrWhiteSpace(search))
+                    _windows[flowDocId].PerformSearch(search);
             }
-            _windows[flowDocId].Title = title;
-            _windows[flowDocId].Show();
-            _windows[flowDocId].Activate();
-            _windows[flowDocId].Focus();
-
-            if (!string.IsNullOrWhiteSpace(search))
-                _windows[flowDocId].PerformSearch(search);
+            catch (CryptographicException)
+            {
+                MessageBox.Show("Invalid password", "Invalid password", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch (ApplicationException)
+            {
+                MessageBox.Show("This entry is encrypted. A password is required to open it.", "Password Required", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
         #endregion
 

@@ -30,6 +30,7 @@ namespace TjMott.Writer.Model.SQLiteClasses
         private string _isbn;
         private string _asin;
         private long? _markdownDocumentId;
+        private long? _flowDocumentId;
         #endregion
 
         #region Database Properties
@@ -152,6 +153,17 @@ namespace TjMott.Writer.Model.SQLiteClasses
             {
                 _markdownDocumentId = value;
                 OnPropertyChanged("MarkdownDocumentId");
+            }
+        }
+
+        [DbField]
+        public long? FlowDocumentId
+        {
+            get { return _flowDocumentId; }
+            set
+            {
+                _flowDocumentId = value;
+                OnPropertyChanged("FlowDocumentId");
             }
         }
         #endregion

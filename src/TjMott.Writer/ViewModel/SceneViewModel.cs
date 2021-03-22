@@ -120,10 +120,24 @@ namespace TjMott.Writer.ViewModel
             }
         }
 
+        private bool _isEncrypted = false;
+        public bool IsEncrypted
+        {
+            get { return _isEncrypted; }
+            private set
+            {
+                _isEncrypted = value;
+                OnPropertyChanged("IsEncrypted");
+            }
+        }
+
         public SceneViewModel(Scene model)
         {
             Model = model;
             Model.PropertyChanged += Model_PropertyChanged;
+            
+            // Inits the IsEncrypted field.
+            CanDecrypt();
         }
 
         public void Rename()
@@ -150,7 +164,7 @@ namespace TjMott.Writer.ViewModel
 
         public void ExportToWord(Docx.DocX doc)
         {
-            Model.SQLiteClasses.FlowDocument flowDoc = new Model.SQLiteClasses.FlowDocument(Model.Connection);
+            FlowDocument flowDoc = new FlowDocument(Model.Connection);
             flowDoc.id = Model.FlowDocumentId;
             flowDoc.Load();
 
@@ -174,6 +188,7 @@ namespace TjMott.Writer.ViewModel
             fd.IsEncrypted = true;
             vm.GetAesPassword(true);
             vm.Save();
+            IsEncrypted = true;
         }
 
         public bool CanEncrypt()
@@ -181,6 +196,7 @@ namespace TjMott.Writer.ViewModel
             FlowDocument fd = new FlowDocument(Model.Connection);
             fd.id = Model.FlowDocumentId;
             fd.Load();
+            IsEncrypted = fd.IsEncrypted;
             return !fd.IsEncrypted;
         }
 
@@ -195,6 +211,7 @@ namespace TjMott.Writer.ViewModel
                 fd.IsEncrypted = false;
                 fd.Save();
                 vm.Save();
+                IsEncrypted = false;
             }
             catch (CryptographicException)
             {
@@ -211,6 +228,7 @@ namespace TjMott.Writer.ViewModel
             FlowDocument fd = new FlowDocument(Model.Connection);
             fd.id = Model.FlowDocumentId;
             fd.Load();
+            IsEncrypted = fd.IsEncrypted;
             return fd.IsEncrypted;
         }
     }
