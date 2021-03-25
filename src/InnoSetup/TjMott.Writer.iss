@@ -1,13 +1,13 @@
 [Setup]
 AppId="TjMott.Writer"
 AppName="TJ Mott's Writer"
-AppVersion=0.0.1
+AppVersion=0.1.0
 DefaultDirName="{commonpf}\TJ Mott\TJ Mott's Writer"
 VersionInfoCompany="TJ Mott"
 VersionInfoCopyright="Copyright (C) 2020, TJ Mott"
 DefaultGroupName="TJ Mott's Writer"
 OutputDir=.
-OutputBaseFilename="TJ Mott's Writer v0.0.1 Setup"
+OutputBaseFilename="TJ Mott's Writer v0.1.0 Setup"
 Compression=lzma
 SolidCompression=yes
 ArchitecturesInstallIn64BitMode=x64
