@@ -17,12 +17,13 @@ AppPublisherURL="https://www.tjmott.com/"
 LicenseFile="..\..\LICENSE"
 
 [Files]
-Source: "..\TjMott.Writer\bin\Release\netcoreapp3.1\*.dll";                  DestDir: "{app}";
-Source: "..\TjMott.Writer\bin\Release\netcoreapp3.1\*.exe";                  DestDir: "{app}";
-Source: "..\TjMott.Writer\bin\Release\netcoreapp3.1\*.deps.json";            DestDir: "{app}";
-Source: "..\TjMott.Writer\bin\Release\netcoreapp3.1\*.runtimeconfig.json";   DestDir: "{app}";
-Source: "..\TjMott.Writer\bin\Release\netcoreapp3.1\runtimes\*";             DestDir: "{app}\runtimes";         Flags: recursesubdirs;
-Source: "..\..\LICENSE";                                                     DestDir: "{app}";                  DestName: "license.txt";
+Source: "..\TjMott.Writer\bin\Release\net5.0-windows\*.dll";                  DestDir: "{app}";
+Source: "..\TjMott.Writer\bin\Release\net5.0-windows\*.exe";                  DestDir: "{app}";
+Source: "..\TjMott.Writer\bin\Release\net5.0-windows\*.deps.json";            DestDir: "{app}";
+Source: "..\TjMott.Writer\bin\Release\net5.0-windows\*.runtimeconfig.json";   DestDir: "{app}";
+Source: "..\TjMott.Writer\bin\Release\net5.0-windows\README.md";              DestDir: "{app}";
+Source: "..\TjMott.Writer\bin\Release\net5.0-windows\runtimes\*";             DestDir: "{app}\runtimes";         Flags: recursesubdirs;
+Source: "..\..\LICENSE";                                                      DestDir: "{app}";                  DestName: "license.txt";
 
 [Icons]
 Name: "{group}\Launch TJ Mott's Writer";      Filename: "{app}\TjMott.Writer.exe";

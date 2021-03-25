@@ -42,6 +42,7 @@
 
                 <ContextMenu x:Key="storyContextMenu">
                     <MenuItem Header="Add New Chapter" Command="{Binding CreateChapterCommand}" />
+                    <MenuItem Header="Show Pacing" Command="{Binding ShowPacingCommand}" />
                     <MenuItem Header="Edit Story Properties" Command="{Binding EditPropertiesCommand}" />
                     <MenuItem Header="Edit Copyright Page" Command="{Binding EditCopyrightPageCommand}" />
                     <MenuItem Header="Delete Story" Command="{Binding DeleteCommand}" />
@@ -49,6 +50,7 @@
 
                 <ContextMenu x:Key="chapterContextMenu">
                     <MenuItem Header="Add New Scene" Command="{Binding CreateSceneCommand}" />
+                    <MenuItem Header="Show Pacing" Command="{Binding ShowPacingCommand}" />
                     <MenuItem Header="Rename Chapter" Command="{Binding RenameCommand}"  />
                     <MenuItem Header="Delete Chapter" Command="{Binding DeleteCommand}" />
                 </ContextMenu>

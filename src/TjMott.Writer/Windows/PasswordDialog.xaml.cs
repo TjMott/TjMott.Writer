@@ -18,7 +18,7 @@ namespace TjMott.Writer.Windows
             _showConfirm = showConfirm;
         }
 
-        private void okButton_Click(object sender, RoutedEventArgs e)
+        private void submit()
         {
             if (string.IsNullOrEmpty(passwordBox.Password))
             {
@@ -41,6 +41,16 @@ namespace TjMott.Writer.Windows
             Password = passwordBox.Password;
             DialogResult = true;
             return;
+        }
+
+        private void passwordBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            submit();
+        }
+
+        private void okButton_Click(object sender, RoutedEventArgs e)
+        {
+            submit();
         }
 
         private void cancelButton_Click(object sender, RoutedEventArgs e)

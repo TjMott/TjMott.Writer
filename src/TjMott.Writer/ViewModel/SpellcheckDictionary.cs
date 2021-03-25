@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Text;
+using System.Linq;
 using System.Windows.Input;
 using TjMott.Writer.Model.SQLiteClasses;
 using TjMott.Writer.Windows;
@@ -26,12 +26,36 @@ namespace TjMott.Writer.ViewModel
                 return _editDictionaryCommand;
             }
         }
+
+        private ICommand _deleteWordCommand;
+        public ICommand DeleteWordCommand
+        {
+            get
+            {
+                if (_deleteWordCommand == null)
+                {
+                    _deleteWordCommand = new RelayCommand(param => DeleteSelectedWord(), param => CanDeleteSelectedWord());
+                }
+                return _deleteWordCommand;
+            }
+        }
         #endregion
 
         private void onDictionaryModified()
         {
             if (DictionaryModified != null)
                 DictionaryModified(this, new EventArgs());
+        }
+
+        private SpellcheckWord _selectedWord;
+        public SpellcheckWord SelectedWord
+        {
+            get { return _selectedWord; }
+            set
+            {
+                _selectedWord = value;
+                OnPropertyChanged("SelectedWord");
+            }
         }
 
         private string _tempFile;
@@ -105,22 +129,57 @@ namespace TjMott.Writer.ViewModel
             }
         }
 
+        public void RemoveDuplicates()
+        {
+            // Not sure how I got duplicates. Import / conversion error from the old file format?
+            List<string> foundWords = new List<string>();
+
+            for (int i = Words.Count - 1; i >= 0; i--)
+            {
+                SpellcheckWord w = Words[i];
+                if (foundWords.Contains(w.Word))
+                {
+                    w.Delete();
+                    Words.Remove(w);
+                }
+                else
+                {
+                    foundWords.Add(w.Word);
+                }
+            }
+
+        }
+
         public void LoadFromDatabase()
         {
             Words.Clear();
             _tempFile = getDictionaryFileName();
-            var words = SpellcheckWord.GetAllSpellcheckWord(UniverseVm.Model.Connection);
+            var words = SpellcheckWord.GetAllSpellcheckWord(UniverseVm.Model.Connection).OrderBy(i => i.Word);
 
             foreach (var w in words)
             {
                 if (w.UniverseId == UniverseVm.Model.id)
+                {
                     Words.Add(w);
+                }
             }
         }
 
         public void EditDictionary()
         {
             SpellcheckDictionaryWindow.ShowSpellcheckDictionaryWindow(this);
+        }
+
+        public void DeleteSelectedWord()
+        {
+            SelectedWord.Delete();
+            Words.Remove(SelectedWord);
+            SelectedWord = null;
+        }
+
+        public bool CanDeleteSelectedWord()
+        {
+            return _selectedWord != null;
         }
     }
 }

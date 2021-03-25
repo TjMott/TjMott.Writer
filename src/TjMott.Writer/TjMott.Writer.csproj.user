@@ -61,6 +61,12 @@
     <Compile Update="Windows\MarkdownDocumentWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Windows\PacingWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Windows\ReadmeWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Windows\SpellcheckDictionaryWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -117,7 +123,13 @@
     <Page Update="Windows\MarkdownDocumentWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Windows\PacingWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Windows\PasswordDialog.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Windows\ReadmeWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Windows\SpellcheckDictionaryWindow.xaml">

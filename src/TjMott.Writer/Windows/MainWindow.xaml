@@ -46,6 +46,7 @@
                 <MenuItem Header="Spellcheck Dictionary" Command="{Binding Database.SelectedUniverse.SpellcheckDictionary.EditDictionaryCommand}" />
             </MenuItem>
             <MenuItem Header="Help">
+                <MenuItem Header="Readme" Click="readmeMenuItem_Click" />
                 <MenuItem Header="About" Click="aboutMenuItem_Click" />
             </MenuItem>
         </Menu>

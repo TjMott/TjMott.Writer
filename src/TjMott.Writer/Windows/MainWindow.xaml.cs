@@ -64,5 +64,10 @@ namespace TjMott.Writer.Windows
             about.Owner = this;
             about.ShowDialog();
         }
+
+        private void readmeMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            ReadmeWindow.ShowInstance();
+        }
     }
 }

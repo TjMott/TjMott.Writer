@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
 using TjMott.Writer.Dialogs;
 using TjMott.Writer.Model;
 using TjMott.Writer.Model.SQLiteClasses;
+using TjMott.Writer.Windows;
 using Docx = Xceed.Words.NET;
 
 namespace TjMott.Writer.ViewModel
@@ -65,6 +67,18 @@ namespace TjMott.Writer.ViewModel
                     _createSceneCommand = new RelayCommand(param => CreateScene());
                 }
                 return _createSceneCommand;
+            }
+        }
+        private ICommand _showPacingCommand;
+        public ICommand ShowPacingCommand
+        {
+            get
+            {
+                if (_showPacingCommand == null)
+                {
+                    _showPacingCommand = new RelayCommand(param => ShowPacing());
+                }
+                return _showPacingCommand;
             }
         }
         #endregion
@@ -146,6 +160,14 @@ namespace TjMott.Writer.ViewModel
                 Scenes[i].Model.SortIndex = i;
                 Scenes[i].Save();
             }
+        }
+
+        public void ShowPacing()
+        {
+            var chapters = new List<ChapterViewModel>();
+            chapters.Add(this);
+            PacingWindow wnd = new PacingWindow(chapters);
+            wnd.Show();
         }
 
         public void ExportToWord(Docx.DocX doc)

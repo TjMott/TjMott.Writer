@@ -95,7 +95,7 @@
         </Ribbon>
 
         <ScrollViewer Name="mainScrollViewer" Grid.Row="1" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Disabled">
-            <RichTextBox Name="MainTextBox" SpellCheck.IsEnabled="True" 
+            <RichTextBox Name="MainTextBox" SpellCheck.IsEnabled="False" 
                          TextChanged="MainTextBox_TextChanged" KeyDown="MainTextBox_KeyDown"
                          ContextMenuOpening="MainTextBox_ContextMenuOpening" SelectionChanged="MainTextBox_SelectionChanged"
                          FontFamily="Garamond" FontSize="12" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Disabled">

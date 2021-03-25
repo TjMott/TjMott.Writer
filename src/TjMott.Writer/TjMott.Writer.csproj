@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -62,7 +62,7 @@
   <ItemGroup>
     <PackageReference Include="DocX" Version="1.7.1" />
     <PackageReference Include="HtmlRenderer.WPF" Version="1.5.1-beta1" />
-    <PackageReference Include="Markdig" Version="0.23.0" />
+    <PackageReference Include="Markdig" Version="0.24.0" />
     <PackageReference Include="System.Data.SQLite" Version="1.0.113.7" />
   </ItemGroup>
 
@@ -129,5 +129,9 @@
       <LastGenOutput>AppSettings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="copy &quot;$(SolutionDir)..\README.md&quot; &quot;$(OutDir)&quot;" />
+  </Target>
 
 </Project>

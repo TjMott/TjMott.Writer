@@ -82,6 +82,19 @@ namespace TjMott.Writer.ViewModel
                 return _editCopyrightPageCommand;
             }
         }
+
+        private ICommand _showPacingCommand;
+        public ICommand ShowPacingCommand
+        {
+            get
+            {
+                if (_showPacingCommand == null)
+                {
+                    _showPacingCommand = new RelayCommand(param => ShowPacing());
+                }
+                return _showPacingCommand;
+            }
+        }
         #endregion
 
         public long GetWordCount()
@@ -186,6 +199,12 @@ namespace TjMott.Writer.ViewModel
                 Chapters[i].Model.SortIndex = i;
                 Chapters[i].Save();
             }
+        }
+
+        public void ShowPacing()
+        {
+            PacingWindow wnd = new PacingWindow(Chapters);
+            wnd.Show();
         }
 
         public void ExportToWord(Docx.DocX doc)
