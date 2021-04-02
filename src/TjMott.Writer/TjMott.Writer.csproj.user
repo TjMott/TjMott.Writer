@@ -25,6 +25,9 @@
     <Compile Update="Dialogs\MarkdownCategoryDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Dialogs\MoveSceneToChapterDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Dialogs\NameItemDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -85,6 +88,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Dialogs\MarkdownCategoryDialog.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Dialogs\MoveSceneToChapterDialog.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Dialogs\NameItemDialog.xaml">

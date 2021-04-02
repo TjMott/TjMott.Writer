@@ -56,6 +56,7 @@
                 </ContextMenu>
 
                 <ContextMenu x:Key="sceneContextMenu">
+                    <MenuItem Header="Move to Chapter" Command="{Binding MoveToChapterCommand}" />
                     <MenuItem Header="Rename Scene" Command="{Binding RenameCommand}" />
                     <MenuItem Header="Color">
                         <MenuItem Click="sceneColorMenuItem_Click" Background="Black" />

@@ -82,6 +82,19 @@ namespace TjMott.Writer.ViewModel
                 return _decryptCommand;
             }
         }
+
+        private ICommand _moveToChapterCommand;
+        public ICommand MoveToChapterCommand
+        {
+            get
+            {
+                if (_moveToChapterCommand == null)
+                {
+                    _moveToChapterCommand = new RelayCommand(param => MoveToChapter());
+                }
+                return _moveToChapterCommand;
+            }
+        }
         #endregion
 
         public long GetWordCount()
@@ -160,6 +173,14 @@ namespace TjMott.Writer.ViewModel
                 Model.Delete();
                 ChapterVm.DeleteScene(this);
             }
+        }
+
+        public void MoveToChapter()
+        {
+            MoveSceneToChapterDialog d = new MoveSceneToChapterDialog();
+            d.Owner = DialogOwner;
+            d.SceneToMove = this;
+            d.ShowDialog();
         }
 
         public void ExportToWord(Docx.DocX doc)
