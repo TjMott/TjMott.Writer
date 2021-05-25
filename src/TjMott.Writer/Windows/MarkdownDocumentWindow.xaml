@@ -35,7 +35,7 @@
             </TabItem>
             <TabItem Header="Edit">
                 <TextBox AcceptsReturn="True" AcceptsTab="True" Text="{Binding Model.MarkdownText, UpdateSourceTrigger=PropertyChanged}"
-                         KeyDown="TextBox_KeyDown" />
+                         KeyDown="TextBox_KeyDown" TextWrapping="Wrap" />
             </TabItem>
         </TabControl>
         
