@@ -45,7 +45,8 @@ namespace TjMott.Writer.Windows
 
         private void passwordBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            submit();
+            if (e.Key == System.Windows.Input.Key.Enter)
+                submit();
         }
 
         private void okButton_Click(object sender, RoutedEventArgs e)
