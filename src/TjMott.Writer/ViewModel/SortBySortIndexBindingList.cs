@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Linq;
 using TjMott.Writer.Model;
 
 namespace TjMott.Writer.ViewModel
@@ -8,6 +9,19 @@ namespace TjMott.Writer.ViewModel
     {
         private bool _ignoreSortIndexChanged = false;
 
+        public void AddToEnd(T item)
+        {
+            item.PropertyChanged += Item_PropertyChanged;
+            if (Count == 0)
+            {
+                item.SortIndex = 0;
+                base.Add(item);
+                return;
+            }
+            long newIndex = this.Max(i => i.SortIndex) + 1;
+            item.SortIndex = newIndex;
+            Add(item);
+        }
 
         public new void Add(T item)
         {
@@ -23,10 +37,15 @@ namespace TjMott.Writer.ViewModel
                 if (this[i].SortIndex >= item.SortIndex)
                 {
                     this.InsertItem(i, item);
+                    FixSortIndices(i);
                     return;
                 }
             }
 
+            if (item.SortIndex < Count)
+            {
+                item.SortIndex = Count;
+            }
             base.Add(item);
         }
 
@@ -34,6 +53,7 @@ namespace TjMott.Writer.ViewModel
         {
             item.PropertyChanged -= Item_PropertyChanged;
             base.Remove(item);
+            FixSortIndices(item.SortIndex);
         }
 
         public bool CanMoveItemUp(T item)
@@ -80,6 +100,18 @@ namespace TjMott.Writer.ViewModel
             _ignoreSortIndexChanged = false;
             other.SortIndex--;
             other.Save();
+        }
+
+        public void FixSortIndices(long startIndex)
+        {
+            // Fix sort indices to be consecutive.
+            _ignoreSortIndexChanged = true;
+            for (int i = (int)startIndex; i < Count; i++)
+            {
+                this[i].SortIndex = i;
+                this[i].Save();
+            }
+            _ignoreSortIndexChanged = false;
         }
 
         private void Item_PropertyChanged(object sender, PropertyChangedEventArgs e)

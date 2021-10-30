@@ -102,6 +102,7 @@
                 </HierarchicalDataTemplate>
                 <HierarchicalDataTemplate DataType="{x:Type viewModels:SceneViewModel}">
                     <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding SortIndex}" Visibility="Collapsed" /> <!-- Make visible to help debug sort issues. -->
                         <Image Style="{StaticResource padlockStyle}" />
                         <Image Style="{StaticResource noteFlagStyle}" />
                         <TextBlock Margin="3" ContextMenu="{StaticResource sceneContextMenu}">

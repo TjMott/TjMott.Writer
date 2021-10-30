@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using TjMott.Writer.ViewModel;
 
@@ -29,7 +30,7 @@ namespace TjMott.Writer.Dialogs
             if (originalChapter != newChapter)
             {
                 originalChapter.Scenes.Remove(SceneToMove);
-                newChapter.Scenes.Add(SceneToMove);
+                newChapter.Scenes.AddToEnd(SceneToMove);
                 SceneToMove.ChapterVm = newChapter;
                 SceneToMove.Model.ChapterId = newChapter.Model.id;
                 SceneToMove.Model.Save();
