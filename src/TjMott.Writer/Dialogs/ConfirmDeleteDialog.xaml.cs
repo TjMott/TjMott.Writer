@@ -10,7 +10,7 @@ namespace TjMott.Writer.Dialogs
     public partial class ConfirmDeleteDialog : Window
     {
         private string _message;
-        private int secondsBeforeDelete = 5;
+        private int secondsBeforeDelete = 3;
         private DispatcherTimer _timer;
 
         public ConfirmDeleteDialog(Window owner, string message)

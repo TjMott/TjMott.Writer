@@ -3,6 +3,7 @@ using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
+using TjMott.Writer.Dialogs;
 using TjMott.Writer.Properties;
 using TjMott.Writer.Windows;
 
@@ -115,18 +116,39 @@ namespace TjMott.Writer.ViewModel
             if (result.HasValue && result.Value)
             {
                 Database = new Database(dialog.FileName);
-                Database.Load();
                 AppSettings.Default.lastFile = Database.FileName;
                 AppSettings.Default.Save();
+
+                if (Database.RequiresUpgrade)
+                {
+                    DatabaseUpgradeDialog upgradeDialog = new DatabaseUpgradeDialog();
+                    upgradeDialog.Database = Database;
+                    upgradeDialog.Owner = _mainWindow;
+                    upgradeDialog.ShowDialog();
+                }
+                else
+                {
+                    Database.Load();
+                }
             }
         }
 
         public void OpenDatabase(string filename)
         {
             Database = new Database(filename);
-            Database.Load();
             AppSettings.Default.lastFile = Database.FileName;
             AppSettings.Default.Save();
+            if (Database.RequiresUpgrade)
+            {
+                DatabaseUpgradeDialog upgradeDialog = new DatabaseUpgradeDialog();
+                upgradeDialog.Database = Database;
+                upgradeDialog.Owner = _mainWindow;
+                upgradeDialog.ShowDialog();
+            }
+            else
+            {
+                Database.Load();
+            }
         }
 
 

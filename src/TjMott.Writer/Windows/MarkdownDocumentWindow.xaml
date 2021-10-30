@@ -25,7 +25,7 @@
                 <MenuItem Header="Close" Click="closeMenuItem_Click" />
             </MenuItem>
             <MenuItem Header="Help">
-                <MenuItem Header="Markdown Reference" />
+                <MenuItem Header="Markdown Reference" Click="MarkdownReferenceMenuItem_Click" />
             </MenuItem>
         </Menu>
 

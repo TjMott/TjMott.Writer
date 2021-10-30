@@ -49,6 +49,14 @@ namespace TjMott.Writer.ViewModel
             }
         }
 
+        public bool RequiresUpgrade
+        { 
+            get
+            {
+                return Metadata.DbVersion < Metadata.ExpectedVersion;
+            }
+        }
+
         public static Database Instance { get; private set; }
 
         public SortBySortIndexBindingList<UniverseViewModel> Universes { get; private set; }
@@ -104,13 +112,6 @@ namespace TjMott.Writer.ViewModel
             }
 
             Metadata = new Metadata(_connection);
-
-            // Version check.
-            if (Metadata.DbVersion != Metadata.ExpectedVersion)
-            {
-                // TODO: Database upgrade.
-            }
-
             Universes = new SortBySortIndexBindingList<UniverseViewModel>();
             Instance = this;
         }

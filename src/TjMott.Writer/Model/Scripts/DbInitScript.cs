@@ -13,7 +13,7 @@ CREATE TABLE Metadata
     Value TEXT NOT NULL
 );
 
-INSERT INTO Metadata(Key, Value) VALUES ('DbVersion', 1);
+INSERT INTO Metadata(Key, Value) VALUES ('DbVersion', 2);
 INSERT INTO Metadata(Key, Value) VALUES ('DefaultUniverse', 0);
 
 CREATE TABLE Universe
@@ -252,7 +252,7 @@ CREATE TRIGGER Chapter_ai AFTER INSERT ON Chapter BEGIN
   INSERT INTO Chapter_fts(rowid, Name) VALUES (new.id, new.Name);
 END;
 CREATE TRIGGER Chapter_ad AFTER DELETE ON Chapter BEGIN
-  INSERT INTO SceneChapter_fts_fts(Chapter_fts, rowid, Name) VALUES ('delete', old.id, old.Name);
+  INSERT INTO Chapter_fts(Chapter_fts, rowid, Name) VALUES ('delete', old.id, old.Name);
 END;
 CREATE TRIGGER Chapter_au AFTER UPDATE ON Chapter BEGIN
   INSERT INTO Chapter_fts(Chapter_fts, rowid, Name) VALUES ('delete', old.id, old.Name);
@@ -267,7 +267,7 @@ CREATE TRIGGER Story_ai AFTER INSERT ON Story BEGIN
   INSERT INTO Story_fts(rowid, Name) VALUES (new.id, new.Name);
 END;
 CREATE TRIGGER Story_ad AFTER DELETE ON Story BEGIN
-  INSERT INTO SceneStory_fts_fts(Story_fts, rowid, Name) VALUES ('delete', old.id, old.Name);
+  INSERT INTO Story_fts(Story_fts, rowid, Name) VALUES ('delete', old.id, old.Name);
 END;
 CREATE TRIGGER Story_au AFTER UPDATE ON Story BEGIN
   INSERT INTO Story_fts(Story_fts, rowid, Name) VALUES ('delete', old.id, old.Name);
