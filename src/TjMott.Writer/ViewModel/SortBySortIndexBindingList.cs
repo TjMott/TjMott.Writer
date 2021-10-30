@@ -11,24 +11,25 @@ namespace TjMott.Writer.ViewModel
 
         public void AddToEnd(T item)
         {
-            item.PropertyChanged += Item_PropertyChanged;
             if (Count == 0)
             {
                 item.SortIndex = 0;
                 base.Add(item);
+                item.PropertyChanged += Item_PropertyChanged;
                 return;
             }
             long newIndex = this.Max(i => i.SortIndex) + 1;
             item.SortIndex = newIndex;
-            Add(item);
+            base.Add(item);
+            item.PropertyChanged += Item_PropertyChanged;
         }
 
         public new void Add(T item)
         {
-            item.PropertyChanged += Item_PropertyChanged;
             if (Count == 0)
             {
                 base.Add(item);
+                item.PropertyChanged += Item_PropertyChanged;
                 return;
             }
 
@@ -38,6 +39,7 @@ namespace TjMott.Writer.ViewModel
                 {
                     this.InsertItem(i, item);
                     FixSortIndices(i);
+                    item.PropertyChanged += Item_PropertyChanged;
                     return;
                 }
             }
@@ -47,6 +49,7 @@ namespace TjMott.Writer.ViewModel
                 item.SortIndex = Count;
             }
             base.Add(item);
+            item.PropertyChanged += Item_PropertyChanged;
         }
 
         public new void Remove(T item)
