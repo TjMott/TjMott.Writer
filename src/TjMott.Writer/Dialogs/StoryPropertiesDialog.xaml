@@ -7,6 +7,9 @@
         WindowStartupLocation="CenterOwner"
         mc:Ignorable="d" Loaded="Window_Loaded" ResizeMode="NoResize"
         Title="Story Properties" Height="250" Width="300">
+    <Window.Style>
+        <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}" />
+    </Window.Style>
     <Grid Margin="5">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

@@ -50,6 +50,7 @@ namespace TjMott.Writer.Windows
             DataContext = _viewModel;
             Width = AppSettings.Default.wikiBrowserWindowWidth;
             Height = AppSettings.Default.wikiBrowserWindowHeight;
+            fontSizeSlider.Value = AppSettings.Default.markdownDocEditorFontSize;
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -57,6 +58,7 @@ namespace TjMott.Writer.Windows
             _windows.Remove(_viewModel.Model.id);
             AppSettings.Default.wikiBrowserWindowHeight = ActualHeight;
             AppSettings.Default.wikiBrowserWindowWidth = ActualWidth;
+            AppSettings.Default.markdownDocEditorFontSize = (int)fontSizeSlider.Value;
             AppSettings.Default.Save();
         }
 

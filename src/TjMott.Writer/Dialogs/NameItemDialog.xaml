@@ -8,6 +8,9 @@
         Loaded="Window_Loaded"
         WindowStartupLocation="CenterOwner"
         Title="Set Name" Height="110" Width="220">
+    <Window.Style>
+        <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}" />
+    </Window.Style>
     <Grid>
         <Grid>
             <Grid.RowDefinitions>

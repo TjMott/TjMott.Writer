@@ -69,5 +69,15 @@ namespace TjMott.Writer.Windows
         {
             ReadmeWindow.ShowInstance();
         }
+
+        private void LightThemeMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            ThemeManager.SetTheme(ThemeManager.Theme.Light);
+        }
+
+        private void DarkThemeMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            ThemeManager.SetTheme(ThemeManager.Theme.Dark);
+        }
     }
 }

@@ -7,6 +7,9 @@
         ResizeMode="NoResize" Loaded="Window_Loaded"
         mc:Ignorable="d" WindowStartupLocation="CenterOwner"
         Title="Confirm Delete" Height="150" Width="300">
+    <Window.Style>
+        <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}" />
+    </Window.Style>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

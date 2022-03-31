@@ -119,7 +119,19 @@ namespace TjMott.Writer.ViewModel
                 {
                     _textColorBrush = new SolidColorBrush(Color.FromArgb(Model.ColorA, Model.ColorR, Model.ColorG, Model.ColorB));
                 }
-                return _textColorBrush; 
+                // Black is special, means automatic. Use black or white depending on the selected theme.
+                if (_textColorBrush.Color == Colors.Black)
+                {
+                    if (ThemeManager.SelectedTheme == ThemeManager.Theme.Dark)
+                    {
+                        return new SolidColorBrush(Colors.White);
+                    }
+                    else if (ThemeManager.SelectedTheme == ThemeManager.Theme.Light)
+                    {
+                        return new SolidColorBrush(Colors.Black);
+                    }
+                }
+                return _textColorBrush;
             }
             set
             {
@@ -151,6 +163,12 @@ namespace TjMott.Writer.ViewModel
             
             // Inits the IsEncrypted field.
             CanDecrypt();
+
+            // Monitor theme changes so the text color brush can be updated.
+            ThemeManager.ThemeChanged += (o, e) =>
+            {
+                OnPropertyChanged("TextColorBrush");
+            };
         }
 
         public void Rename()

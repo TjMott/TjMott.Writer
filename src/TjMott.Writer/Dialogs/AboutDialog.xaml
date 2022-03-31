@@ -7,6 +7,9 @@
         Loaded="Window_Loaded" UseLayoutRounding="True"
         mc:Ignorable="d" ResizeMode="NoResize" WindowStartupLocation="CenterOwner"
         Title="About TJ Mott's Writer" Height="600" Width="650">
+    <Window.Style>
+        <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}" />
+    </Window.Style>
     <Grid Margin="5">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

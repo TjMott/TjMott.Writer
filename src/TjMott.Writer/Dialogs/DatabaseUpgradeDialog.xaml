@@ -7,6 +7,9 @@
         mc:Ignorable="d" Loaded="Window_Loaded" ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner"
         Title="Database Upgrade" Height="250" Width="500">
+    <Window.Style>
+        <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}" />
+    </Window.Style>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

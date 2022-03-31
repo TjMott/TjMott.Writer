@@ -7,6 +7,9 @@
         ResizeMode="NoResize" WindowStartupLocation="CenterOwner"
         mc:Ignorable="d" Loaded="Window_Loaded"
         Title="Select Template" Height="450" Width="400">
+    <Window.Style>
+        <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}" />
+    </Window.Style>
     <Grid Margin="5">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

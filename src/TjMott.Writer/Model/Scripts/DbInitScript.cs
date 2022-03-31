@@ -227,7 +227,6 @@ CREATE TRIGGER Ticket_MarkdownDoc_ad AFTER DELETE ON Ticket BEGIN
   DELETE FROM MarkdownDocument WHERE id = (old.MarkdownDocumentId);
 END;
 
-
 -- Full-Text Search stuff
 CREATE VIRTUAL TABLE Scene_fts USING fts5(Name, content=Scene, content_rowid=id);
 -- Table rebuild, just here for reference

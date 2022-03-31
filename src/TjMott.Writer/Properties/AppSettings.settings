@@ -38,5 +38,11 @@
     <Setting Name="ticketDialogHeight" Type="System.Double" Scope="User">
       <Value Profile="(Default)">500</Value>
     </Setting>
+    <Setting Name="theme" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Light</Value>
+    </Setting>
+    <Setting Name="markdownDocEditorFontSize" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">12</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

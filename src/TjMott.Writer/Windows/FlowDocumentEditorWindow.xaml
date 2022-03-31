@@ -8,6 +8,9 @@
         UseLayoutRounding="True"
         mc:Ignorable="d" Loaded="Window_Loaded" Closing="Window_Closing"
         Title="FlowDocumentEditorWindow" Height="1024" Width="1024">
+    <Window.Style>
+        <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}" />
+    </Window.Style>
     <Grid>
         <Grid.Resources>
             <Style TargetType="{x:Type RibbonButton}">

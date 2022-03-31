@@ -12,7 +12,7 @@ namespace TjMott.Writer.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.7.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.10.0.0")]
     internal sealed partial class AppSettings : global::System.Configuration.ApplicationSettingsBase {
         
         private static AppSettings defaultInstance = ((AppSettings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new AppSettings())));
@@ -164,6 +164,30 @@ namespace TjMott.Writer.Properties {
             }
             set {
                 this["ticketDialogHeight"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Light")]
+        public string theme {
+            get {
+                return ((string)(this["theme"]));
+            }
+            set {
+                this["theme"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("12")]
+        public int markdownDocEditorFontSize {
+            get {
+                return ((int)(this["markdownDocEditorFontSize"]));
+            }
+            set {
+                this["markdownDocEditorFontSize"] = value;
             }
         }
     }

@@ -11,6 +11,9 @@
         UseLayoutRounding="True"
         mc:Ignorable="d"
         Title="TJ Mott's Writer" Height="450" Width="800">
+    <Window.Style>
+        <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}" />
+    </Window.Style>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -44,6 +47,10 @@
                 <MenuItem Header="Create New Note Document" Command="{Binding Database.SelectedUniverse.MarkdownTree.CreateDocumentCommand}" />
                 <Separator />
                 <MenuItem Header="Spellcheck Dictionary" Command="{Binding Database.SelectedUniverse.SpellcheckDictionary.EditDictionaryCommand}" />
+            </MenuItem>
+            <MenuItem Header="Theme">
+                <MenuItem Header="Light" Click="LightThemeMenuItem_Click" />
+                <MenuItem Header="Dark (Experimental)" Click="DarkThemeMenuItem_Click" />
             </MenuItem>
             <MenuItem Header="Help">
                 <MenuItem Header="Readme" Click="readmeMenuItem_Click" />

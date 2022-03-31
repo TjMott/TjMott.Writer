@@ -39,6 +39,8 @@ namespace TjMott.Writer
             {
                 StartupFileName = AppSettings.Default.lastFile;
             }
+            ThemeManager.InitTheme();
+            
             MainWindow wnd = new MainWindow();
             wnd.Show();
         }

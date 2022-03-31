@@ -59,7 +59,7 @@
                     <MenuItem Header="Move to Chapter" Command="{Binding MoveToChapterCommand}" />
                     <MenuItem Header="Rename Scene" Command="{Binding RenameCommand}" />
                     <MenuItem Header="Color">
-                        <MenuItem Click="sceneColorMenuItem_Click" Background="Black" />
+                        <MenuItem Click="sceneColorMenuItem_Click" Background="Black" Header="Auto" />
                         <MenuItem Click="sceneColorMenuItem_Click" Background="Gray" />
                         <MenuItem Click="sceneColorMenuItem_Click" Background="Red" />
                         <MenuItem Click="sceneColorMenuItem_Click" Background="Orange" />

@@ -7,6 +7,9 @@
         xmlns:local="clr-namespace:TjMott.Writer.Windows"
         mc:Ignorable="d" Loaded="Window_Loaded" Closing="Window_Closing"
         Title="Readme" Height="450" Width="800">
+    <Window.Style>
+        <Style TargetType="Window" BasedOn="{StaticResource {x:Type Window}}" />
+    </Window.Style>
     <Grid>
         <Border BorderBrush="DarkGray" Grid.Row="2" BorderThickness="1">
             <htmlRenderer:HtmlPanel x:Name="htmlRenderer" Margin="5"
