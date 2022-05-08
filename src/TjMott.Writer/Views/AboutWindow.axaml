@@ -1,0 +1,101 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="TjMott.Writer.Views.AboutWindow"
+		UseLayoutRounding="True" CanResize="False" WindowStartupLocation="CenterOwner"
+        Title="About TJ Mott's Writer" Height="600" Width="650">
+	<Window.Styles>
+		<Style Selector="Button.link">
+			<Setter Property="Foreground" Value="Blue" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="Cursor" Value="Hand" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="Template">
+				<ControlTemplate>
+					<ContentPresenter Content="{TemplateBinding Content}">
+						<ContentPresenter.Styles>
+							<Style Selector="TextBlock">
+								<Setter Property="Foreground" Value="{TemplateBinding Foreground}"/>
+								<Setter Property="FontSize" Value="{TemplateBinding FontSize}"/>
+								<Setter Property="Cursor" Value="Hand" />
+							</Style>
+						</ContentPresenter.Styles>
+					</ContentPresenter>
+				</ControlTemplate>
+			</Setter>
+		</Style>
+		<Style Selector="StackPanel.about">
+			<Setter Property="Orientation" Value="Horizontal" />
+			<Setter Property="Margin" Value="0,5,0,5" />
+		</Style>
+		<Style Selector="TextBlock.license">
+			<Setter Property="TextWrapping" Value="Wrap" />
+			<Setter Property="Margin" Value="0,5,0,5" />
+			<Setter Property="LineHeight" Value="20" />
+		</Style>
+		<Style Selector="TextBlock.licenseList">
+			<Setter Property="Margin" Value="30,10,50,10" />
+		</Style>
+	</Window.Styles>
+	<Grid Margin="5">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
+
+		<TextBlock Text="TJ Mott's Writer" FontSize="26" Foreground="#333333" />
+
+		<StackPanel Grid.Row="1" Margin="15">
+			<StackPanel Classes="about">
+				<TextBlock Margin="0,0,5,0">Version</TextBlock>
+				<TextBlock x:Name="versionTextBox">X.X.X.X</TextBlock>	
+			</StackPanel>
+			<StackPanel Classes="about">
+				<TextBlock>Copyright © 2020 TJ Mott. All rights reserved. </TextBlock>
+			</StackPanel>
+			<StackPanel Classes="about">
+				<TextBlock Margin="0,0,5,0">TJ's Website:</TextBlock>
+				<Button Classes="link" Click="tjSiteButton_Click">https://www.tjmott.com</Button>
+			</StackPanel>
+			<StackPanel Classes="about">
+				<TextBlock Margin="0,0,5,0">Project GitHub page:</TextBlock>
+				<Button Classes="link" Click="githubButton_Click">https://github.com/TjMott/TjMott.Writer</Button>
+			</StackPanel>
+			<StackPanel Classes="about">
+				<TextBlock Margin="0,0,5,0">This application uses free icons from</TextBlock>
+				<Button Classes="link" Click="iconsButton_Click">https://icons8.com</Button>
+			</StackPanel>
+		</StackPanel>
+
+		<Border Grid.Row="2" Margin="5" BorderBrush="DarkGray" BorderThickness="1">
+			<ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible">
+				<StackPanel Margin="10">
+					<TextBlock Classes="license">LICENSE INFO</TextBlock>
+					<TextBlock Classes="license">This application is open-source software released under the terms of the BSD 3-Clause license.</TextBlock>
+					<TextBlock Classes="license">
+						Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+					</TextBlock>
+					<TextBlock Classes="license licenseList">
+						1.  Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+					</TextBlock>
+					<TextBlock Classes="license licenseList">
+						2.  Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+					</TextBlock>
+					<TextBlock Classes="license licenseList">
+						3.  Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+					</TextBlock>
+					<TextBlock Classes="license">
+						THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+					</TextBlock>
+				</StackPanel>
+			</ScrollViewer>
+		</Border>
+
+		<Button Grid.Row="3" Content="OK" HorizontalAlignment="Right" Width="100" Margin="0,10,0,0" Click="okButton_Click" />
+	</Grid>
+</Window>

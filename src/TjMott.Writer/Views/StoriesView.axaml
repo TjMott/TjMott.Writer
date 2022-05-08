@@ -1,0 +1,86 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:viewModels="clr-namespace:TjMott.Writer.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="TjMott.Writer.Views.StoriesView">
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*" />
+			<ColumnDefinition Width="Auto" />
+		</Grid.ColumnDefinitions>
+
+		<Border BorderThickness="1" BorderBrush="DarkGray">
+			<TreeView Items="{Binding SubItems}" SelectedItem="{Binding SelectedTreeViewItem}">
+				<TreeView.Styles>
+					<Style Selector="Image.padlock">
+						<Setter Property="Margin" Value="3" />
+						<Setter Property="Height" Value="18" />
+						<Setter Property="Width" Value="18" />
+						<Setter Property="ToolTip.Tip" Value="Encrypted" />
+						<Setter Property="Source" Value="/Assets/icons8-password-40.png" />
+						<Setter Property="IsVisible" Value="{Binding IsEncrypted}" />
+					</Style>
+					<Style Selector="TextBlock.treeLabel">
+						<Setter Property="Margin" Value="0,0,10,0" />
+					</Style>
+				</TreeView.Styles>
+				<TreeView.DataTemplates>
+					<TreeDataTemplate DataType="{x:Type viewModels:CategoryViewModel}" ItemsSource="{Binding Stories}">
+						<StackPanel Orientation="Horizontal">
+							<TextBlock Text="Category:" Classes="treeLabel" />
+							<TextBlock Text="{Binding Model.Name}" />
+						</StackPanel>
+					</TreeDataTemplate>
+					<TreeDataTemplate DataType="{x:Type viewModels:StoryViewModel}" ItemsSource="{Binding Chapters}">
+						<StackPanel Orientation="Horizontal">
+							<TextBlock Text="Story:" Classes="treeLabel" />
+							<TextBlock Text="{Binding Model.Name}" />
+						</StackPanel>
+					</TreeDataTemplate>
+					<TreeDataTemplate DataType="{x:Type viewModels:ChapterViewModel}" ItemsSource="{Binding Scenes}">
+						<StackPanel Orientation="Horizontal">
+							<TextBlock Text="Chapter:" Classes="treeLabel" />
+							<TextBlock Text="{Binding Model.Name}" />
+						</StackPanel>
+					</TreeDataTemplate>
+					<TreeDataTemplate DataType="{x:Type viewModels:SceneViewModel}">
+						<StackPanel Orientation="Horizontal">
+							<Image Classes="padlock" />
+							<TextBlock Text="Scene:" Classes="treeLabel" />
+							<TextBlock Text="{Binding Model.Name}" />
+						</StackPanel>
+					</TreeDataTemplate>
+				</TreeView.DataTemplates>
+			</TreeView>
+		</Border>
+
+		<StackPanel Grid.Column="1" VerticalAlignment="Center">
+			<StackPanel.Styles>
+				<Style Selector="Button.button">
+					<Setter Property="Width" Value="45" />
+					<Setter Property="Margin" Value="4" />
+				</Style>
+			</StackPanel.Styles>
+			<Button ToolTip.Tip="Open Editor" IsEnabled="{Binding CanOpenEditor}" Command="{Binding OpenEditorCommand}" Classes="button">
+				<Image Source="/Assets/icons8-typewriter-with-paper-40.png" />
+			</Button>
+			<Button ToolTip.Tip="Open Notes" Command="{Binding OpenNoteCommand}" Classes="button">
+				<Image Source="/Assets/icons8-note-40.png" />
+			</Button>
+			<Button ToolTip.Tip="Move Up" IsEnabled="{Binding CanMoveItemUp}" Command="{Binding MoveItemUpCommand}" Classes="button">
+				<Image Source="/Assets/icons8-up.png" />
+			</Button>
+			<Button ToolTip.Tip="Move Down" IsEnabled="{Binding CanMoveItemDown}" Command="{Binding MoveItemDownCommand}" Classes="button">
+				<Image Source="/Assets/icons8-down-arrow.png" />
+			</Button>
+			<Button ToolTip.Tip="Word Count" Command="{Binding ShowWordCountCommand}" Classes="button">
+				<Image Source="/Assets/icons8-statistics-40.png" />
+			</Button>
+			<Button ToolTip.Tip="Export to Word" IsEnabled="{Binding CanExportToWord}" Command="{Binding ExportToWordCommand}" Classes="button">
+				<Image Source="/Assets/icons8-word-40.png" />
+			</Button>
+		</StackPanel>
+	</Grid>
+</UserControl>

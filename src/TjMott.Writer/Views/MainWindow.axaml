@@ -1,0 +1,107 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:TjMott.Writer.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:views="clr-namespace:TjMott.Writer.Views"
+		xmlns:viewModels="clr-namespace:TjMott.Writer.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="TjMott.Writer.Views.MainWindow"
+		WindowStartupLocation="CenterScreen"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="TJ Mott's Writer" Height="450" Width="800">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+	
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
+
+		<Menu>
+			<MenuItem Header="File">
+				<MenuItem Header="New" Command="{Binding NewFileCommand}"  />
+				<MenuItem Header="Open" Command="{Binding OpenFileCommand}" />
+				<MenuItem Header="Quit" Command="{Binding QuitCommand}" />
+			</MenuItem>
+			<MenuItem Header="Universe">
+				<MenuItem Header="Create Universe" />
+				<MenuItem Header="Select Universe" Items="{Binding Database.Universes}">
+					<MenuItem.ItemTemplate>
+						<DataTemplate>
+							<MenuItem Header="{Binding Model.Name}" />
+						</DataTemplate>
+					</MenuItem.ItemTemplate>
+				</MenuItem>
+				<MenuItem Header="Rename Universe" />
+				<Separator />
+				<MenuItem Header="Create New Category" />
+				<MenuItem Header="Create New Story" />
+				<Separator />
+				<MenuItem Header="Create New Notes Category" />
+				<MenuItem Header="Create New Note Document" />
+				<Separator />
+				<MenuItem Header="Spellcheck Dictionary" />
+			</MenuItem>
+			<MenuItem Header="Help">
+				<MenuItem Header="Readme" />
+				<MenuItem Header="About" Command="{Binding AboutCommand}" />
+			</MenuItem>
+		</Menu>
+
+		<TabControl Grid.Row="1">
+			<TabItem Header="Stories">
+				<views:StoriesView DataContext="{Binding Database.SelectedUniverse}" />
+			</TabItem>
+			<TabItem Header="Notes">
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="*" />
+						<ColumnDefinition Width="*" />
+						<ColumnDefinition Width="Auto" />
+					</Grid.ColumnDefinitions>
+
+					<ListBox x:Name="testListBox" SelectionChanged="testListBox_SelectionChanged" Items="{Binding TestList}">
+						<ListBox.ItemTemplate>
+							<DataTemplate>
+								<TextBlock Text="{Binding Name}" />
+							</DataTemplate>
+						</ListBox.ItemTemplate>
+					</ListBox>
+					
+					<TextBlock x:Name="testTextBlock" Grid.Column="1" />
+
+					<StackPanel Grid.Column="2">
+						<Button x:Name="upButton" Click="upButton_Click">Up</Button>
+						<Button x:Name="downButton" Click="downButton_Click">Down</Button>
+					</StackPanel>
+				</Grid>
+			</TabItem>
+			<TabItem Header="Files">
+
+			</TabItem>
+
+			<TabItem Header="Tickets">
+
+			</TabItem>
+			<TabItem Header="Search">
+
+			</TabItem>
+		</TabControl>
+
+		<StackPanel Grid.Row="2" Orientation="Horizontal" Margin="4">
+			<TextBlock Text="Database:" />
+			<TextBlock Margin="5,0,30,0" Text="{Binding Database.FileName}" />
+			<TextBlock Text="Universe:" />
+			<TextBlock Margin="5,0,30,0" Text="{Binding Database.SelectedUniverse.Model.Name}" />
+		</StackPanel>
+
+	</Grid>
+
+	
+
+	</Window>
