@@ -8,5 +8,16 @@
 
     <Application.Styles>
         <FluentTheme Mode="Light"/>
+		<Style Selector="StackPanel.dialogButtonPanel">
+			<Setter Property="Orientation" Value="Horizontal" />
+			<Setter Property="HorizontalAlignment" Value="Right" />
+			<Setter Property="VerticalAlignment" Value="Bottom" />
+			<Setter Property="Margin" Value="4" />
+		</Style>
+		<Style Selector="StackPanel.dialogButtonPanel Button">
+			<Setter Property="Width" Value="65" />
+			<Setter Property="Margin" Value="3,0,0,0" />
+			<Setter Property="HorizontalContentAlignment" Value="Center" />
+		</Style>
     </Application.Styles>
 </Application>

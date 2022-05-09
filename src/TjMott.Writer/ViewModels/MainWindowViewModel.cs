@@ -27,6 +27,11 @@ namespace TjMott.Writer.ViewModels
             OpenFileCommand = ReactiveCommand.Create(OpenFile);
             QuitCommand = ReactiveCommand.Create(Quit);
             AboutCommand = ReactiveCommand.Create(ShowAbout);
+
+            if (!string.IsNullOrWhiteSpace(AppSettings.Default.lastFile) && File.Exists(AppSettings.Default.lastFile))
+            {
+                OpenDatabase(AppSettings.Default.lastFile);
+            }
         }
 
         public async void NewFile()
@@ -39,7 +44,8 @@ namespace TjMott.Writer.ViewModels
             {
                 Database = new Database(path);
                 Database.Load();
-                
+                AppSettings.Default.lastFile = Database.FileName;
+                AppSettings.Default.Save();
             }
         }
 
@@ -53,17 +59,24 @@ namespace TjMott.Writer.ViewModels
 
             if (paths != null && paths.Length == 1 && File.Exists(paths[0]))
             {
-                Database = new Database(paths[0]);
-
-                if (Database.RequiresUpgrade)
-                {
-
-                }
-                else
-                {
-                    Database.Load();
-                }
+                OpenDatabase(paths[0]);
             }
+        }
+
+        public void OpenDatabase(string filename)
+        {
+            Database = new Database(filename);
+
+            if (Database.RequiresUpgrade)
+            {
+
+            }
+            else
+            {
+                Database.Load();
+            }
+            AppSettings.Default.lastFile = filename;
+            AppSettings.Default.Save();
         }
 
         public void ShowAbout()
@@ -74,6 +87,8 @@ namespace TjMott.Writer.ViewModels
 
         public void Quit()
         {
+            if (Database != null)
+                Database.Close();
             (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime).Shutdown();
         }
     }

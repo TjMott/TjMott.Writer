@@ -9,6 +9,7 @@
         x:Class="TjMott.Writer.Views.MainWindow"
 		WindowStartupLocation="CenterScreen"
         Icon="/Assets/avalonia-logo.ico"
+		Closing="Window_Closing"
         Title="TJ Mott's Writer" Height="450" Width="800">
 
     <Design.DataContext>
@@ -30,14 +31,22 @@
 			</MenuItem>
 			<MenuItem Header="Universe">
 				<MenuItem Header="Create Universe" />
-				<MenuItem Header="Select Universe" Items="{Binding Database.Universes}">
-					<MenuItem.ItemTemplate>
-						<DataTemplate>
-							<MenuItem Header="{Binding Model.Name}" />
-						</DataTemplate>
-					</MenuItem.ItemTemplate>
+				<MenuItem x:Name="selectUniverseMenu" Header="Select Universe" Items="{Binding Database.Universes}">
+					<MenuItem.Styles>
+						<Style Selector="#selectUniverseMenu MenuItem">
+							<Setter Property="Icon">
+								<Template>
+									<CheckBox BorderThickness="0" Width="20" Height="20" IsHitTestVisible="False" 
+											  IsChecked="{Binding IsSelected, Mode=OneWay}" />
+								</Template>
+							</Setter>
+							<Setter Property="Header" Value="{Binding Model.Name}" />
+							<Setter Property="Command" Value="{Binding SelectUniverseCommand}" />
+						</Style>
+					</MenuItem.Styles>
+					
 				</MenuItem>
-				<MenuItem Header="Rename Universe" />
+				<MenuItem Header="Rename Universe" Command="{Binding Database.SelectedUniverse.RenameCommand}" />
 				<Separator />
 				<MenuItem Header="Create New Category" />
 				<MenuItem Header="Create New Story" />
@@ -58,28 +67,7 @@
 				<views:StoriesView DataContext="{Binding Database.SelectedUniverse}" />
 			</TabItem>
 			<TabItem Header="Notes">
-				<Grid>
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="*" />
-						<ColumnDefinition Width="*" />
-						<ColumnDefinition Width="Auto" />
-					</Grid.ColumnDefinitions>
-
-					<ListBox x:Name="testListBox" SelectionChanged="testListBox_SelectionChanged" Items="{Binding TestList}">
-						<ListBox.ItemTemplate>
-							<DataTemplate>
-								<TextBlock Text="{Binding Name}" />
-							</DataTemplate>
-						</ListBox.ItemTemplate>
-					</ListBox>
-					
-					<TextBlock x:Name="testTextBlock" Grid.Column="1" />
-
-					<StackPanel Grid.Column="2">
-						<Button x:Name="upButton" Click="upButton_Click">Up</Button>
-						<Button x:Name="downButton" Click="downButton_Click">Down</Button>
-					</StackPanel>
-				</Grid>
+				
 			</TabItem>
 			<TabItem Header="Files">
 

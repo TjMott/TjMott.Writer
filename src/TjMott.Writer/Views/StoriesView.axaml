@@ -13,6 +13,42 @@
 
 		<Border BorderThickness="1" BorderBrush="DarkGray">
 			<TreeView Items="{Binding SubItems}" SelectedItem="{Binding SelectedTreeViewItem}">
+				<TreeView.Resources>
+					<ContextMenu x:Key="categoryContextMenu">
+						<MenuItem Header="Rename Category" Command="{Binding RenameCommand}" />
+						<MenuItem Header="Delete Category" Command="{Binding DeleteCommand}" />
+					</ContextMenu>
+					<ContextMenu x:Key="storyContextMenu">
+						<MenuItem Header="Add New Chapter" Command="{Binding CreateChapterCommand}" />
+						<MenuItem Header="Show Pacing" Command="{Binding ShowPacingCommand}" />
+						<MenuItem Header="Edit Story Properties" Command="{Binding EditPropertiesCommand}" />
+						<MenuItem Header="Edit Copyright Page" Command="{Binding EditCopyrightPageCommand}" />
+						<MenuItem Header="Delete Story" Command="{Binding DeleteCommand}" />
+					</ContextMenu>
+					<ContextMenu x:Key="chapterContextMenu">
+						<MenuItem Header="Add New Scene" Command="{Binding CreateSceneCommand}" />
+						<MenuItem Header="Show Pacing" Command="{Binding ShowPacingCommand}" />
+						<MenuItem Header="Rename Chapter" Command="{Binding RenameCommand}"  />
+						<MenuItem Header="Delete Chapter" Command="{Binding DeleteCommand}" />
+					</ContextMenu>
+					<ContextMenu x:Key="sceneContextMenu">
+						<MenuItem Header="Move to Chapter" Command="{Binding MoveToChapterCommand}" />
+						<MenuItem Header="Rename Scene" Command="{Binding RenameCommand}" />
+						<MenuItem Header="Color">
+							<MenuItem Background="Black" />
+							<MenuItem Background="Gray" />
+							<MenuItem Background="Red" />
+							<MenuItem Background="Orange" />
+							<MenuItem Background="Yellow" />
+							<MenuItem Background="Green" />
+							<MenuItem Background="Blue" />
+							<MenuItem Background="Violet" />
+						</MenuItem>
+						<MenuItem Header="Delete Scene" Command="{Binding DeleteCommand}" />
+						<MenuItem Header="Encrypt" Command="{Binding EncryptCommand}" />
+						<MenuItem Header="Decrypt" Command="{Binding DecryptCommand}" />
+					</ContextMenu>
+				</TreeView.Resources>
 				<TreeView.Styles>
 					<Style Selector="Image.padlock">
 						<Setter Property="Margin" Value="3" />
@@ -28,25 +64,25 @@
 				</TreeView.Styles>
 				<TreeView.DataTemplates>
 					<TreeDataTemplate DataType="{x:Type viewModels:CategoryViewModel}" ItemsSource="{Binding Stories}">
-						<StackPanel Orientation="Horizontal">
+						<StackPanel Orientation="Horizontal" ContextMenu="{StaticResource categoryContextMenu}">
 							<TextBlock Text="Category:" Classes="treeLabel" />
 							<TextBlock Text="{Binding Model.Name}" />
 						</StackPanel>
 					</TreeDataTemplate>
 					<TreeDataTemplate DataType="{x:Type viewModels:StoryViewModel}" ItemsSource="{Binding Chapters}">
-						<StackPanel Orientation="Horizontal">
+						<StackPanel Orientation="Horizontal" ContextMenu="{StaticResource storyContextMenu}">
 							<TextBlock Text="Story:" Classes="treeLabel" />
 							<TextBlock Text="{Binding Model.Name}" />
 						</StackPanel>
 					</TreeDataTemplate>
 					<TreeDataTemplate DataType="{x:Type viewModels:ChapterViewModel}" ItemsSource="{Binding Scenes}">
-						<StackPanel Orientation="Horizontal">
+						<StackPanel Orientation="Horizontal" ContextMenu="{StaticResource chapterContextMenu}">
 							<TextBlock Text="Chapter:" Classes="treeLabel" />
 							<TextBlock Text="{Binding Model.Name}" />
 						</StackPanel>
 					</TreeDataTemplate>
 					<TreeDataTemplate DataType="{x:Type viewModels:SceneViewModel}">
-						<StackPanel Orientation="Horizontal">
+						<StackPanel Orientation="Horizontal" ContextMenu="{StaticResource sceneContextMenu}">
 							<Image Classes="padlock" />
 							<TextBlock Text="Scene:" Classes="treeLabel" />
 							<TextBlock Text="{Binding Model.Name}" />

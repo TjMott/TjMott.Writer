@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reactive;
 using TjMott.Writer.Models.SQLiteClasses;
+using TjMott.Writer.Views;
 
 namespace TjMott.Writer.ViewModels
 {
@@ -50,15 +51,15 @@ namespace TjMott.Writer.ViewModels
             DeleteCommand = ReactiveCommand.Create(Delete);
         }
 
-        public void Rename()
+        public async void Rename()
         {
-           /* NameItemDialog dialog = new NameItemDialog(DialogOwner, Model.Name);
-            bool? result = dialog.ShowDialog();
-            if (result.HasValue && result.Value)
+            NameItemWindow dialog = new NameItemWindow(Model.Name);
+            string result = await dialog.ShowDialog<string>(MainWindow);
+            if (result != null)
             {
-                Model.Name = dialog.UserInput;
+                Model.Name = result;
                 Model.Save();
-            }*/
+            }
         }
 
         public void Delete()
