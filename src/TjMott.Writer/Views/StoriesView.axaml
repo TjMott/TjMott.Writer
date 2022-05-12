@@ -99,22 +99,22 @@
 					<Setter Property="Margin" Value="4" />
 				</Style>
 			</StackPanel.Styles>
-			<Button ToolTip.Tip="Open Editor" IsEnabled="{Binding CanOpenEditor}" Command="{Binding OpenEditorCommand}" Classes="button">
+			<Button ToolTip.Tip="Open Editor" Command="{Binding OpenEditorCommand}" Classes="button">
 				<Image Source="/Assets/icons8-typewriter-with-paper-40.png" />
 			</Button>
 			<Button ToolTip.Tip="Open Notes" Command="{Binding OpenNoteCommand}" Classes="button">
 				<Image Source="/Assets/icons8-note-40.png" />
 			</Button>
-			<Button ToolTip.Tip="Move Up" IsEnabled="{Binding CanMoveItemUp}" Command="{Binding MoveItemUpCommand}" Classes="button">
+			<Button ToolTip.Tip="Move Up" Command="{Binding MoveItemUpCommand}" Classes="button">
 				<Image Source="/Assets/icons8-up.png" />
 			</Button>
-			<Button ToolTip.Tip="Move Down" IsEnabled="{Binding CanMoveItemDown}" Command="{Binding MoveItemDownCommand}" Classes="button">
+			<Button ToolTip.Tip="Move Down" Command="{Binding MoveItemDownCommand}" Classes="button">
 				<Image Source="/Assets/icons8-down-arrow.png" />
 			</Button>
 			<Button ToolTip.Tip="Word Count" Command="{Binding ShowWordCountCommand}" Classes="button">
 				<Image Source="/Assets/icons8-statistics-40.png" />
 			</Button>
-			<Button ToolTip.Tip="Export to Word" IsEnabled="{Binding CanExportToWord}" Command="{Binding ExportToWordCommand}" Classes="button">
+			<Button ToolTip.Tip="Export to Word" Command="{Binding ExportToWordCommand}" Classes="button">
 				<Image Source="/Assets/icons8-word-40.png" />
 			</Button>
 		</StackPanel>

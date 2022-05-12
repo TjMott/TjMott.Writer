@@ -1,0 +1,40 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"  Height="500" Width="300" CanResize="False"
+        x:Class="TjMott.Writer.Views.MoveSceneToChapterWindow"
+		WindowStartupLocation="CenterOwner"
+        Title="Move Scene To Chapter">
+	<Grid Margin="5">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
+
+		<TextBlock Text="Select a chapter to move this scene to." />
+
+		<Border Grid.Row="1" BorderBrush="DarkGray" BorderThickness="1">
+			<ListBox Name="chapterListBox">
+				<ListBox.ItemTemplate>
+					<DataTemplate>
+						<TextBlock Text="{Binding Model.Name}" />
+					</DataTemplate>
+				</ListBox.ItemTemplate>
+			</ListBox>
+		</Border>
+
+		<StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Center">
+			<StackPanel.Styles>
+				<Style Selector="Button">
+					<Setter Property="Width" Value="70" />
+					<Setter Property="Margin" Value="5" />
+					<Setter Property="HorizontalContentAlignment" Value="Center" />
+				</Style>
+			</StackPanel.Styles>
+			<Button Name="okButton" Click="okButton_Click">OK</Button>
+			<Button Name="cancelButton" Click="cancelButton_Click">Cancel</Button>
+		</StackPanel>
+	</Grid>
+</Window>

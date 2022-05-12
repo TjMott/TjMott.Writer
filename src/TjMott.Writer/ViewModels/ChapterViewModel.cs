@@ -64,15 +64,15 @@ namespace TjMott.Writer.ViewModels
             }
         }
 
-        public void Delete()
+        public async void Delete()
         {
-            /*ConfirmDeleteDialog dialog = new ConfirmDeleteDialog(DialogOwner, string.Format("Chapter: {0}", Model.Name));
-            bool? result = dialog.ShowDialog();
-            if (result.HasValue && result.Value)
+            ConfirmDeleteWindow dialog = new ConfirmDeleteWindow(string.Format("Chapter: {0}", Model.Name));
+            bool result = await dialog.ShowDialog<bool>(MainWindow);
+            if (result)
             {
                 Model.Delete();
                 StoryVm.DeleteChapter(this);
-            }*/
+            }
         }
 
         public void CreateScene()

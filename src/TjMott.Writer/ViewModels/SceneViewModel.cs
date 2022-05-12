@@ -110,23 +110,21 @@ namespace TjMott.Writer.ViewModels
             }
         }
 
-        public void Delete()
+        public async void Delete()
         {
-            /*ConfirmDeleteDialog dialog = new ConfirmDeleteDialog(DialogOwner, string.Format("Scene: {0}", Model.Name));
-            bool? result = dialog.ShowDialog();
-            if (result.HasValue && result.Value)
+            ConfirmDeleteWindow dialog = new ConfirmDeleteWindow(string.Format("Scene: {0}", Model.Name));
+            bool result = await dialog.ShowDialog<bool>(MainWindow);
+            if (result)
             {
                 Model.Delete();
                 ChapterVm.DeleteScene(this);
-            }*/
+            }
         }
 
         public void MoveToChapter()
         {
-            /*MoveSceneToChapterDialog d = new MoveSceneToChapterDialog();
-            d.Owner = DialogOwner;
-            d.SceneToMove = this;
-            d.ShowDialog();*/
+            MoveSceneToChapterWindow d = new MoveSceneToChapterWindow(this);
+            d.ShowDialog<bool>(MainWindow);
         }
 
         /*public void ExportToWord(Docx.DocX doc)

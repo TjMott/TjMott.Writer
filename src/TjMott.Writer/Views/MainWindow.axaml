@@ -30,7 +30,7 @@
 				<MenuItem Header="Quit" Command="{Binding QuitCommand}" />
 			</MenuItem>
 			<MenuItem Header="Universe">
-				<MenuItem Header="Create Universe" />
+				<MenuItem Header="Create Universe" Command="{Binding Database.CreateUniverseCommand}" />
 				<MenuItem x:Name="selectUniverseMenu" Header="Select Universe" Items="{Binding Database.Universes}">
 					<MenuItem.Styles>
 						<Style Selector="#selectUniverseMenu MenuItem">
@@ -48,8 +48,8 @@
 				</MenuItem>
 				<MenuItem Header="Rename Universe" Command="{Binding Database.SelectedUniverse.RenameCommand}" />
 				<Separator />
-				<MenuItem Header="Create New Category" />
-				<MenuItem Header="Create New Story" />
+				<MenuItem Header="Create New Category" Command="{Binding Database.SelectedUniverse.CreateCategoryCommand}" />
+				<MenuItem Header="Create New Story" Command="{Binding Database.SelectedUniverse.CreateStoryCommand}" />
 				<Separator />
 				<MenuItem Header="Create New Notes Category" />
 				<MenuItem Header="Create New Note Document" />
@@ -89,7 +89,4 @@
 		</StackPanel>
 
 	</Grid>
-
-	
-
-	</Window>
+</Window>

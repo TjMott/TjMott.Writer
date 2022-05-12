@@ -1,11 +1,10 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Input;
 using TjMott.Writer.Models.SQLiteClasses;
 using ReactiveUI;
 using System.Reactive;
+using TjMott.Writer.Views;
 
 namespace TjMott.Writer.ViewModels
 {
@@ -72,15 +71,16 @@ namespace TjMott.Writer.ViewModels
             ShowPacingCommand = ReactiveCommand.Create(ShowPacing);
         }
 
-        public void EditProperties()
+        public async void EditProperties()
         {
-            /*StoryPropertiesDialog dialog = new StoryPropertiesDialog(DialogOwner, Model, UniverseVm.Categories);
-            bool? result = dialog.ShowDialog();
-            if (result.HasValue && result.Value)
+            EditStoryPropertiesWindow dialog = new EditStoryPropertiesWindow();
+            dialog.DataContext = new EditStoryPropertiesWindowViewModel(Model, UniverseVm.Categories);
+            bool result = await dialog.ShowDialog<bool>(MainWindow);
+            if (result)
             {
                 Model.Save();
                 UniverseVm.UpdateStoryInTree(this);
-            }*/
+            }
         }
 
         public void EditCopyrightPage()
@@ -104,15 +104,15 @@ namespace TjMott.Writer.ViewModels
             }*/
         }
 
-        public void Delete()
+        public async void Delete()
         {
-            /*ConfirmDeleteDialog dialog = new ConfirmDeleteDialog(DialogOwner, string.Format("Story: {0}", Model.Name));
-            bool? result = dialog.ShowDialog();
-            if (result.HasValue && result.Value)
+            ConfirmDeleteWindow dialog = new ConfirmDeleteWindow(string.Format("Story: {0}", Model.Name));
+            bool result = await dialog.ShowDialog<bool>(MainWindow);
+            if (result)
             {
                 Model.Delete();
                 UniverseVm.DeleteSubItem(this);
-            }*/
+            }
         }
 
         public void CreateChapter()

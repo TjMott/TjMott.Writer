@@ -76,11 +76,13 @@ namespace TjMott.Writer.ViewModels
             int index = IndexOf(item);
             T other = this[index - 1];
             _ignoreSortIndexChanged = true;
+            base.Remove(other);
+            base.Insert(index, other);
             item.SortIndex--;
             item.Save();
-            _ignoreSortIndexChanged = false;
             other.SortIndex++;
             other.Save();
+            _ignoreSortIndexChanged = false;
         }
 
         public bool CanMoveItemDown(T item)
@@ -99,11 +101,13 @@ namespace TjMott.Writer.ViewModels
             int index = IndexOf(item);
             T other = this[index + 1];
             _ignoreSortIndexChanged = true;
+            base.Remove(other);
+            base.Insert(index, other);
             item.SortIndex++;
             item.Save();
-            _ignoreSortIndexChanged = false;
             other.SortIndex--;
             other.Save();
+            _ignoreSortIndexChanged = false;
         }
 
         public void FixSortIndices(long startIndex)

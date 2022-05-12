@@ -1,7 +1,10 @@
 ﻿using Microsoft.Data.Sqlite;
+using ReactiveUI;
 using System.Linq;
+using System.Reactive;
 using TjMott.Writer.Models.SQLiteClasses;
 using TjMott.Writer.Models.SqlScripts;
+using TjMott.Writer.Views;
 
 namespace TjMott.Writer.ViewModels
 {
@@ -58,6 +61,10 @@ namespace TjMott.Writer.ViewModels
         public Metadata Metadata { get; private set; }
         #endregion
 
+        #region Commands
+        public ReactiveCommand<Unit, Unit> CreateUniverseCommand { get; }
+        #endregion
+
         public Database(string filename)
         {
             _filename = filename;
@@ -93,6 +100,8 @@ namespace TjMott.Writer.ViewModels
             Metadata = new Metadata(_connection);
             Universes = new SortBySortIndexBindingList<UniverseViewModel>();
             Instance = this;
+
+            CreateUniverseCommand = ReactiveCommand.Create(CreateUniverse);
         }
 
         public void Load()
@@ -180,14 +189,14 @@ namespace TjMott.Writer.ViewModels
             _connection = null;
         }
 
-        public void CreateUniverse()
+        public async void CreateUniverse()
         {
-            /*NameItemDialog dialog = new NameItemDialog(DialogOwner, "New Universe");
-            bool? result = dialog.ShowDialog();
-            if (result.HasValue && result.Value)
+            NameItemWindow dialog = new NameItemWindow("New Universe");
+            string result = await dialog.ShowDialog<string>(MainWindow);
+            if (!string.IsNullOrWhiteSpace(result))
             {
                 Universe uni = new Universe(_connection);
-                uni.Name = dialog.UserInput;
+                uni.Name = result;
                 if (Universes.Count == 0)
                 {
                     uni.SortIndex = 0;
@@ -202,7 +211,7 @@ namespace TjMott.Writer.ViewModels
 
                 if (Universes.Count == 1)
                     SelectedUniverse = vm;
-            }*/
+            }
         }
 
     }

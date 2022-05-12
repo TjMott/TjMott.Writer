@@ -1,0 +1,29 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" Height="150" Width="300"
+        x:Class="TjMott.Writer.Views.ConfirmDeleteWindow"
+		WindowStartupLocation="CenterOwner" CanResize="False"
+		Activated="ConfirmDeleteWindow_Activated"
+        Title="Confirm Delete">
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="Auto" />
+			<ColumnDefinition Width="*" />
+		</Grid.ColumnDefinitions>
+		<Image Source="avares://MessageBox.Avalonia/Assets/warning.png" Width="32" Margin="16" />
+		<TextBlock Margin="5,16,5,5" Text="Are you sure you want to delete this item? This action cannot be undone!" TextWrapping="Wrap" Grid.Column="1" />
+		<TextBlock Grid.Row="1" x:Name="itemInfoTextBlock" Text="Item: Story {0}" TextWrapping="Wrap"
+                   Margin="5" VerticalAlignment="Center" Grid.Column="1" />
+		<StackPanel Grid.Row="2" Orientation="Horizontal" Classes="dialogButtonPanel" Grid.ColumnSpan="2">
+			<Button Width="85" Name="deleteButton" Click="deleteButton_Click" IsEnabled="False">Delete (5)</Button>
+			<Button Name="cancelButton" Click="cancelButton_Click">Cancel</Button>
+		</StackPanel>
+	</Grid>
+</Window>

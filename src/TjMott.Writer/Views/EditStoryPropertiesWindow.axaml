@@ -1,0 +1,72 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" Height="300" Width="330"
+        x:Class="TjMott.Writer.Views.EditStoryPropertiesWindow"
+		WindowStartupLocation="CenterOwner" CanResize="False"
+        Title="Story Properties" x:Name="Window">
+	<Grid Margin="5">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="Auto" />
+			<ColumnDefinition Width="*" />
+		</Grid.ColumnDefinitions>
+		<Grid.Styles>
+			<Style Selector="TextBlock">
+				<Setter Property="Margin" Value="0,0,10,0" />
+				<Setter Property="VerticalAlignment" Value="Center" />
+			</Style>
+			<Style Selector="TextBox">
+				<Setter Property="Grid.Column" Value="1" />
+				<Setter Property="Margin" Value="0,2,0,2" />
+			</Style>
+			<Style Selector="ComboBox">
+				<Setter Property="Grid.Column" Value="1" />
+				<Setter Property="Margin" Value="0,2,0,2" />
+				<Setter Property="HorizontalAlignment" Value="Stretch" />
+			</Style>
+		</Grid.Styles>
+
+		<TextBlock Text="Category" />
+		<ComboBox Items="{Binding Categories}" SelectedItem="{Binding SelectedCategory}">
+			<ComboBox.ItemTemplate>
+				<DataTemplate>
+					<TextBlock Text="{Binding Model.Name}" />
+				</DataTemplate>
+			</ComboBox.ItemTemplate>
+		</ComboBox>
+
+		<TextBlock Text="Title" Grid.Row="1" />
+		<TextBox Grid.Row="1" Text="{Binding Model.Name}" />
+
+		<TextBlock Text="Subtitle" Grid.Row="2" />
+		<TextBox Grid.Row="2" Text="{Binding Model.Subtitle}" />
+
+		<TextBlock Text="Author" Grid.Row="3" />
+		<TextBox Grid.Row="3" Text="{Binding Model.Author}" />
+
+		<TextBlock Text="Edition" Grid.Row="4" />
+		<TextBox Grid.Row="4" Text="{Binding Model.Edition}" />
+
+		<TextBlock Text="ASIN" Grid.Row="5" />
+		<TextBox Grid.Row="5" Text="{Binding Model.ASIN}" />
+
+		<TextBlock Text="ISBN" Grid.Row="6" />
+		<TextBox Grid.Row="6" Text="{Binding Model.ISBN}" />
+
+		<StackPanel Grid.Row="7" Grid.ColumnSpan="2" Classes="dialogButtonPanel">
+			<Button Content="OK" Command="{Binding AcceptCommand}" CommandParameter="{Binding ElementName=Window}" />
+			<Button Content="Cancel" Command="{Binding CancelCommand}" CommandParameter="{Binding ElementName=Window}" />
+		</StackPanel>
+	</Grid>
+</Window>
