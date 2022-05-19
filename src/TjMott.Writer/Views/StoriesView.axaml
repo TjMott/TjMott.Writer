@@ -55,7 +55,7 @@
 						<Setter Property="Height" Value="18" />
 						<Setter Property="Width" Value="18" />
 						<Setter Property="ToolTip.Tip" Value="Encrypted" />
-						<Setter Property="Source" Value="/Assets/icons8-password-40.png" />
+						<Setter Property="Source" Value="/Assets/Images/icons8-password-40.png" />
 						<Setter Property="IsVisible" Value="{Binding IsEncrypted}" />
 					</Style>
 					<Style Selector="TextBlock.treeLabel">
@@ -100,22 +100,22 @@
 				</Style>
 			</StackPanel.Styles>
 			<Button ToolTip.Tip="Open Editor" Command="{Binding OpenEditorCommand}" Classes="button">
-				<Image Source="/Assets/icons8-typewriter-with-paper-40.png" />
+				<Image Source="/Assets/Images/icons8-typewriter-with-paper-40.png" />
 			</Button>
 			<Button ToolTip.Tip="Open Notes" Command="{Binding OpenNoteCommand}" Classes="button">
-				<Image Source="/Assets/icons8-note-40.png" />
+				<Image Source="/Assets/Images/icons8-note-40.png" />
 			</Button>
 			<Button ToolTip.Tip="Move Up" Command="{Binding MoveItemUpCommand}" Classes="button">
-				<Image Source="/Assets/icons8-up.png" />
+				<Image Source="/Assets/Images/icons8-up.png" />
 			</Button>
 			<Button ToolTip.Tip="Move Down" Command="{Binding MoveItemDownCommand}" Classes="button">
-				<Image Source="/Assets/icons8-down-arrow.png" />
+				<Image Source="/Assets/Images/icons8-down-arrow.png" />
 			</Button>
 			<Button ToolTip.Tip="Word Count" Command="{Binding ShowWordCountCommand}" Classes="button">
-				<Image Source="/Assets/icons8-statistics-40.png" />
+				<Image Source="/Assets/Images/icons8-statistics-40.png" />
 			</Button>
 			<Button ToolTip.Tip="Export to Word" Command="{Binding ExportToWordCommand}" Classes="button">
-				<Image Source="/Assets/icons8-word-40.png" />
+				<Image Source="/Assets/Images/icons8-word-40.png" />
 			</Button>
 		</StackPanel>
 	</Grid>

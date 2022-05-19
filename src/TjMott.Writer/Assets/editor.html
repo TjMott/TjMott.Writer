@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<style>
+	html, body {
+		height:100%;
+		overflow-y:hidden;
+	}
+
+	#quill-container {
+		position:absolute;
+		top:55px;
+		right:0;
+		left:0;
+		bottom:0;
+	}
+
+    .ql-snow .ql-picker.ql-size .ql-picker-label[data-value]::before, .ql-snow .ql-picker.ql-size .ql-picker-item[data-value]::before {
+        content: attr(data-value) !important;
+    }
+
+    .ql-picker-options {
+        max-height:300px;
+        overflow-y:scroll;
+    }
+
+	</style>
+	
+</head>
+<body>
+	<!-- Include Quill stylesheet -->
+	<link href="quilljs/quill.snow.css" rel="stylesheet">
+
+	<!-- Create the editor container -->
+	<div id="quill-container">
+		<p>Hello World!</p>
+	</div>
+
+	<!-- Include the Quill library -->
+	<script src="quilljs/quill.min.js"></script>
+
+	<script>
+	//https://stackoverflow.com/questions/43728080/how-to-add-font-types-on-quill-js-with-toolbar-options
+
+        fonts = [];
+
+        function getFontName(font) {
+            return font.toLowerCase().replace(/\s/g, "-");
+		}
+
+        function addFont(font) {
+            fonts.push(font);
+        }
+
+        function initEditor() {
+
+            // Initialize fonts.
+            var editorFonts = fonts.map(font => getFontName(font));
+
+            // add fonts to style
+            var fontStyles = "";
+            fonts.forEach(function (font) {
+                var fontName = getFontName(font);
+                fontStyles += ".ql-snow .ql-picker.ql-font .ql-picker-label[data-value=" + fontName + "]::before, .ql-snow .ql-picker.ql-font .ql-picker-item[data-value=" + fontName + "]::before {" +
+                    "content: '" + font + "';" +
+                    "font-family: '" + font + "', sans-serif;" +
+                    "}" +
+                    ".ql-font-" + fontName + "{" +
+                    " font-family: '" + font + "', sans-serif;" +
+                    "}";
+            });
+
+            var node = document.createElement('style');
+            node.innerHTML = fontStyles;
+            document.body.appendChild(node);
+
+            // Add fonts to whitelist
+            var Font = Quill.import('formats/font');
+            Font.whitelist = editorFonts;
+            Quill.register(Font, true);
+
+            // Set up font sizes
+            const fontSizeArr = ['8px', '9px', '10px', '12px', '14px', '16px', '20px', '24px', '32px', '42px', '54px', '68px', '84px', '98px'];
+
+            var Size = Quill.import('attributors/style/size');
+            Size.whitelist = fontSizeArr;
+            Quill.register(Size, true);
+
+
+            window.editor = new Quill('#quill-container', {
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+
+                        // custom button values
+                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                        [{ 'script': 'sub' }, { 'script': 'super' }],      // superscript/subscript
+                        [{ 'indent': '-1' }, { 'indent': '+1' }],          // outdent/indent
+
+                        [{ 'color': [] }],          // dropdown with defaults from theme
+                        [{ 'font': editorFonts }],
+                        [{ 'size': fontSizeArr }],
+                        [{ 'align': [] }],
+
+                        ['clean']                                         // remove formatting button
+                    ]
+                },
+                theme: 'snow'
+            });
+        }
+
+        //addFont("Times New Roman");
+        //addFont("Arial");
+        //addFont("Consolas");
+        //addFont("Garamound");
+        //initEditor();
+	
+	</script>
+</body>
+</html>
