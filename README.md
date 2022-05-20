@@ -10,7 +10,7 @@ In addition, I am working on a rewrite to .NET 6 and Avalonia which will make th
 
 # PLATFORM
 
-This application runs on .NET 5.0 with a WPF GUI. It requires Visual Studio 2019 (Community Edition is fine) to compile.
+This application runs on .NET 5.0 with a WPF GUI. It requires Visual Studio 2019 (Community Edition is fine) to compile. Only Windows is supported, though check the Avalonia branch to see progress on cross-platform support.
 
 
 # Basic Tutorial
