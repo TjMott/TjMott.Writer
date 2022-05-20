@@ -11,16 +11,16 @@ using System.Threading.Tasks;
 
 namespace TjMott.Writer.Controls
 {
-    public class CustomWebView : WebView
+    public class QuillJsEditor : WebView
     {
         private static string editor_path;
 
-        static CustomWebView()
+        static QuillJsEditor()
         {
             editor_path = "file:///" + Path.Join(Directory.GetCurrentDirectory(), "Assets", "editor.html");
         }
 
-        public CustomWebView()
+        public QuillJsEditor()
         {
             InitialUrl = editor_path;
             BrowserCreated += CustomWebView_BrowserCreated;

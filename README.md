@@ -8,7 +8,7 @@ NOTE: This software is incomplete! Use at your own risk. The file format is subj
 
 # PLATFORM
 
-This application runs on .NET 5.0 with a WPF GUI. It requires Visual Studio 2019 (Community Edition is fine) to compile.
+This application runs on .NET 6.0 with an Avalonia GUI. It requires Visual Studio 2022 (Community Edition is fine) to compile. It is cross-platform and fully tested on Windows 10 and Linux Mint 20. Unofficially, it should work on any Linux that supports .NET 6, and will probably work on Mac with a bit of tweaking.
 
 
 # Basic Tutorial
@@ -36,13 +36,13 @@ A chapter is a subcomponent of a story, used to organize scenes.
 ### Scene
 A scene is a single continuous section of a story. Generally, if the narrator or setting changes, or if a large amount of time has passed, then a scene break should occur. Scenes are contained within chapters. Each scene contains one FlowDocument which has its actual text content.
 
-### Flow Document
+### Flow Document (OUTDATED)
 The actual text editor portion operates on a Microsoft datatype called a FlowDocument. This is an XML-based format for rich text editing. In addition, my implementation of the FlowDocument allows for optional AES encryption of its contents, allowing you to encrypt and password-protect contents if you deem necessary.
 
-### Markdown Document
+### Markdown Document (OUTDATED)
 The notes portion of the application can be used to store and organize reference data, character details, plot ideas, timelines, and so on, using a text formatter called Markdown. The application has its own little HTML browser used to view and edit these Markdown documents. Markdown documents are not part of your work and are not included when you export a work to a Word document; they are merely for notes and supporting info you need as an author. Markdown documents are attached to a universe.
 
-### Spellcheck Dictionary
+### Spellcheck Dictionary (OUTDATED)
 Each universe has its own custom spellcheck dictionary. You can add words by right-clicking a misspelled word in the FlowDocument editor and adding it to the dictionary.
 
 ### Ticket Tracker
