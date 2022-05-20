@@ -6,6 +6,8 @@ This is my custom-developed word processor plus extras for writing/authoring as 
 
 NOTE: This software is incomplete! Use at your own risk. The file format is subject to change without warning, and many features are not yet implemented or useful. However this is under active development and I'll update this readme once I hit a releasable state.
 
+In addition, I am working on a rewrite to .NET 6 and Avalonia which will make the application cross-platform, allowing it to run on Linux. So look at the Avalonia branch for more recent updates. The master branch is unlikely to see any updates until the Avalonia branch is ready for release and merged back to master.
+
 # PLATFORM
 
 This application runs on .NET 5.0 with a WPF GUI. It requires Visual Studio 2019 (Community Edition is fine) to compile.
