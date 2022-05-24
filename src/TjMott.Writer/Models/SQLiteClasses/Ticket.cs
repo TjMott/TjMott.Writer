@@ -7,7 +7,7 @@ using TjMott.Writer.Models.Attributes;
 namespace TjMott.Writer.Models.SQLiteClasses
 {
     [DbTableName("Ticket")]
-    public class Ticket : IDbType, INotifyPropertyChanged, IHasNameProperty, IHasMarkdownDocument
+    public class Ticket : IDbType, INotifyPropertyChanged, IHasNameProperty
     {
         #region INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
@@ -24,7 +24,6 @@ namespace TjMott.Writer.Models.SQLiteClasses
         private string _status;
         private string _dueDate;
         private int _priority;
-        private long? _markdownDocumentId;
         private long _universeId;
         #endregion
 
@@ -91,17 +90,6 @@ namespace TjMott.Writer.Models.SQLiteClasses
             {
                 _universeId = value;
                 OnPropertyChanged("UniverseId");
-            }
-        }
-
-        [DbField]
-        public long? MarkdownDocumentId
-        {
-            get { return _markdownDocumentId; }
-            set
-            {
-                _markdownDocumentId = value;
-                OnPropertyChanged("MarkdownDocumentId");
             }
         }
         #endregion

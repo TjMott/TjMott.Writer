@@ -145,11 +145,11 @@ namespace TjMott.Writer.ViewModels
             CreateStoryCommand = ReactiveCommand.Create(CreateStory);
             MoveItemUpCommand = ReactiveCommand.Create(MoveItemUp, this.WhenAny(x => x.SelectedTreeViewItem.SortIndex, (item) => CanMoveItemUp()));
             MoveItemDownCommand = ReactiveCommand.Create(MoveItemDown, this.WhenAny(x => x.SelectedTreeViewItem.SortIndex, (item) => CanMoveItemDown()));
-            OpenEditorCommand = ReactiveCommand.Create(OpenEditor, this.WhenAny(x => x.SelectedTreeViewItem, (item) => (item as SceneViewModel) != null));
-            ExportToWordCommand = ReactiveCommand.Create(ExportToWord, this.WhenAny(x => x.SelectedTreeViewItem, (item) => (item as IExportToWordDocument) != null));
-            ShowWordCountCommand = ReactiveCommand.Create(ShowWordCount, this.WhenAny(x => x.SelectedTreeViewItem, (item) => (item as IGetWordCount) != null));
+            OpenEditorCommand = ReactiveCommand.Create(OpenEditor,     this.WhenAny(x => x.SelectedTreeViewItem, (item) => (item.Value as SceneViewModel) != null));
+            ExportToWordCommand = ReactiveCommand.Create(ExportToWord, this.WhenAny(x => x.SelectedTreeViewItem, (item) => (item.Value as IExportToWordDocument) != null));
+            ShowWordCountCommand = ReactiveCommand.Create(ShowWordCount, this.WhenAny(x => x.SelectedTreeViewItem, (item) => (item.Value as IGetWordCount) != null));
             RenameCommand = ReactiveCommand.Create(Rename);
-            OpenNoteCommand = ReactiveCommand.Create(OpenOrCreateNoteForItem, this.WhenAny(x => x.SelectedTreeViewItem, (item) => item != null));
+            OpenNoteCommand = ReactiveCommand.Create(OpenOrCreateNoteForItem, this.WhenAny(x => x.SelectedTreeViewItem, (item) => item.Value != null));
 
             Categories = new BindingList<CategoryViewModel>();
             Stories = new BindingList<StoryViewModel>();
@@ -440,7 +440,8 @@ namespace TjMott.Writer.ViewModels
 
         public void OpenEditor()
         {
-            //SceneViewModel vm = SelectedTreeViewItem as SceneViewModel;
+            SceneViewModel vm = SelectedTreeViewItem as SceneViewModel;
+            SceneEditorWindow.ShowEditorWindow(vm);
             //FlowDocumentEditorWindow.ShowEditorWindow(vm.Model.FlowDocumentId, vm.Model.Connection, SpellcheckDictionary, string.Format("Scene: {0}", vm.Model.Name));
         }
 

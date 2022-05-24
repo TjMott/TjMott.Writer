@@ -39,8 +39,8 @@ namespace TjMott.Writer.ViewModels
 
         public long GetWordCount()
         {
-            FlowDocument fd = new FlowDocument(Model.Connection);
-            fd.id = Model.FlowDocumentId;
+            Document fd = new Document(Model.Connection);
+            fd.id = Model.DocumentId;
             fd.Load();
             if (fd.IsEncrypted)
                 return 0;
@@ -158,8 +158,8 @@ namespace TjMott.Writer.ViewModels
 
         public bool CanEncrypt()
         {
-            FlowDocument fd = new FlowDocument(Model.Connection);
-            fd.id = Model.FlowDocumentId;
+            Document fd = new Document(Model.Connection);
+            fd.id = Model.DocumentId;
             fd.Load();
             IsEncrypted = fd.IsEncrypted;
             return !fd.IsEncrypted;
@@ -190,8 +190,8 @@ namespace TjMott.Writer.ViewModels
 
         public bool CanDecrypt()
         {
-            FlowDocument fd = new FlowDocument(Model.Connection);
-            fd.id = Model.FlowDocumentId;
+            Document fd = new Document(Model.Connection);
+            fd.id = Model.DocumentId;
             fd.Load();
             IsEncrypted = fd.IsEncrypted;
             return fd.IsEncrypted;

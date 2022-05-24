@@ -8,7 +8,7 @@ using TjMott.Writer.Models.Attributes;
 namespace TjMott.Writer.Models.SQLiteClasses
 {
     [DbTableName("File")]
-    public class FileBlob : IDbType, INotifyPropertyChanged, ISortable, IHasNameProperty, IHasMarkdownDocument
+    public class FileBlob : IDbType, INotifyPropertyChanged, ISortable, IHasNameProperty
     {
         #region INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
@@ -22,7 +22,6 @@ namespace TjMott.Writer.Models.SQLiteClasses
         #region Private variables
         private long _id;
         private long _universeId;
-        private long? _markdownDocumentId;
         private string _name;
         private string _fileName;
         private string _fileType;
@@ -49,16 +48,6 @@ namespace TjMott.Writer.Models.SQLiteClasses
             {
                 _universeId = value;
                 OnPropertyChanged("UniverseId");
-            }
-        }
-        [DbField]
-        public long? MarkdownDocumentId
-        {
-            get { return _markdownDocumentId; }
-            set
-            {
-                _markdownDocumentId = value;
-                OnPropertyChanged("MarkdownDocumentId");
             }
         }
 

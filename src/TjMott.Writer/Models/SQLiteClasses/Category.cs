@@ -7,7 +7,7 @@ using TjMott.Writer.Models.Attributes;
 namespace TjMott.Writer.Models.SQLiteClasses
 {
     [DbTableName("Category")]
-    public class Category : IDbType, INotifyPropertyChanged, ISortable, IHasNameProperty, IHasMarkdownDocument
+    public class Category : IDbType, INotifyPropertyChanged, ISortable, IHasNameProperty
     {
         #region INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
@@ -23,7 +23,6 @@ namespace TjMott.Writer.Models.SQLiteClasses
         private string _name;
         private long _sortIndex;
         private long _universeId;
-        private long? _markdownDocumentId;
         #endregion
 
         #region Database Properties
@@ -68,17 +67,6 @@ namespace TjMott.Writer.Models.SQLiteClasses
             {
                 _universeId = value;
                 OnPropertyChanged("UniverseId");
-            }
-        }
-
-        [DbField]
-        public long? MarkdownDocumentId
-        {
-            get { return _markdownDocumentId; }
-            set
-            {
-                _markdownDocumentId = value;
-                OnPropertyChanged("MarkdownDocumentId");
             }
         }
         #endregion

@@ -26,7 +26,25 @@ namespace TjMott.Writer.Controls
             BrowserCreated += CustomWebView_BrowserCreated;
         }
 
+        public async Task<string> GetText()
+        {
+            dynamic scriptableObject = await GetMainFrame().GetScriptableObjectAsync(CancellationToken.None).ConfigureAwait(false);
+            dynamic window = scriptableObject.window;
+            dynamic quill = window.editor;
+            string text = quill.getText();
+            return text;
+        }
+
         public async Task<string> GetJsonDocument()
+        {
+            dynamic scriptableObject = await GetMainFrame().GetScriptableObjectAsync(CancellationToken.None).ConfigureAwait(false);
+            dynamic window = scriptableObject.window;
+            dynamic quill = window.editor;
+            dynamic delta = quill.getContents();
+            return delta;
+        }
+
+        public async Task<string> GetJsonText()
         {
             dynamic scriptableObject = await GetMainFrame().GetScriptableObjectAsync(CancellationToken.None).ConfigureAwait(false);
             dynamic window = scriptableObject.window;
@@ -36,13 +54,28 @@ namespace TjMott.Writer.Controls
             return contents;
         }
 
-        public async void SetJsonDocument(string json)
+        public async void SetJsonDocument(dynamic json)
+        {
+            dynamic scriptableObject = await GetMainFrame().GetScriptableObjectAsync(CancellationToken.None).ConfigureAwait(false);
+            dynamic window = scriptableObject.window;
+            dynamic quill = window.editor;
+            quill.setContents(json);
+        }
+
+        public async void SetJsonText(string json)
         {
             dynamic scriptableObject = await GetMainFrame().GetScriptableObjectAsync(CancellationToken.None).ConfigureAwait(false);
             dynamic window = scriptableObject.window;
             dynamic quill = window.editor;
             dynamic delta = window.JSON.parse(json);
             quill.setContents(delta);
+        }
+
+        public async Task<int> GetWordCount()
+        {
+            string text = await GetText();
+            string[] words = text.Split(new string[] { " ", "\r", "\n", "\t" }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            return words.Length;
         }
 
         private void CustomWebView_BrowserCreated(object sender, EventArgs e)

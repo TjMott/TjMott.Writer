@@ -115,15 +115,15 @@ namespace TjMott.Writer.ViewModels
             }
         }
 
-        public void CreateChapter()
+        public async void CreateChapter()
         {
-            /*NameItemDialog dialog = new NameItemDialog(DialogOwner, "New Chapter");
-            bool? result = dialog.ShowDialog();
-            if (result.HasValue && result.Value)
+            NameItemWindow dialog = new NameItemWindow("New Chapter");
+            string result = await dialog.ShowDialog<string>(MainWindow);
+            if (!string.IsNullOrWhiteSpace(result))
             {
                 Chapter chapter = new Chapter(Model.Connection);
                 chapter.StoryId = Model.id;
-                chapter.Name = dialog.UserInput;
+                chapter.Name = result;
                 if (Chapters.Count == 0)
                     chapter.SortIndex = 0;
                 else
@@ -132,7 +132,7 @@ namespace TjMott.Writer.ViewModels
                 ChapterViewModel chapterVm = new ChapterViewModel(chapter);
                 chapterVm.StoryVm = this;
                 Chapters.Add(chapterVm);
-            }*/
+            }
         }
 
         public void DeleteChapter(ChapterViewModel chapter)

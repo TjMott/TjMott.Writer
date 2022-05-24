@@ -7,7 +7,7 @@ using TjMott.Writer.Models.Attributes;
 namespace TjMott.Writer.Models.SQLiteClasses
 {
     [DbTableName("Scene")]
-    public class Scene : IDbType, INotifyPropertyChanged, ISortable, IHasNameProperty, IHasMarkdownDocument
+    public class Scene : IDbType, INotifyPropertyChanged, ISortable, IHasNameProperty
     {
         #region INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
@@ -23,8 +23,7 @@ namespace TjMott.Writer.Models.SQLiteClasses
         private long _chapterId;
         private string _name;
         private long _sortIndex;
-        private long _flowDocumentId;
-        private long? _markdownDocumentId;
+        private long _documentId;
         private byte _colorA;
         private byte _colorR;
         private byte _colorG;
@@ -118,24 +117,13 @@ namespace TjMott.Writer.Models.SQLiteClasses
         }
 
         [DbField]
-        public long FlowDocumentId
+        public long DocumentId
         {
-            get { return _flowDocumentId; }
+            get { return _documentId; }
             set
             {
-                _flowDocumentId = value;
-                OnPropertyChanged("FlowDocumentId");
-            }
-        }
-
-        [DbField]
-        public long? MarkdownDocumentId
-        {
-            get { return _markdownDocumentId; }
-            set
-            {
-                _markdownDocumentId = value;
-                OnPropertyChanged("MarkdownDocumentId");
+                _documentId = value;
+                OnPropertyChanged("DocumentId");
             }
         }
         #endregion
@@ -151,8 +139,6 @@ namespace TjMott.Writer.Models.SQLiteClasses
             Connection = connection;
             if (_dbHelper == null)
                 _dbHelper = new DbHelper<Scene>(Connection);
-
-            initSql(Connection);
 
             id = -1;
             Name = "New Scene";
@@ -183,27 +169,6 @@ namespace TjMott.Writer.Models.SQLiteClasses
         {
             _dbHelper.Update(this);
         }
-
-        #region Flow document serialization
-        private static DbCommandHelper _updateDocumentCmd;
-        private static DbCommandHelper _selectDocumentCmd;
-
-        private static void initSql(SqliteConnection con)
-        {
-            if (_updateDocumentCmd == null)
-            {
-                _updateDocumentCmd = new DbCommandHelper(con);
-                _updateDocumentCmd.Command.CommandText = "UPDATE Scene SET [FlowDocumentXml] = @xml, [DocumentRawText] = @raw WHERE [id] = @id";
-                _updateDocumentCmd.AddParameter("@xml");
-                _updateDocumentCmd.AddParameter("@raw");
-                _updateDocumentCmd.AddParameter("@id");
-
-                _selectDocumentCmd = new DbCommandHelper(con);
-                _selectDocumentCmd.Command.CommandText = "SELECT [FlowDocumentXml], [DocumentRawText] FROM Scene WHERE [id] = @id";
-                _selectDocumentCmd.AddParameter("@id");
-            }
-        }
-        #endregion
 
         public Scene Clone()
         {

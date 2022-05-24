@@ -90,7 +90,6 @@ namespace TjMott.Writer.ViewModels
 
                 Universe defaultUniverse = new Universe(_connection);
                 defaultUniverse.Name = "New Universe";
-                defaultUniverse.MarkdownCss = "";//DefaultMarkdownCss.DefaultCss;
                 defaultUniverse.Create();
 
                 Metadata md = new Metadata(_connection);

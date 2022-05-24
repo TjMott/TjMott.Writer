@@ -22,7 +22,6 @@ namespace TjMott.Writer.Models.SQLiteClasses
         private long _id;
         private long _sortIndex;
         private string _name;
-        private string _markdownCss;
         private long? _defaultTemplateId;
         #endregion
 
@@ -70,16 +69,6 @@ namespace TjMott.Writer.Models.SQLiteClasses
                 OnPropertyChanged("Name");
             }
         }
-        [DbField]
-        public string MarkdownCss
-        {
-            get { return _markdownCss; }
-            set
-            {
-                _markdownCss = value;
-                OnPropertyChanged("MarkdownCss");
-            }
-        }
         #endregion
 
         #region Properties
@@ -97,7 +86,6 @@ namespace TjMott.Writer.Models.SQLiteClasses
             id = -1;
             SortIndex = 0;
             Name = "New Universe";
-            MarkdownCss = DefaultMarkdownCss.DefaultCss;
         }
 
         public void Create()

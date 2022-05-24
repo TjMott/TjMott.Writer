@@ -17,7 +17,7 @@ namespace TjMott.Writer.Models.SQLiteClasses
     public class Metadata
     {
 
-        public const int ExpectedVersion = 2;
+        public const int ExpectedVersion = 4;
 
         private SqliteConnection _connection;
 

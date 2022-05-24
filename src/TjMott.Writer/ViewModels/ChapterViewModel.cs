@@ -75,32 +75,32 @@ namespace TjMott.Writer.ViewModels
             }
         }
 
-        public void CreateScene()
+        public async void CreateScene()
         {
-            /*NameItemDialog dialog = new NameItemDialog(DialogOwner, "New Scene");
-            bool? result = dialog.ShowDialog();
-            if (result.HasValue && result.Value)
+            NameItemWindow dialog = new NameItemWindow("New Scene");
+            string result = await dialog.ShowDialog<string>(MainWindow);
+            if (!string.IsNullOrWhiteSpace(result))
             {
-                FlowDocument doc = new FlowDocument(Model.Connection);
+                Document doc = new Document(Model.Connection);
                 doc.UniverseId = StoryVm.Model.UniverseId;
                 doc.WordCount = 0;
                 doc.PlainText = "";
-                doc.Xml = FlowDocumentViewModel.GetEmptyFlowDocXml();
+                doc.Json = "";
                 doc.Create();
 
                 Scene scene = new Scene(Model.Connection);
                 scene.ChapterId = Model.id;
-                scene.Name = dialog.UserInput;
+                scene.Name = result;
                 if (Scenes.Count == 0)
                     scene.SortIndex = 0;
                 else
                     scene.SortIndex = Scenes.Max(i => i.Model.SortIndex) + 1;
-                scene.FlowDocumentId = doc.id;
+                scene.DocumentId = doc.id;
                 scene.Create();
                 SceneViewModel sceneVm = new SceneViewModel(scene);
                 sceneVm.ChapterVm = this;
                 Scenes.Add(sceneVm);
-            }*/
+            }
         }
 
         public void DeleteScene(SceneViewModel scene)

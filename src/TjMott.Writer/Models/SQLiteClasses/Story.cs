@@ -7,7 +7,7 @@ using TjMott.Writer.Models.Attributes;
 namespace TjMott.Writer.Models.SQLiteClasses
 {
     [DbTableName("Story")]
-    public class Story : IDbType, INotifyPropertyChanged, ISortable, IHasNameProperty, IHasMarkdownDocument
+    public class Story : IDbType, INotifyPropertyChanged, ISortable, IHasNameProperty
     {
         #region INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
@@ -29,8 +29,6 @@ namespace TjMott.Writer.Models.SQLiteClasses
         private string _edition;
         private string _isbn;
         private string _asin;
-        private long? _markdownDocumentId;
-        private long? _flowDocumentId;
         #endregion
 
         #region Database Properties
@@ -142,28 +140,6 @@ namespace TjMott.Writer.Models.SQLiteClasses
             {
                 _asin = value;
                 OnPropertyChanged("ASIN");
-            }
-        }
-
-        [DbField]
-        public long? MarkdownDocumentId
-        {
-            get { return _markdownDocumentId; }
-            set
-            {
-                _markdownDocumentId = value;
-                OnPropertyChanged("MarkdownDocumentId");
-            }
-        }
-
-        [DbField]
-        public long? FlowDocumentId
-        {
-            get { return _flowDocumentId; }
-            set
-            {
-                _flowDocumentId = value;
-                OnPropertyChanged("FlowDocumentId");
             }
         }
         #endregion

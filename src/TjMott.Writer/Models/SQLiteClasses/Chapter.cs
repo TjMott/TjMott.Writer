@@ -8,7 +8,7 @@ using TjMott.Writer.Models.Attributes;
 namespace TjMott.Writer.Models.SQLiteClasses
 {
     [DbTableName("Chapter")]
-    public class Chapter : IDbType, INotifyPropertyChanged, ISortable, IHasNameProperty, IHasMarkdownDocument
+    public class Chapter : IDbType, INotifyPropertyChanged, ISortable, IHasNameProperty
     {
 
         #region INotifyPropertyChanged
@@ -25,7 +25,6 @@ namespace TjMott.Writer.Models.SQLiteClasses
         private long _storyId;
         private long _sortIndex;
         private string _name;
-        private long? _markdownDocumentId;
         #endregion
 
         #region Database Properties
@@ -70,17 +69,6 @@ namespace TjMott.Writer.Models.SQLiteClasses
             {
                 _name = value;
                 OnPropertyChanged("Name");
-            }
-        }
-
-        [DbField]
-        public long? MarkdownDocumentId
-        {
-            get { return _markdownDocumentId; }
-            set
-            {
-                _markdownDocumentId = value;
-                OnPropertyChanged("MarkdownDocumentId");
             }
         }
         #endregion
