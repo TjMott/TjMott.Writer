@@ -121,6 +121,69 @@ CREATE TABLE Ticket
     FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE
 );
 
+
+-- Full-Text Search Stuff
+CREATE VIRTUAL TABLE Scene_fts USING fts5(Name, content=Scene, content_rowid=id);
+-- Table rebuild, just here for reference
+-- INSERT INTO Scene_fts(Scene_fts) VALUES ('rebuild');
+-- Triggers to keep Scene_fts up-to-date
+CREATE TRIGGER Scene_ai AFTER INSERT ON Scene BEGIN
+  INSERT INTO Scene_fts(rowid, Name) VALUES (new.id, new.Name);
+END;
+CREATE TRIGGER Scene_ad AFTER DELETE ON Scene BEGIN
+  INSERT INTO Scene_fts(Scene_fts, rowid, Name) VALUES ('delete', old.id, old.Name);
+END;
+CREATE TRIGGER Scene_au AFTER UPDATE ON Scene BEGIN
+  INSERT INTO Scene_fts(Scene_fts, rowid, Name) VALUES ('delete', old.id, old.Name);
+  INSERT INTO Scene_fts(rowid, Name) VALUES (new.id, new.Name);
+END;
+
+CREATE VIRTUAL TABLE Chapter_fts USING fts5(Name, content=Chapter, content_rowid=id);
+-- Table rebuild, just here for reference
+-- INSERT INTO Chapter_fts(Chapter_fts) VALUES ('rebuild');
+-- Triggers to keep Chapter_fts up-to-date
+CREATE TRIGGER Chapter_ai AFTER INSERT ON Chapter BEGIN
+  INSERT INTO Chapter_fts(rowid, Name) VALUES (new.id, new.Name);
+END;
+CREATE TRIGGER Chapter_ad AFTER DELETE ON Chapter BEGIN
+  INSERT INTO Chapter_fts(Chapter_fts, rowid, Name) VALUES ('delete', old.id, old.Name);
+END;
+CREATE TRIGGER Chapter_au AFTER UPDATE ON Chapter BEGIN
+  INSERT INTO Chapter_fts(Chapter_fts, rowid, Name) VALUES ('delete', old.id, old.Name);
+  INSERT INTO Chapter_fts(rowid, Name) VALUES (new.id, new.Name);
+END;
+
+CREATE VIRTUAL TABLE Story_fts USING fts5(Name, content=Story, content_rowid=id);
+-- Table rebuild, just here for reference
+-- INSERT INTO Story_fts(Story_fts) VALUES ('rebuild');
+-- Triggers to keep Story_fts up-to-date
+CREATE TRIGGER Story_ai AFTER INSERT ON Story BEGIN
+  INSERT INTO Story_fts(rowid, Name) VALUES (new.id, new.Name);
+END;
+CREATE TRIGGER Story_ad AFTER DELETE ON Story BEGIN
+  INSERT INTO Story_fts(Story_fts, rowid, Name) VALUES ('delete', old.id, old.Name);
+END;
+CREATE TRIGGER Story_au AFTER UPDATE ON Story BEGIN
+  INSERT INTO Story_fts(Story_fts, rowid, Name) VALUES ('delete', old.id, old.Name);
+  INSERT INTO Story_fts(rowid, Name) VALUES (new.id, new.Name);
+END;
+
+
+CREATE VIRTUAL TABLE Document_fts USING fts5(PlainText, Content=Document, content_rowid=id);
+-- Table rebuild, just here for reference
+-- INSERT INTO Document_fts(Document_fts) VALUES ('rebuild');
+-- Triggers to keep Document_fts up-to-date
+CREATE TRIGGER Document_ai AFTER INSERT ON Document BEGIN
+  INSERT INTO Document_fts(rowid, PlainText) VALUES (new.id, new.PlainText);
+END;
+CREATE TRIGGER Document_ad AFTER DELETE ON Document BEGIN
+  INSERT INTO Document_fts(Document_fts, rowid, PlainText) VALUES ('delete', old.id, old.PlainText);
+END;
+CREATE TRIGGER Document_au AFTER UPDATE ON Document BEGIN
+  INSERT INTO Document_fts(Document_fts, rowid, PlainText) VALUES ('delete', old.id, old.PlainText);
+  INSERT INTO Document_fts(rowid, PlainText) VALUES (new.id, new.PlainText);
+END;
+
 ";
         public static string InitScript
         {

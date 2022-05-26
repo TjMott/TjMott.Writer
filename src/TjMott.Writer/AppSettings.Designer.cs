@@ -58,5 +58,41 @@ namespace TjMott.Writer {
                 this["lastFile"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1024")]
+        public double editorWindowWidth {
+            get {
+                return ((double)(this["editorWindowWidth"]));
+            }
+            set {
+                this["editorWindowWidth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1024")]
+        public double editorWindowHeight {
+            get {
+                return ((double)(this["editorWindowHeight"]));
+            }
+            set {
+                this["editorWindowHeight"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public double editorZoom {
+            get {
+                return ((double)(this["editorZoom"]));
+            }
+            set {
+                this["editorZoom"] = value;
+            }
+        }
     }
 }

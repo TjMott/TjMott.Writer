@@ -63,13 +63,20 @@ namespace TjMott.Writer.ViewModels
             }
         }
 
-        public void OpenDatabase(string filename)
+        public async void OpenDatabase(string filename)
         {
             Database = new Database(filename);
 
             if (Database.RequiresUpgrade)
             {
-
+                DatabaseUpgradeView upgradeView = new DatabaseUpgradeView();
+                upgradeView.DataContext = new DatabaseUpgradeViewModel(Database);
+                bool result = await upgradeView.ShowDialog<bool>(MainWindow);
+                if (!result)
+                {
+                    // Upgrade error.
+                    (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime).Shutdown(1);
+                }
             }
             else
             {

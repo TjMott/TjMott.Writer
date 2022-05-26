@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Avalonia.Controls;
+using Microsoft.Data.Sqlite;
 using System.Threading.Tasks;
 
 namespace TjMott.Writer.Models.SqlScripts
 {
-    public static class Update1to2
+    public class Update1to2 : DbUpgrader
     {
         private static string _script = @"
     DROP TRIGGER Chapter_ad;
@@ -21,10 +19,15 @@ namespace TjMott.Writer.Models.SqlScripts
 
     UPDATE Metadata SET Value = 2 WHERE Key = 'DbVersion';
 ";
-
-        public static string Script
+        public Update1to2()
         {
-            get { return _script; }
+            StartVersion = 1;
+            TargetVersion = 2;
+        }
+
+        public override Task<bool> DoUpgradeAsync(SqliteConnection connection, Window dialogOwner)
+        {
+            return runScriptWithVersionCheckAsync(connection, _script, StartVersion, TargetVersion);
         }
     }
 }

@@ -1,18 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <title>empty</title>
 	<style>
 	html, body {
-		height:100%;
-		overflow-y:hidden;
+		position:absolute;
+        top:0;
+        left:0;
+        right:0;
+        bottom:2em;
 	}
 
-	#quill-container {
+    .ql-container {
+        font-size:12px;
+        font-family:Garamond;
+    }
+
+	#quillll-container {
 		position:absolute;
-		top:55px;
+		top:3.5em;
 		right:0;
 		left:0;
-		bottom:0;
+		bottom:0px;
 	}
 
     .ql-snow .ql-picker.ql-size .ql-picker-label[data-value]::before, .ql-snow .ql-picker.ql-size .ql-picker-item[data-value]::before {
@@ -22,6 +31,19 @@
     .ql-picker-options {
         max-height:300px;
         overflow-y:scroll;
+    }
+
+    .ql-editor {
+        position:absolute !important;
+        top:0 !important;
+        left:0 !important;
+        right:0 !important;
+        bottom:5em !important;
+    }
+
+    p {
+        text-indent: 1.5em;
+        margin-bottom: 0.5em !important;
     }
 
 	</style>
@@ -50,6 +72,12 @@
 
         function addFont(font) {
             fonts.push(font);
+        }
+
+        function quillTextChanged(delta, oldDelta, source) {
+            // Hack -- communicate with C# layer using the document title.
+            document.title = "blank";
+            document.title = "TextChanged";
         }
 
         function initEditor() {
@@ -107,6 +135,11 @@
                 },
                 theme: 'snow'
             });
+
+            window.editor.on('text-change', quillTextChanged);
+
+            // Hack -- communicate with C# layer using the document title.
+            document.title = "loaded";
         }
 
         //addFont("Times New Roman");
@@ -114,6 +147,9 @@
         //addFont("Consolas");
         //addFont("Garamound");
         //initEditor();
+
+        // Signal C# that we're ready to create Quill
+        document.title = "readyForInit";
 	
 	</script>
 </body>

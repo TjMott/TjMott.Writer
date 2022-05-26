@@ -4,11 +4,19 @@ This is my custom-developed word processor plus extras for writing/authoring as 
 
 # NOTE: This application is a work in progress!
 
-NOTE: This software is incomplete! Use at your own risk. The file format is subject to change without warning, and many features are not yet implemented or useful. However this is under active development and I'll update this readme once I hit a releasable state.
+NOTE: This branch is not yet usable, but it's under active development. If you want a version that works, look at the master branch. This branch will replace master when it's ready.
 
 # PLATFORM
 
 This application runs on .NET 6.0 with an Avalonia GUI. It requires Visual Studio 2022 (Community Edition is fine) to compile. It is cross-platform and fully tested on Windows 10 and Linux Mint 20. Unofficially, it should work on any Linux that supports .NET 6, and will probably work on Mac with a bit of tweaking. Only 64-bit operating systems are supported. It should run on a 32-bit operating system with minimal changes, but why?
+
+# DEPENDENCIES
+
+If you want to build from source, you need the Chromium Embedded Framework (used to load the HTML/JS editor). Go to https://cef-builds.spotifycdn.com/index.html and download the correct one for your operating system, then extract the artifacts to src/TjMott.Writer/Assets/cef-yourplatform. Within that folder will be a lib folder for your DLL's or SO's (plus icudtl.dat, it's important that goes in the lib folder!), a resources folder, and a resources/locales folder.
+
+This application uses CefNet, a .NET CLR binding for the Chromium Embedded Framework (CEF): https://github.com/CefNet/CefNet
+
+The main editor control is based on Quill, a web-based rich text editor: https://quilljs.com/
 
 
 # Basic Tutorial
@@ -48,7 +56,7 @@ Each universe has its own custom spellcheck dictionary. You can add words by rig
 ### Ticket Tracker
 Each universe has an optional ticket tracker where you can keep track of your to-do items and status.
 
-### File Repository
+### File Repository (OUTDATED)
 Each universe has a file repository where you can store files related to that universe. These can include images, published drafts/editions, and Word templates used for export. These are all contained within the application's save file format for convenience.
 
 ### Export to Word

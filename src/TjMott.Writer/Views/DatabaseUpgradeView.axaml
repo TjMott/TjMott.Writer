@@ -1,0 +1,26 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="TjMott.Writer.Views.DatabaseUpgradeView"
+		WindowStartupLocation="CenterOwner" CanResize="False"
+		Closing="DatabaseUpgradeView_Closing"
+        Title="Database Upgrade" Height="250" Width="500">
+	<Grid RowDefinitions="Auto,*,Auto">
+		<TextBlock Text="Database Upgrade Required" Margin="10" FontSize="24" />
+		<TextBlock Grid.Row="1" Text="{Binding StatusMessage}" TextWrapping="Wrap" Margin="10" />
+		<StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+			<StackPanel.Styles>
+				<Style Selector="Button">
+					<Setter Property="Margin" Value="5" />
+					<Setter Property="Width" Value="75" />
+					<Setter Property="HorizontalContentAlignment" Value="Center" />
+				</Style>
+			</StackPanel.Styles>
+			<Button Content="Upgrade" Command="{Binding DoUpgradeCommand}" CommandParameter="{Binding $parent[Window]}" IsVisible="{Binding ShowUpgradeButton}" />
+			<Button Content="OK" IsVisible="{Binding ShowOkButton}" Click="OkButton_Click" />
+			<Button Content="Quit" Click="QuitButton_Click" IsVisible="{Binding ShowQuitButton}" />
+		</StackPanel>
+	</Grid>
+</Window>

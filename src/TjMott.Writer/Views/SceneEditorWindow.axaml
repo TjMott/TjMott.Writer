@@ -8,18 +8,23 @@
         Title="SceneEditorWindow">
 	<Grid RowDefinitions="Auto,*,Auto">
 		<Menu>
-			
+			<MenuItem Header="File">
+				<MenuItem Header="Save" Command="{Binding ElementName=manuscriptEditor, Path=Save}" />
+				<MenuItem Header="Revert" Command="{Binding ElementName=manuscriptEditor, Path=Revert}" />
+				<MenuItem Header="Export" />
+				<MenuItem Header="Close" />
+			</MenuItem>
 		</Menu>
-		<TabControl Grid.Row="1">
-			<TabItem Header="Manuscript">
-				<Border BorderBrush="DarkGray" BorderThickness="1">
-					<controls:QuillJsEditor x:Name="manuscriptEditor" />
-				</Border>
-			</TabItem>
-			<TabItem Header="Notes">
-				
-			</TabItem>
-		</TabControl>
-		<TextBlock Grid.Row="2" Text="StatusBar" />
+		
+		<controls:QuillJsEditor x:Name="manuscriptEditor" Margin="5" Grid.Row="1" />
+
+		<StackPanel Margin="12,5" Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Left">
+			<TextBlock x:Name="wordCountTextBlock" Grid.Row="2" Text="Word Count:" />
+		</StackPanel>
+
+		<StackPanel Margin="12,5" Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Right">
+			<TextBlock Text="Zoom" Margin="0,0,10,0" VerticalAlignment="Center" />
+			<Slider Minimum="1" Maximum="10" x:Name="zoomSlider" Width="200" PropertyChanged="ZoomSlider_PropertyChanged" />
+		</StackPanel>
 	</Grid>
 </Window>

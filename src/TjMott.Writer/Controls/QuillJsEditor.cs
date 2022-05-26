@@ -1,4 +1,5 @@
-﻿using CefNet.Avalonia;
+﻿using CefNet;
+using CefNet.Avalonia;
 using CefNet.JSInterop;
 using System;
 using System.Collections.Generic;
@@ -8,12 +9,30 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using TjMott.Writer.Models.SQLiteClasses;
 
 namespace TjMott.Writer.Controls
 {
     public class QuillJsEditor : WebView
     {
+        public event EventHandler EditorLoaded;
+        public event EventHandler TextChanged;
         private static string editor_path;
+        private bool _isInitialized = false;
+
+        private Document _document;
+        public Document Document
+        {
+            get { return _document; }
+            set
+            {
+                _document = value;
+                if (IsInitialized)
+                {
+                    SetJsonText(_document.Json);
+                }
+            }
+        }
 
         static QuillJsEditor()
         {
@@ -23,7 +42,33 @@ namespace TjMott.Writer.Controls
         public QuillJsEditor()
         {
             InitialUrl = editor_path;
-            BrowserCreated += CustomWebView_BrowserCreated;
+            DocumentTitleChanged += QuillJsEditor_DocumentTitleChanged;
+            IsEnabled = false;
+        }
+
+        private void QuillJsEditor_DocumentTitleChanged(object sender, CefNet.DocumentTitleChangedEventArgs e)
+        {
+            // Kind of a hack but it works. The easiest way to get an event from the JS side to the C# side is to change
+            // the HTML document title, because that is already routed as a C# event. And the user never sees
+            // the HTML title anyway.
+            if (e.Title == "readyForInit" && !_isInitialized)
+            {
+                initEditor();
+                _isInitialized = true; // This event likes to double-fire.
+            }
+            else if (e.Title == "loaded")
+            {
+                IsEnabled = true;
+                if (_document != null)
+                    SetJsonText(_document.Json);
+                if (EditorLoaded != null)
+                    EditorLoaded(this, new EventArgs());
+            }
+            else if (e.Title == "TextChanged")
+            {
+                if (TextChanged != null)
+                    TextChanged(this, new EventArgs());
+            }
         }
 
         public async Task<string> GetText()
@@ -78,12 +123,6 @@ namespace TjMott.Writer.Controls
             return words.Length;
         }
 
-        private void CustomWebView_BrowserCreated(object sender, EventArgs e)
-        {
-            BrowserCreated -= CustomWebView_BrowserCreated;
-            initEditor();
-        }
-
         private async void initEditor()
         {
             dynamic scriptableObject = await GetMainFrame().GetScriptableObjectAsync(CancellationToken.None).ConfigureAwait(false);
@@ -100,6 +139,28 @@ namespace TjMott.Writer.Controls
 
             // Initialize Quilljs.
             window.initEditor();
+        }
+
+        public async void Save()
+        {
+            Document.Json = await GetJsonText();
+            if (Document.IsEncrypted)
+            {
+                Document.PlainText = "";
+                Document.WordCount = 0;
+            }
+            else
+            {
+                Document.PlainText = await GetText();
+                Document.WordCount = await GetWordCount();
+            }
+            Document.Save();
+        }
+
+        public void Revert()
+        {
+            Document.Load();
+            SetJsonText(Document.Json);
         }
     }
 }

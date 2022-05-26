@@ -77,7 +77,7 @@ namespace TjMott.Writer
             commandLine.AppendSwitchWithValue("override-metrics-upload-url", "");
             commandLine.AppendSwitchWithValue("realtime-reporting-url", "");
 
-            if (PlatformInfo.IsLinux)
+            //if (PlatformInfo.IsLinux)
             {
                 // Needed to prevent crash on Linux.
                 commandLine.AppendSwitch("no-zygote");
