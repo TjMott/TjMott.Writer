@@ -23,6 +23,8 @@ namespace TjMott.Writer.Models.SQLiteClasses
         private long _sortIndex;
         private long _universeId;
         private long? _categoryId;
+        private long? _noteId;
+        private long? _copyrightPageId;
         private string _name;
         private string _subtitle;
         private string _author;
@@ -140,6 +142,27 @@ namespace TjMott.Writer.Models.SQLiteClasses
             {
                 _asin = value;
                 OnPropertyChanged("ASIN");
+            }
+        }
+
+        [DbField]
+        public long? NoteId
+        {
+            get { return _noteId; }
+            set
+            {
+                _noteId = value;
+                OnPropertyChanged("NoteId");
+            }
+        }
+        [DbField]
+        public long? CopyrightPageId
+        {
+            get { return _copyrightPageId; }
+            set
+            {
+                _copyrightPageId = value;
+                OnPropertyChanged("CopyrightPageId");
             }
         }
         #endregion

@@ -25,6 +25,7 @@ namespace TjMott.Writer.Models.SQLiteClasses
         private string _dueDate;
         private int _priority;
         private long _universeId;
+        private long _documentId;
         #endregion
 
         #region Database properties
@@ -90,6 +91,17 @@ namespace TjMott.Writer.Models.SQLiteClasses
             {
                 _universeId = value;
                 OnPropertyChanged("UniverseId");
+            }
+        }
+
+        [DbField]
+        public long DocumentId
+        {
+            get { return _documentId; }
+            set
+            {
+                _documentId = value;
+                OnPropertyChanged("DocumentId");
             }
         }
         #endregion

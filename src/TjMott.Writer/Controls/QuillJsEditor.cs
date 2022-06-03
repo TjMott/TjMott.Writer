@@ -1,12 +1,9 @@
-﻿using CefNet;
-using CefNet.Avalonia;
+﻿using CefNet.Avalonia;
 using CefNet.JSInterop;
+using SixLabors.Fonts;
 using System;
-using System.Collections.Generic;
-using System.Drawing.Text;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using TjMott.Writer.Models.SQLiteClasses;
@@ -129,12 +126,11 @@ namespace TjMott.Writer.Controls
             dynamic window = scriptableObject.window;
 
             // Enumerate installed fonts, add them to the Quill editor.
-            using (InstalledFontCollection col = new InstalledFontCollection())
+            FontCollection col = new FontCollection();
+            col.AddSystemFonts();
+            foreach (var font in col.Families.OrderBy(i => i.Name))
             {
-                foreach (var font in col.Families)
-                {
-                    window.addFont(font.Name);
-                }
+                window.addFont(font.Name);
             }
 
             // Initialize Quilljs.

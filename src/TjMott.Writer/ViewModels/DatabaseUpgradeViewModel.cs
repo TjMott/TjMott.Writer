@@ -65,6 +65,12 @@ namespace TjMott.Writer.ViewModels
             {
                 await cmd.ExecuteNonQueryAsync();
             }
+            // Start transaction (has a huge performance improvement during the upgrade)
+            using (var cmd = new SqliteCommand("BEGIN TRANSACTION;", _db.Connection))
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+            StatusMessage = "Performing upgrade.";
 
             bool loop = true;
             //try
@@ -80,7 +86,10 @@ namespace TjMott.Writer.ViewModels
                             upgrader = new Update1to2();
                             break;
                         case 2:
-                            upgrader = new Update2to4();
+                            upgrader = new Update2to3();
+                            break;
+                        case 3:
+                            upgrader = new Update3to4();
                             break;
                     }
 
@@ -111,6 +120,12 @@ namespace TjMott.Writer.ViewModels
                     await cmd.ExecuteNonQueryAsync();
                 }
 
+                // Commit transaction.
+                using (var cmd = new SqliteCommand("COMMIT TRANSACTION;", _db.Connection))
+                {
+                    await cmd.ExecuteNonQueryAsync();
+                }
+
                 // Done!
                 StatusMessage = "Database upgraded successfully!";
                 IsBusy = false;
@@ -118,6 +133,11 @@ namespace TjMott.Writer.ViewModels
             /*}
             catch (Exception ex)
             {
+                // Roll back transaction.
+                using (var cmd = new SqliteCommand("ROLLBACK TRANSACTION;", _db.Connection))
+                {
+                    await cmd.ExecuteNonQueryAsync();
+                }
                 var msgBox = MessageBoxManager.GetMessageBoxStandardWindow("Database Upgrade Error",
                     ex.Message,
                     MessageBox.Avalonia.Enums.ButtonEnum.Ok,

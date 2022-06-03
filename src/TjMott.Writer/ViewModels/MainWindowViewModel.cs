@@ -4,6 +4,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using ReactiveUI;
 using System.IO;
 using System.Reactive;
+using System.Threading.Tasks;
 using TjMott.Writer.Views;
 
 namespace TjMott.Writer.ViewModels
@@ -71,17 +72,19 @@ namespace TjMott.Writer.ViewModels
             {
                 DatabaseUpgradeView upgradeView = new DatabaseUpgradeView();
                 upgradeView.DataContext = new DatabaseUpgradeViewModel(Database);
+                // Delay to give main window a chance to show. ShowDialog below fails if
+                // MainWindow isn't open yet.
+                while (!MainWindow.IsActive)
+                    await Task.Delay(100);
                 bool result = await upgradeView.ShowDialog<bool>(MainWindow);
                 if (!result)
                 {
                     // Upgrade error.
                     (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime).Shutdown(1);
+                    return;
                 }
             }
-            else
-            {
-                Database.Load();
-            }
+            Database.Load();
             AppSettings.Default.lastFile = filename;
             AppSettings.Default.Save();
         }

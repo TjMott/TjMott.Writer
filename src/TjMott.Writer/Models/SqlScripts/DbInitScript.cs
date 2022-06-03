@@ -32,6 +32,7 @@ CREATE TABLE Document
     PlainText TEXT,
     WordCount INTEGER DEFAULT 0,
     IsEncrypted INTEGER DEFAULT 0,
+    IsNote INTEGER DEFAULT 0,
 
     FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE
 );
@@ -42,9 +43,16 @@ CREATE TABLE Category
     UniverseId INTEGER,
     Name TEXT DEFAULT 'New Category',
     SortIndex INTEGER DEFAULT 0,
+    NoteId INTEGER DEFAULT NULL,
 
-    FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE
+    FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE,
+    FOREIGN KEY(NoteId) REFERENCES Document(id)
 );
+
+-- Delete note Document after its Category is deleted.
+CREATE TRIGGER Category_NoteDoc_ad AFTER DELETE ON Category BEGIN
+  DELETE FROM Document WHERE id = (old.NoteId);
+END;
 
 
 CREATE TABLE Story
@@ -59,24 +67,20 @@ CREATE TABLE Story
     ISBN TEXT DEFAULT '',
     ASIN TEXT DEFAULT '',
     SortIndex INTEGER DEFAULT 0,
+    NoteId INTEGER DEFAULT NULL,
+    CopyrightPageId INTEGER DEFAULT NULL,
 
     FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE,
-    FOREIGN KEY(CategoryId) REFERENCES Category(id) ON DELETE SET NULL
+    FOREIGN KEY(CategoryId) REFERENCES Category(id) ON DELETE SET NULL,
+    FOREIGN KEY(NoteId) REFERENCES Document(id),
+    FOREIGN KEY(CopyrightPageId) REFERENCES Document(id)
 );
 
-
-CREATE TABLE File
-(
-    id INTEGER PRIMARY KEY,
-    UniverseId INTEGER,
-    Name TEXT DEFAULT 'New File',
-    FileName TEXT DEFAULT '',
-    FileType TEXT DEFAULT '',
-    Data BLOB,
-    SortIndex INTEGER DEFAULT 0,
-
-    FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE
-);
+-- Delete note Document after its Story is deleted.
+CREATE TRIGGER Story_NoteDoc_ad AFTER DELETE ON Story BEGIN
+  DELETE FROM Document WHERE id = (old.NoteId);
+  DELETE FROM Document WHERE id = (old.CopyrightPageId);
+END;
 
 CREATE TABLE Chapter
 (
@@ -84,9 +88,16 @@ CREATE TABLE Chapter
     StoryId INTEGER,
     Name TEXT DEFAULT 'New Chapter',
     SortIndex INTEGER DEFAULT 0,
+    NoteId INTEGER DEFAULT NULL,
 
-    FOREIGN KEY(StoryId) REFERENCES Story(id) ON DELETE CASCADE
+    FOREIGN KEY(StoryId) REFERENCES Story(id) ON DELETE CASCADE,
+    FOREIGN KEY(NoteId) REFERENCES Document(id)
 );
+
+-- Delete note Document after its chapter is deleted.
+CREATE TRIGGER Chapter_NoteDoc_ad AFTER DELETE ON Chapter BEGIN
+  DELETE FROM Document WHERE id = (old.NoteId);
+END;
 
 CREATE TABLE Scene
 (
@@ -99,14 +110,17 @@ CREATE TABLE Scene
     ColorG INTEGER DEFAULT 0,
     ColorB INTEGER DEFAULT 0,
     DocumentId INTEGER DEFAULT NULL,
+    NoteId INTEGER DEFAULT NULL,
 
     FOREIGN KEY(ChapterId) REFERENCES Chapter(id) ON DELETE CASCADE,
-    FOREIGN KEY(DocumentId) REFERENCES Document(id)
+    FOREIGN KEY(DocumentId) REFERENCES Document(id),
+    FOREIGN KEY(NoteId) REFERENCES Document(id)
 );
 
 -- Delete Document after its scene is deleted.
 CREATE TRIGGER Scene_Doc_ad AFTER DELETE ON Scene BEGIN
   DELETE FROM Document WHERE id = (old.DocumentId);
+  DELETE FROM Document WHERE id = (old.NoteId);
 END;
 
 CREATE TABLE Ticket
@@ -117,8 +131,42 @@ CREATE TABLE Ticket
     Name TEXT DEFAULT 'New Ticket',
     Status TEXT DEFAULT 'Not Started',
     DueDate TEXT DEFAULT '',
+    DocumentId INTEGER DEFAULT NULL,
 
-    FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE
+    FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE,
+    FOREIGN KEY(DocumentId) REFERENCES Document(id)
+);
+
+-- Delete note Document after its ticket is deleted.
+CREATE TRIGGER Ticket_NoteDoc_ad AFTER DELETE ON Ticket BEGIN
+  DELETE FROM Document WHERE id = (old.DocumentId);
+END;
+
+CREATE TABLE NoteDocument
+(
+    id INTEGER PRIMARY KEY,
+    UniverseId INTEGER NOT NULL,
+    DocumentId INTEGER NOT NULL,
+    Name TEXT DEFAULT 'New Note',
+
+    FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE,
+    FOREIGN KEY(DocumentId) REFERENCES Document(DocumentId) ON DELETE CASCADE
+);
+
+-- Delete Document when NoteDocument is deleted.
+CREATE TRIGGER NoteDocument_ad AFTER DELETE ON NoteDocument BEGIN
+  DELETE FROM NoteDucment WHERE id = (old.DocumentId);
+END;
+
+CREATE TABLE NoteCategory
+(
+    id INTEGER PRIMARY KEY,
+    UniverseId INTEGER NOT NULL,
+    ParentId INTEGER,
+    Name TEXT DEFAULT 'New Category',
+
+    FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE,
+    FOREIGN KEY(ParentId) REFERENCES NoteCategory(id) ON DELETE SET NULL
 );
 
 
@@ -182,6 +230,21 @@ END;
 CREATE TRIGGER Document_au AFTER UPDATE ON Document BEGIN
   INSERT INTO Document_fts(Document_fts, rowid, PlainText) VALUES ('delete', old.id, old.PlainText);
   INSERT INTO Document_fts(rowid, PlainText) VALUES (new.id, new.PlainText);
+END;
+
+CREATE VIRTUAL TABLE NoteDocument_fts USING fts5(PlainText, Content=NoteDocument, content_rowid=id);
+-- Table rebuild, just here for reference
+-- INSERT INTO NoteDocument_fts(NoteDocument_fts) VALUES ('rebuild');
+-- Triggers to keep NoteDocument_fts up-to-date
+CREATE TRIGGER NoteDocument_ai_fts AFTER INSERT ON NoteDocument BEGIN
+  INSERT INTO NoteDocument_fts(rowid, Name) VALUES (new.id, new.Name);
+END;
+CREATE TRIGGER NoteDocument_ad_fts AFTER DELETE ON NoteDocument BEGIN
+  INSERT INTO NoteDocument_fts(NoteDocument_fts, rowid, Name) VALUES ('delete', old.id, old.Name);
+END;
+CREATE TRIGGER NoteDocument_au_fts AFTER UPDATE ON NoteDocument BEGIN
+  INSERT INTO NoteDocument_fts(NoteDocument_fts, rowid, Name) VALUES ('delete', old.id, old.Name);
+  INSERT INTO NoteDocument_fts(rowid, Name) VALUES (new.id, new.Name);
 END;
 
 ";

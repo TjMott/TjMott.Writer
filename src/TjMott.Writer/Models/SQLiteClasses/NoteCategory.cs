@@ -1,16 +1,11 @@
 ﻿using Microsoft.Data.Sqlite;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TjMott.Writer.Models.Attributes;
 
 namespace TjMott.Writer.Models.SQLiteClasses
 {
-    [DbTableName("Document")]
-    public class Document : IDbType, INotifyPropertyChanged 
+    public class NoteCategory : IDbType, INotifyPropertyChanged, IHasNameProperty
     {
         #region INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
@@ -21,14 +16,12 @@ namespace TjMott.Writer.Models.SQLiteClasses
         }
         #endregion
 
+
         #region Private variables
         private long _id;
         private long _universeId;
-        private string _json;
-        private string _plainText;
-        private long _wordCount;
-        private bool _isEncrypted;
-        private bool _isNote;
+        private long? _parentId;
+        private string _name;
         #endregion
 
         #region Database Properties
@@ -45,46 +38,27 @@ namespace TjMott.Writer.Models.SQLiteClasses
             set { _universeId = value; OnPropertyChanged("UniverseId"); }
         }
         [DbField]
-        public string Json
+        public long? ParentId
         {
-            get { return _json; }
-            set { _json = value; OnPropertyChanged("Json"); }
+            get { return _parentId; }
+            set { _parentId = value; OnPropertyChanged("ParentId"); }
         }
         [DbField]
-        public string PlainText
+        public string Name
         {
-            get { return _plainText; }
-            set { _plainText = value; OnPropertyChanged("PlainText"); }
+            get { return _name; }
+            set { _name = value; OnPropertyChanged("Name"); }
         }
-        [DbField]
-        public long WordCount
-        {
-            get {  return _wordCount; }
-            set { _wordCount = value; OnPropertyChanged("WordCount"); }
-        }
-        [DbField]
-        public bool IsEncrypted
-        {
-            get { return _isEncrypted; }
-            set { _isEncrypted = value; OnPropertyChanged("IsEncrypted"); }
-        }
-        [DbField]
-        public bool IsNote
-        {
-            get { return _isNote; }
-            set { _isNote = value; OnPropertyChanged("IsNote"); }
-        }
-
-        public SqliteConnection Connection { get; set; }
         #endregion
 
-        private static DbHelper<Document> _dbHelper;
+        public SqliteConnection Connection { get; set; }
+        private static DbHelper<NoteCategory> _dbHelper;
 
-        public Document(SqliteConnection connection)
+        public NoteCategory(SqliteConnection connection)
         {
             Connection = connection;
             if (_dbHelper == null)
-                _dbHelper = new DbHelper<Document>(Connection);
+                _dbHelper = new DbHelper<NoteCategory>(Connection);
         }
 
         public void Create()
@@ -108,22 +82,21 @@ namespace TjMott.Writer.Models.SQLiteClasses
             _dbHelper.Update(this);
         }
 
-        public static List<Document> GetAllDocuments(SqliteConnection connection)
+        public static List<NoteCategory> GetAllDocuments(SqliteConnection connection)
         {
             if (_dbHelper == null)
-                _dbHelper = new DbHelper<Document>(connection);
+                _dbHelper = new DbHelper<NoteCategory>(connection);
 
-            List<Document> retval = new List<Document>();
+            List<NoteCategory> retval = new List<NoteCategory>();
             List<long> ids = _dbHelper.GetAllIds();
             foreach (long id in ids)
             {
-                Document doc = new Document(connection);
+                NoteCategory doc = new NoteCategory(connection);
                 doc.id = id;
                 doc.Load();
                 retval.Add(doc);
             }
             return retval;
         }
-
     }
 }
