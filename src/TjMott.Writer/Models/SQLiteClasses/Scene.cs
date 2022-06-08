@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using TjMott.Writer.Models.Attributes;
 
@@ -149,25 +150,25 @@ namespace TjMott.Writer.Models.SQLiteClasses
             ColorB = 0;
         }
 
-        public void Create()
+        public async Task CreateAsync()
         {
-            _dbHelper.Insert(this);
-            Load();
+            await _dbHelper.InsertAsync(this).ConfigureAwait(false);
+            await LoadAsync();
         }
 
-        public void Delete()
+        public async Task DeleteAsync()
         {
-            _dbHelper.Delete(this);
+            await _dbHelper.DeleteAsync(this).ConfigureAwait(false);
         }
 
-        public void Load()
+        public async Task LoadAsync()
         {
-            _dbHelper.Load(this);
+            await _dbHelper.LoadAsync(this).ConfigureAwait(false);
         }
 
-        public void Save()
+        public async Task SaveAsync()
         {
-            _dbHelper.Update(this);
+            await _dbHelper.UpdateAsync(this).ConfigureAwait(false);
         }
 
         public Scene Clone()
@@ -181,18 +182,18 @@ namespace TjMott.Writer.Models.SQLiteClasses
             return clone;
         }
 
-        public static List<Scene> GetAllScenes(SqliteConnection connection)
+        public static async Task<List<Scene>> GetAllScenes(SqliteConnection connection)
         {
             if (_dbHelper == null)
                 _dbHelper = new DbHelper<Scene>(connection);
 
             List<Scene> retval = new List<Scene>();
-            List<long> ids = _dbHelper.GetAllIds();
+            List<long> ids = await _dbHelper.GetAllIdsAsync().ConfigureAwait(false);
             foreach (long id in ids)
             {
                 Scene scene = new Scene(connection);
                 scene.id = id;
-                scene.Load();
+                await scene.LoadAsync().ConfigureAwait(false);
                 retval.Add(scene);
             }
             return retval;

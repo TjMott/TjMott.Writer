@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using TjMott.Writer.Models.Attributes;
 
@@ -119,39 +120,39 @@ namespace TjMott.Writer.Models.SQLiteClasses
                 _dbHelper = new DbHelper<Ticket>(Connection);
         }
 
-        public void Create()
+        public async Task CreateAsync()
         {
-            _dbHelper.Insert(this);
-            Load();
+            await _dbHelper.InsertAsync(this).ConfigureAwait(false);
+            await LoadAsync().ConfigureAwait(false);
         }
 
-        public void Delete()
+        public async Task DeleteAsync()
         {
-            _dbHelper.Delete(this);
+            await _dbHelper.DeleteAsync(this).ConfigureAwait(false);
         }
 
-        public void Load()
+        public async Task LoadAsync()
         {
-            _dbHelper.Load(this);
+            await _dbHelper.LoadAsync(this).ConfigureAwait(false);
         }
 
-        public void Save()
+        public async Task SaveAsync()
         {
-            _dbHelper.Update(this);
+            await _dbHelper.UpdateAsync(this).ConfigureAwait(false);
         }
 
-        public static List<Ticket> GetAllTickets(SqliteConnection connection)
+        public static async Task<List<Ticket>> LoadAll(SqliteConnection connection)
         {
             if (_dbHelper == null)
                 _dbHelper = new DbHelper<Ticket>(connection);
 
             List<Ticket> retval = new List<Ticket>();
-            List<long> ids = _dbHelper.GetAllIds();
+            List<long> ids = await _dbHelper.GetAllIdsAsync().ConfigureAwait(false);
             foreach (long id in ids)
             {
                 Ticket ticket = new Ticket(connection);
                 ticket.id = id;
-                ticket.Load();
+                await ticket.LoadAsync().ConfigureAwait(false);
                 retval.Add(ticket);
             }
             return retval;

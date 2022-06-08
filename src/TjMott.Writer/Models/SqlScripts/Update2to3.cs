@@ -33,7 +33,7 @@ namespace TjMott.Writer.Models.SqlScripts
         PlainText TEXT,
         WordCount INTEGER DEFAULT 0,
         IsEncrypted INTEGER DEFAULT 0,
-        IsNote INTEGER DEFAULT 0,
+        DocumentType TEXT NOT NULL DEFAULT 'Manuscript',
 
         FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE
     );
@@ -224,7 +224,7 @@ namespace TjMott.Writer.Models.SqlScripts
       DELETE FROM NoteDucment WHERE id = (old.DocumentId);
     END;
 
-    CREATE VIRTUAL TABLE NoteDocument_fts USING fts5(PlainText, Content=NoteDocument, content_rowid=id);
+    CREATE VIRTUAL TABLE NoteDocument_fts USING fts5(Name, Content=NoteDocument, content_rowid=id);
     CREATE TRIGGER NoteDocument_ai_fts AFTER INSERT ON NoteDocument BEGIN
       INSERT INTO NoteDocument_fts(rowid, Name) VALUES (new.id, new.Name);
     END;
@@ -240,13 +240,21 @@ namespace TjMott.Writer.Models.SqlScripts
     (
         id INTEGER PRIMARY KEY,
         UniverseId INTEGER NOT NULL,
-        ParentId INTEGER,
+        ParentId INTEGER DEFAULT NULL,
         Name TEXT DEFAULT 'New Category',
 
         FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE,
         FOREIGN KEY(ParentId) REFERENCES NoteCategory(id) ON DELETE SET NULL
     );
+    CREATE TABLE NoteCategoryDocument
+    (
+        id INTEGER PRIMARY KEY,
+        NoteDocumentId INTEGER NOT NULL,
+        NoteCategoryId INTEGER NOT NULL,
 
+        FOREIGN KEY(NoteDocumentId) REFERENCES NoteDocument(id) ON DELETE CASCADE,
+        FOREIGN KEY(NoteCategoryId) REFERENCES NoteCategory(id) ON DELETE SET NULL
+    );
 
 
     --

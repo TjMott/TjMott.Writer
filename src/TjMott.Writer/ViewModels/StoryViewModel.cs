@@ -5,6 +5,7 @@ using TjMott.Writer.Models.SQLiteClasses;
 using ReactiveUI;
 using System.Reactive;
 using TjMott.Writer.Views;
+using System.Threading.Tasks;
 
 namespace TjMott.Writer.ViewModels
 {
@@ -21,9 +22,9 @@ namespace TjMott.Writer.ViewModels
             if (e.PropertyName == "SortIndex")
                 OnPropertyChanged("SortIndex");
         }
-        public void Save()
+        public async Task SaveAsync()
         {
-            Model.Save();
+            await Model.SaveAsync().ConfigureAwait(false);
         }
         #endregion
 
@@ -78,7 +79,7 @@ namespace TjMott.Writer.ViewModels
             bool result = await dialog.ShowDialog<bool>(MainWindow);
             if (result)
             {
-                Model.Save();
+                await Model.SaveAsync().ConfigureAwait(false);
                 UniverseVm.UpdateStoryInTree(this);
             }
         }
@@ -110,7 +111,7 @@ namespace TjMott.Writer.ViewModels
             bool result = await dialog.ShowDialog<bool>(MainWindow);
             if (result)
             {
-                Model.Delete();
+                await Model.DeleteAsync().ConfigureAwait(false);
                 UniverseVm.DeleteSubItem(this);
             }
         }
@@ -128,7 +129,7 @@ namespace TjMott.Writer.ViewModels
                     chapter.SortIndex = 0;
                 else
                     chapter.SortIndex = Chapters.Max(i => i.Model.SortIndex) + 1;
-                chapter.Create();
+                await chapter.CreateAsync().ConfigureAwait(false);
                 ChapterViewModel chapterVm = new ChapterViewModel(chapter);
                 chapterVm.StoryVm = this;
                 Chapters.Add(chapterVm);
@@ -141,12 +142,12 @@ namespace TjMott.Writer.ViewModels
             UpdateChapterSortIndices();
         }
 
-        public void UpdateChapterSortIndices()
+        public async void UpdateChapterSortIndices()
         {
             for (int i = 0; i < Chapters.Count; i++)
             {
                 Chapters[i].Model.SortIndex = i;
-                Chapters[i].Save();
+                await Chapters[i].SaveAsync().ConfigureAwait(false);
             }
         }
 

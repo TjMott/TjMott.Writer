@@ -79,9 +79,9 @@ namespace TjMott.Writer.ViewModels
             base.Remove(other);
             base.Insert(index, other);
             item.SortIndex--;
-            item.Save();
+            item.SaveAsync();
             other.SortIndex++;
-            other.Save();
+            other.SaveAsync();
             _ignoreSortIndexChanged = false;
         }
 
@@ -104,9 +104,9 @@ namespace TjMott.Writer.ViewModels
             base.Remove(other);
             base.Insert(index, other);
             item.SortIndex++;
-            item.Save();
+            item.SaveAsync();
             other.SortIndex--;
-            other.Save();
+            other.SaveAsync();
             _ignoreSortIndexChanged = false;
         }
 
@@ -117,7 +117,7 @@ namespace TjMott.Writer.ViewModels
             for (int i = (int)startIndex; i < Count; i++)
             {
                 this[i].SortIndex = i;
-                this[i].Save();
+                this[i].SaveAsync();
             }
             _ignoreSortIndexChanged = false;
         }

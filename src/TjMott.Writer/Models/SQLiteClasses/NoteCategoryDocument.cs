@@ -6,8 +6,8 @@ using TjMott.Writer.Models.Attributes;
 
 namespace TjMott.Writer.Models.SQLiteClasses
 {
-    [DbTableName("NoteCategory")]
-    public class NoteCategory : IDbType, INotifyPropertyChanged, IHasNameProperty
+    [DbTableName("NoteCategoryDocument")]
+    public class NoteCategoryDocument : IDbType, INotifyPropertyChanged
     {
         #region INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
@@ -21,9 +21,8 @@ namespace TjMott.Writer.Models.SQLiteClasses
 
         #region Private variables
         private long _id;
-        private long _universeId;
-        private long? _parentId;
-        private string _name;
+        private long _noteDocId;
+        private long _noteCatDocId;
         #endregion
 
         #region Database Properties
@@ -34,38 +33,32 @@ namespace TjMott.Writer.Models.SQLiteClasses
             set { _id = value; OnPropertyChanged("id"); }
         }
         [DbField]
-        public long UniverseId
+        public long NoteDocumentId
         {
-            get { return _universeId; }
-            set { _universeId = value; OnPropertyChanged("UniverseId"); }
+            get { return _noteDocId; }
+            set { _noteDocId = value; OnPropertyChanged("NoteDocumentId"); }
         }
         [DbField]
-        public long? ParentId
+        public long NoteCategoryId
         {
-            get { return _parentId; }
-            set { _parentId = value; OnPropertyChanged("ParentId"); }
-        }
-        [DbField]
-        public string Name
-        {
-            get { return _name; }
-            set { _name = value; OnPropertyChanged("Name"); }
+            get { return _noteCatDocId; }
+            set { _noteCatDocId = value; OnPropertyChanged("NoteCategoryId"); }
         }
         #endregion
 
         public SqliteConnection Connection { get; set; }
-        private static DbHelper<NoteCategory> _dbHelper;
+        private static DbHelper<NoteCategoryDocument> _dbHelper;
 
-        public NoteCategory(SqliteConnection connection)
+        public NoteCategoryDocument(SqliteConnection connection)
         {
             Connection = connection;
             if (_dbHelper == null)
-                _dbHelper = new DbHelper<NoteCategory>(Connection);
+                _dbHelper = new DbHelper<NoteCategoryDocument>(Connection);
         }
         public async Task CreateAsync()
         {
             await _dbHelper.InsertAsync(this).ConfigureAwait(false);
-            await LoadAsync().ConfigureAwait(false);
+            await LoadAsync();
         }
 
         public async Task DeleteAsync()
@@ -83,16 +76,16 @@ namespace TjMott.Writer.Models.SQLiteClasses
             await _dbHelper.UpdateAsync(this).ConfigureAwait(false);
         }
 
-        public static async Task<List<NoteCategory>> LoadAll(SqliteConnection connection)
+        public static async Task<List<NoteCategoryDocument>> LoadAll(SqliteConnection connection)
         {
             if (_dbHelper == null)
-                _dbHelper = new DbHelper<NoteCategory>(connection);
+                _dbHelper = new DbHelper<NoteCategoryDocument>(connection);
 
-            List<NoteCategory> retval = new List<NoteCategory>();
+            List<NoteCategoryDocument> retval = new List<NoteCategoryDocument>();
             List<long> ids = await _dbHelper.GetAllIdsAsync().ConfigureAwait(false);
             foreach (long id in ids)
             {
-                NoteCategory doc = new NoteCategory(connection);
+                NoteCategoryDocument doc = new NoteCategoryDocument(connection);
                 doc.id = id;
                 await doc.LoadAsync().ConfigureAwait(false);
                 retval.Add(doc);

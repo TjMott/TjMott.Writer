@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive;
+using System.Threading.Tasks;
 using TjMott.Writer.Models;
 using TjMott.Writer.Models.SQLiteClasses;
 using TjMott.Writer.ViewModels;
@@ -65,16 +66,16 @@ namespace TjMott.Writer.ViewModels
             }
         }*/
 
-        /*private MarkdownTree _markdownTree;
-        public MarkdownTree MarkdownTree
+        private NotesTree _notesTree;
+        public NotesTree NotesTree
         {
-            get { return _markdownTree; }
+            get { return _notesTree; }
             set
             {
-                _markdownTree = value;
-                OnPropertyChanged("MarkdownTree");
+                _notesTree = value;
+                OnPropertyChanged("NotesTree");
             }
-        }*/
+        }
 
         /*private FileBrowserViewModel _fileBrowserVm;
         public FileBrowserViewModel FileBrowserViewModel
@@ -87,7 +88,7 @@ namespace TjMott.Writer.ViewModels
             }
         }*/
 
-        /*private TicketTrackerViewModel _ticketTracker;
+        private TicketTrackerViewModel _ticketTracker;
         public TicketTrackerViewModel TicketTrackerViewModel
         {
             get { return _ticketTracker; }
@@ -96,7 +97,7 @@ namespace TjMott.Writer.ViewModels
                 _ticketTracker = value;
                 OnPropertyChanged("TicketTrackerViewModel");
             }
-        }*/
+        }
         #endregion
 
         #region ISortable implementation - pass through to model
@@ -110,9 +111,9 @@ namespace TjMott.Writer.ViewModels
             if (e.PropertyName == "SortIndex")
                 OnPropertyChanged("SortIndex");
         }
-        public void Save()
+        public async Task SaveAsync()
         {
-            Model.Save();
+           await Model.SaveAsync();
         }
         #endregion
 
@@ -138,34 +139,39 @@ namespace TjMott.Writer.ViewModels
         {
             Model = model;
             Database = database;
-
             model.PropertyChanged += Model_PropertyChanged;
             SelectUniverseCommand = ReactiveCommand.Create(SelectUniverse);
             CreateCategoryCommand = ReactiveCommand.Create(CreateCategory);
             CreateStoryCommand = ReactiveCommand.Create(CreateStory);
             MoveItemUpCommand = ReactiveCommand.Create(MoveItemUp, this.WhenAny(x => x.SelectedTreeViewItem.SortIndex, (item) => CanMoveItemUp()));
             MoveItemDownCommand = ReactiveCommand.Create(MoveItemDown, this.WhenAny(x => x.SelectedTreeViewItem.SortIndex, (item) => CanMoveItemDown()));
-            OpenEditorCommand = ReactiveCommand.Create(OpenEditor,     this.WhenAny(x => x.SelectedTreeViewItem, (item) => (item.Value as SceneViewModel) != null));
+            OpenEditorCommand = ReactiveCommand.Create(OpenEditor, this.WhenAny(x => x.SelectedTreeViewItem, (item) => (item.Value as SceneViewModel) != null));
             ExportToWordCommand = ReactiveCommand.Create(ExportToWord, this.WhenAny(x => x.SelectedTreeViewItem, (item) => (item.Value as IExportToWordDocument) != null));
             ShowWordCountCommand = ReactiveCommand.Create(ShowWordCount, this.WhenAny(x => x.SelectedTreeViewItem, (item) => (item.Value as IGetWordCount) != null));
             RenameCommand = ReactiveCommand.Create(Rename);
             OpenNoteCommand = ReactiveCommand.Create(OpenOrCreateNoteForItem, this.WhenAny(x => x.SelectedTreeViewItem, (item) => item.Value != null));
 
+            initializeAsync();
+        }
+
+        private async void initializeAsync()
+        {
             Categories = new BindingList<CategoryViewModel>();
             Stories = new BindingList<StoryViewModel>();
             SubItems = new SortBySortIndexBindingList<IUniverseSubItem>();
+
+            NotesTree = new NotesTree(this);
+            await NotesTree.LoadAsync().ConfigureAwait(false);
 
             /*SearchViewModel = new SearchViewModel();
             SearchViewModel.SelectedUniverse = this;
             SpellcheckDictionary = new SpellcheckDictionary(this);
 
-            MarkdownTree = new MarkdownTree(this);
-            MarkdownTree.Load();
             FileBrowserViewModel = new FileBrowserViewModel(this);
-            FileBrowserViewModel.Load();
+            FileBrowserViewModel.Load();*/
 
             TicketTrackerViewModel = new TicketTrackerViewModel(this);
-            TicketTrackerViewModel.Load();*/
+            await TicketTrackerViewModel.LoadAsync().ConfigureAwait(false);
         }
 
         public void UpdateSubItemSortIndices()
@@ -173,7 +179,7 @@ namespace TjMott.Writer.ViewModels
             for (int i = 0; i < SubItems.Count; i++)
             {
                 SubItems[i].SortIndex = i;
-                SubItems[i].Save();
+                SubItems[i].SaveAsync();
             }
         }
 
@@ -194,7 +200,7 @@ namespace TjMott.Writer.ViewModels
                 category.Name = result;
                 if (SubItems.Count > 0)
                     category.SortIndex = SubItems.Max(i => i.SortIndex) + 1;
-                category.Create();
+                await category.CreateAsync().ConfigureAwait(false);
 
                 CategoryViewModel catVm = new CategoryViewModel(category);
                 catVm.UniverseVm = this;
@@ -227,7 +233,7 @@ namespace TjMott.Writer.ViewModels
                     else
                         story.SortIndex = 0;
                 }
-                story.Create();
+                await story.CreateAsync().ConfigureAwait(false);
                 StoryViewModel storyVm = new StoryViewModel(story);
                 storyVm.UniverseVm = this;
                 Stories.Add(storyVm);
@@ -265,7 +271,7 @@ namespace TjMott.Writer.ViewModels
             }
         }
 
-        public void DeleteSubItem(IUniverseSubItem subItem)
+        public async void DeleteSubItem(IUniverseSubItem subItem)
         {
             if (subItem is StoryViewModel)
             {
@@ -287,7 +293,7 @@ namespace TjMott.Writer.ViewModels
                 {
                     story.Model.CategoryId = null;
                     story.SortIndex = SubItems.Max(i => i.SortIndex) + 1;
-                    story.Save();
+                    await story.SaveAsync().ConfigureAwait(false);
                     SubItems.Add(story);
                 }
                 Categories.Remove(cat);
@@ -434,7 +440,7 @@ namespace TjMott.Writer.ViewModels
             if (result != null)
             {
                 Model.Name = result;
-                Model.Save();
+                await Model.SaveAsync().ConfigureAwait(false);
             }
         }
 

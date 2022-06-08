@@ -4,6 +4,7 @@ using System.ComponentModel;
 using Microsoft.Data.Sqlite;
 using System.Text;
 using TjMott.Writer.Models.Attributes;
+using System.Threading.Tasks;
 
 namespace TjMott.Writer.Models.SQLiteClasses
 {
@@ -101,25 +102,25 @@ namespace TjMott.Writer.Models.SQLiteClasses
             SortIndex = 0;
         }
 
-        public void Create()
+        public async Task CreateAsync()
         {
-            _dbHelper.Insert(this);
-            Load();
+            await _dbHelper.InsertAsync(this).ConfigureAwait(false);
+            await LoadAsync().ConfigureAwait(false);
         }
 
-        public void Delete()
+        public async Task DeleteAsync()
         {
-            _dbHelper.Delete(this);
+            await _dbHelper.DeleteAsync(this).ConfigureAwait(false);
         }
 
-        public void Load()
+        public async Task LoadAsync()
         {
-            _dbHelper.Load(this);
+            await _dbHelper.LoadAsync(this).ConfigureAwait(false);
         }
 
-        public void Save()
+        public async Task SaveAsync()
         {
-            _dbHelper.Update(this);
+            await _dbHelper.UpdateAsync(this).ConfigureAwait(false);
         }
 
         public Chapter Clone()
@@ -130,18 +131,18 @@ namespace TjMott.Writer.Models.SQLiteClasses
             return chap;
         }
 
-        public static List<Chapter> GetAllChapters(SqliteConnection connection)
+        public static async Task<List<Chapter>> LoadAll(SqliteConnection connection)
         {
             if (_dbHelper == null)
                 _dbHelper = new DbHelper<Chapter>(connection);
 
             List<Chapter> retval = new List<Chapter>();
-            List<long> ids = _dbHelper.GetAllIds();
+            List<long> ids = await _dbHelper.GetAllIdsAsync().ConfigureAwait(false);
             foreach (long id in ids)
             {
                 Chapter chapter = new Chapter(connection);
                 chapter.id = id;
-                chapter.Load();
+                await chapter.LoadAsync().ConfigureAwait(false);
                 retval.Add(chapter);
             }
             return retval;

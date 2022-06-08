@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 
 namespace TjMott.Writer.Models
@@ -7,9 +8,9 @@ namespace TjMott.Writer.Models
     {
         long id { get; set; }
         SqliteConnection Connection { get; set; }
-        void Load();
-        void Create();
-        void Save();
-        void Delete();
+        Task LoadAsync();
+        Task CreateAsync();
+        Task SaveAsync();
+        Task DeleteAsync();
     }
 }

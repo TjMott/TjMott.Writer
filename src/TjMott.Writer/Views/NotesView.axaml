@@ -1,0 +1,24 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:viewModels="clr-namespace:TjMott.Writer.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="TjMott.Writer.Views.NotesView">
+	<Grid ColumnDefinitions="1*,5,3*">
+
+		<TreeView Items="{Binding Items}">
+			<TreeView.DataTemplates>
+				<TreeDataTemplate DataType="{x:Type viewModels:NoteCategoryViewModel}" ItemsSource="{Binding Children}">
+					<TextBlock Text="{Binding Model.Name}" />
+				</TreeDataTemplate>
+				<TreeDataTemplate DataType="{x:Type viewModels:NoteDocumentViewModel}">
+					<TextBlock Text="{Binding Model.Name}" />
+				</TreeDataTemplate>
+			</TreeView.DataTemplates>
+		</TreeView>
+		
+		<GridSplitter Grid.Column="1" Width="5" VerticalAlignment="Stretch" ResizeDirection="Columns" ResizeBehavior="PreviousAndNext" />
+		
+	</Grid>
+</UserControl>

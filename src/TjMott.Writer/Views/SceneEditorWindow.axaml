@@ -15,16 +15,22 @@
 				<MenuItem Header="Close" />
 			</MenuItem>
 		</Menu>
-		
-		<controls:QuillJsEditor x:Name="manuscriptEditor" Margin="5" Grid.Row="1" />
 
-		<StackPanel Margin="12,5" Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Left">
-			<TextBlock x:Name="wordCountTextBlock" Grid.Row="2" Text="Word Count:" />
-		</StackPanel>
+		<Border Grid.Row="1" BorderBrush="DarkGray" BorderThickness="1">
+			<controls:QuillJsContainer x:Name="manuscriptEditor" Margin="5" />
+		</Border>
 
-		<StackPanel Margin="12,5" Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Right">
-			<TextBlock Text="Zoom" Margin="0,0,10,0" VerticalAlignment="Center" />
-			<Slider Minimum="1" Maximum="10" x:Name="zoomSlider" Width="200" PropertyChanged="ZoomSlider_PropertyChanged" />
-		</StackPanel>
+		<Border BorderBrush="DarkGray" BorderThickness="1" Grid.Row="2" Margin="12,5">
+			<Grid>
+				<StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+					<TextBlock x:Name="wordCountTextBlock" Text="Word Count:" />
+				</StackPanel>
+
+				<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+					<TextBlock Text="Zoom" Margin="0,0,10,0" VerticalAlignment="Center" />
+					<Slider Minimum="1" Maximum="10" x:Name="zoomSlider" Width="200" VerticalAlignment="Center" PropertyChanged="ZoomSlider_PropertyChanged" />
+				</StackPanel>
+			</Grid>
+		</Border>
 	</Grid>
 </Window>

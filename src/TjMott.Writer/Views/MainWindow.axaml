@@ -67,10 +67,10 @@
 				<views:StoriesView DataContext="{Binding Database.SelectedUniverse}" />
 			</TabItem>
 			<TabItem Header="Notes">
-				
+				<views:NotesView DataContext="{Binding Database.SelectedUniverse.NotesTree}" />
 			</TabItem>
 			<TabItem Header="Tickets">
-
+				<views:TicketTrackerView DataContext="{Binding Database.SelectedUniverse.TicketTrackerViewModel}" />
 			</TabItem>
 			<TabItem Header="Search">
 

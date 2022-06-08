@@ -1,10 +1,12 @@
 ﻿using Microsoft.Data.Sqlite;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using TjMott.Writer.Models.Attributes;
 
 namespace TjMott.Writer.Models.SQLiteClasses
 {
+    [DbTableName("NoteDocument")]
     public class NoteDocument : IDbType, INotifyPropertyChanged, IHasNameProperty
     {
         #region INotifyPropertyChanged
@@ -61,39 +63,39 @@ namespace TjMott.Writer.Models.SQLiteClasses
                 _dbHelper = new DbHelper<NoteDocument>(Connection);
         }
 
-        public void Create()
+        public async Task CreateAsync()
         {
-            _dbHelper.Insert(this);
-            Load();
+            await _dbHelper.InsertAsync(this).ConfigureAwait(false);
+            await LoadAsync().ConfigureAwait(false);
         }
 
-        public void Delete()
+        public async Task DeleteAsync()
         {
-            _dbHelper.Delete(this);
+            await _dbHelper.DeleteAsync(this).ConfigureAwait(false);
         }
 
-        public void Load()
+        public async Task LoadAsync()
         {
-            _dbHelper.Load(this);
+            await _dbHelper.LoadAsync(this).ConfigureAwait(false);
         }
 
-        public void Save()
+        public async Task SaveAsync()
         {
-            _dbHelper.Update(this);
+            await _dbHelper.UpdateAsync(this).ConfigureAwait(false);
         }
 
-        public static List<NoteDocument> GetAllDocuments(SqliteConnection connection)
+        public static async Task<List<NoteDocument>> LoadAll(SqliteConnection connection)
         {
             if (_dbHelper == null)
                 _dbHelper = new DbHelper<NoteDocument>(connection);
 
             List<NoteDocument> retval = new List<NoteDocument>();
-            List<long> ids = _dbHelper.GetAllIds();
+            List<long> ids = await _dbHelper.GetAllIdsAsync().ConfigureAwait(false);
             foreach (long id in ids)
             {
                 NoteDocument doc = new NoteDocument(connection);
                 doc.id = id;
-                doc.Load();
+                await doc.LoadAsync().ConfigureAwait(false);
                 retval.Add(doc);
             }
             return retval;

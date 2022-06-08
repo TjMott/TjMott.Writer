@@ -7,6 +7,7 @@ using Avalonia.Media;
 using ReactiveUI;
 using System.Reactive;
 using TjMott.Writer.Views;
+using System.Threading.Tasks;
 
 namespace TjMott.Writer.ViewModels
 {
@@ -23,9 +24,9 @@ namespace TjMott.Writer.ViewModels
             if (e.PropertyName == "SortIndex")
                 OnPropertyChanged("SortIndex");
         }
-        public void Save()
+        public async Task SaveAsync()
         {
-            Model.Save();
+            await Model.SaveAsync();
         }
         #endregion
 
@@ -41,7 +42,7 @@ namespace TjMott.Writer.ViewModels
         {
             Document fd = new Document(Model.Connection);
             fd.id = Model.DocumentId;
-            fd.Load();
+            fd.LoadAsync().Wait();
             if (fd.IsEncrypted)
                 return 0;
             else
@@ -68,7 +69,7 @@ namespace TjMott.Writer.ViewModels
                 Model.ColorR = _textColorBrush.Color.R;
                 Model.ColorG = _textColorBrush.Color.G;
                 Model.ColorB = _textColorBrush.Color.B;
-                Model.Save();
+                Model.SaveAsync().Wait();
                 OnPropertyChanged("TextColorBrush");
             }
         }
@@ -106,7 +107,7 @@ namespace TjMott.Writer.ViewModels
             if (result != null)
             {
                 Model.Name = result;
-                Model.Save();
+                await Model.SaveAsync().ConfigureAwait(false);
             }
         }
 
@@ -116,7 +117,7 @@ namespace TjMott.Writer.ViewModels
             bool result = await dialog.ShowDialog<bool>(MainWindow);
             if (result)
             {
-                Model.Delete();
+                await Model.DeleteAsync().ConfigureAwait(false);
                 ChapterVm.DeleteScene(this);
             }
         }
@@ -160,7 +161,7 @@ namespace TjMott.Writer.ViewModels
         {
             Document fd = new Document(Model.Connection);
             fd.id = Model.DocumentId;
-            fd.Load();
+            fd.LoadAsync().Wait();
             IsEncrypted = fd.IsEncrypted;
             return !fd.IsEncrypted;
         }
@@ -192,7 +193,7 @@ namespace TjMott.Writer.ViewModels
         {
             Document fd = new Document(Model.Connection);
             fd.id = Model.DocumentId;
-            fd.Load();
+            fd.LoadAsync().Wait();
             IsEncrypted = fd.IsEncrypted;
             return fd.IsEncrypted;
         }

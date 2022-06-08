@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive;
+using System.Threading.Tasks;
 using TjMott.Writer.Models;
 using TjMott.Writer.Models.SQLiteClasses;
 using TjMott.Writer.Views;
@@ -21,9 +22,9 @@ namespace TjMott.Writer.ViewModels
             if (e.PropertyName == "SortIndex")
                 OnPropertyChanged("SortIndex");
         }
-        public void Save()
+        public async Task SaveAsync()
         {
-            Model.Save();
+            await Model.SaveAsync().ConfigureAwait(false);
         }
         #endregion
 
@@ -47,30 +48,30 @@ namespace TjMott.Writer.ViewModels
             Model = model;
             Scenes = new SortBySortIndexBindingList<SceneViewModel>();
             Model.PropertyChanged += Model_PropertyChanged;
-            RenameCommand = ReactiveCommand.Create(Rename);
-            DeleteCommand = ReactiveCommand.Create(Delete);
+            RenameCommand = ReactiveCommand.Create(RenameAsync);
+            DeleteCommand = ReactiveCommand.Create(DeleteAsync);
             CreateSceneCommand = ReactiveCommand.Create(CreateScene);
             ShowPacingCommand = ReactiveCommand.Create(ShowPacing);
         }
 
-        public async void Rename()
+        public async void RenameAsync()
         {
             NameItemWindow dialog = new NameItemWindow(Model.Name);
             string result = await dialog.ShowDialog<string>(MainWindow);
             if (result != null)
             {
                 Model.Name = result;
-                Model.Save();
+                await Model.SaveAsync().ConfigureAwait(false);
             }
         }
 
-        public async void Delete()
+        public async void DeleteAsync()
         {
             ConfirmDeleteWindow dialog = new ConfirmDeleteWindow(string.Format("Chapter: {0}", Model.Name));
             bool result = await dialog.ShowDialog<bool>(MainWindow);
             if (result)
             {
-                Model.Delete();
+                await Model.DeleteAsync().ConfigureAwait(false);
                 StoryVm.DeleteChapter(this);
             }
         }
@@ -86,7 +87,7 @@ namespace TjMott.Writer.ViewModels
                 doc.WordCount = 0;
                 doc.PlainText = "";
                 doc.Json = "";
-                doc.Create();
+                await doc.CreateAsync().ConfigureAwait(false);
 
                 Scene scene = new Scene(Model.Connection);
                 scene.ChapterId = Model.id;
@@ -96,7 +97,7 @@ namespace TjMott.Writer.ViewModels
                 else
                     scene.SortIndex = Scenes.Max(i => i.Model.SortIndex) + 1;
                 scene.DocumentId = doc.id;
-                scene.Create();
+                await scene.CreateAsync().ConfigureAwait(false);
                 SceneViewModel sceneVm = new SceneViewModel(scene);
                 sceneVm.ChapterVm = this;
                 Scenes.Add(sceneVm);
@@ -108,12 +109,12 @@ namespace TjMott.Writer.ViewModels
             Scenes.Remove(scene);
         }
 
-        public void UpdateSceneSortIndices()
+        public async void UpdateSceneSortIndices()
         {
             for (int i = 0; i < Scenes.Count; i++)
             {
                 Scenes[i].Model.SortIndex = i;
-                Scenes[i].Save();
+                await Scenes[i].SaveAsync().ConfigureAwait(false);
             }
         }
 

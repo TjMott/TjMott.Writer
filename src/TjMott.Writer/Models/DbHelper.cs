@@ -4,6 +4,7 @@ using Microsoft.Data.Sqlite;
 using System.Linq;
 using System.Reflection;
 using TjMott.Writer.Models.Attributes;
+using System.Threading.Tasks;
 
 namespace TjMott.Writer.Models
 {
@@ -129,10 +130,15 @@ namespace TjMott.Writer.Models
 
         public List<long> GetAllIds()
         {
+            return GetAllIdsAsync().Result;
+        }
+
+        public async Task<List<long>> GetAllIdsAsync()
+        {
             List<long> retval = new List<long>();
-            using (SqliteDataReader reader = _selectAllIdsCommand.ExecuteReader())
+            using (SqliteDataReader reader = await _selectAllIdsCommand.ExecuteReaderAsync().ConfigureAwait(false))
             {
-                while (reader.Read())
+                while (await reader.ReadAsync().ConfigureAwait(false))
                 {
                     long id = reader.GetInt64(0);
                     retval.Add(id);
@@ -142,6 +148,11 @@ namespace TjMott.Writer.Models
         }
 
         public void Insert(T item)
+        {
+            InsertAsync(item).Wait();
+        }
+
+        public async Task InsertAsync(T item)
         {
             for (int i = 0; i < _subsetProperties.Count; i++)
             {
@@ -154,19 +165,24 @@ namespace TjMott.Writer.Models
                     _insertCommand.Parameters["@" + _subsetProperties[i].Name].Value = _subsetProperties[i].GetValue(item);
                 }
             }
-            _insertCommand.Command.ExecuteNonQuery();
+            await _insertCommand.Command.ExecuteNonQueryAsync().ConfigureAwait(false);
 
             // Get new object's id.
-            long id = (long)_getIdCommand.ExecuteScalar();
+            long id = (long)await _getIdCommand.ExecuteScalarAsync().ConfigureAwait(false);
             item.id = id;
         }
 
         public void Load(T item)
         {
+            LoadAsync(item).Wait();
+        }
+
+        public async Task LoadAsync(T item)
+        {
             _selectCommand.Parameters["@id"].Value = item.id;
-            using (SqliteDataReader reader = _selectCommand.Command.ExecuteReader())
+            using (SqliteDataReader reader = await _selectCommand.Command.ExecuteReaderAsync().ConfigureAwait(false))
             {
-                if (reader.Read())
+                if (await reader.ReadAsync())
                 {
                     for (int i = 0; i < _allProperties.Count; i++)
                     {
@@ -200,11 +216,21 @@ namespace TjMott.Writer.Models
 
         public void Delete(T item)
         {
+            DeleteAsync(item).Wait();
+        }
+
+        public async Task DeleteAsync(T item)
+        {
             _deleteCommand.Parameters["@id"].Value = item.id;
-            _deleteCommand.Command.ExecuteNonQuery();
+            await _deleteCommand.Command.ExecuteNonQueryAsync().ConfigureAwait(false);
         }
 
         public void Update(T item, IEnumerable<string> propsToSave = null)
+        {
+            UpdateAsync(item, propsToSave).Wait();
+        }
+
+        public async Task UpdateAsync(T item, IEnumerable<string> propsToSave = null)
         {
             _updateCommand.Parameters["@id"].Value = item.id;
             for (int i = 0; i < _allProperties.Count; i++)
@@ -221,7 +247,7 @@ namespace TjMott.Writer.Models
                     }
                 }
             }
-            int affected = _updateCommand.Command.ExecuteNonQuery();
+            int affected = await _updateCommand.Command.ExecuteNonQueryAsync().ConfigureAwait(false);
         }
     }
 }

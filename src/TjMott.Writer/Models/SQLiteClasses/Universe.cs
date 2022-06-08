@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using TjMott.Writer.Models.Attributes;
 
@@ -90,37 +91,57 @@ namespace TjMott.Writer.Models.SQLiteClasses
 
         public void Create()
         {
-            _dbHelper.Insert(this);
-            Load();
-        }
-
-        public void Delete()
-        {
-            _dbHelper.Delete(this);
-        }
-
-        public void Load()
-        {
-            _dbHelper.Load(this);
+            CreateAsync().Wait();
         }
 
         public void Save()
         {
-            _dbHelper.Update(this);
+            SaveAsync().Wait();
         }
 
-        public static List<Universe> GetAllUniverses(SqliteConnection connection)
+        public void Delete()
+        {
+            DeleteAsync().Wait();
+        }
+
+        public void Load()
+        {
+            LoadAsync().Wait();
+        }
+
+        public async Task CreateAsync()
+        {
+            await _dbHelper.InsertAsync(this).ConfigureAwait(false);
+            await LoadAsync().ConfigureAwait(false);
+        }
+
+        public async Task DeleteAsync()
+        {
+            await _dbHelper.DeleteAsync(this).ConfigureAwait(false);
+        }
+
+        public async Task LoadAsync()
+        {
+            await _dbHelper.LoadAsync(this).ConfigureAwait(false);
+        }
+
+        public async Task SaveAsync()
+        {
+            await _dbHelper.UpdateAsync(this).ConfigureAwait(false);
+        }
+
+        public static async Task<List<Universe>> LoadAll(SqliteConnection connection)
         {
             if (_dbHelper == null)
                 _dbHelper = new DbHelper<Universe>(connection);
 
             List<Universe> retval = new List<Universe>();
-            List<long> ids = _dbHelper.GetAllIds();
+            List<long> ids = await _dbHelper.GetAllIdsAsync().ConfigureAwait(false);
             foreach (long id in ids)
             {
                 Universe universe = new Universe(connection);
                 universe.id = id;
-                universe.Load();
+                await universe.LoadAsync().ConfigureAwait(false);
                 retval.Add(universe);
             }
             return retval;

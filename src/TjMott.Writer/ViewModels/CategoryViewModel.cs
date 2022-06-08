@@ -3,6 +3,7 @@ using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive;
+using System.Threading.Tasks;
 using TjMott.Writer.Models.SQLiteClasses;
 using TjMott.Writer.Views;
 
@@ -21,9 +22,9 @@ namespace TjMott.Writer.ViewModels
             if (e.PropertyName == "SortIndex")
                 OnPropertyChanged("SortIndex");
         }
-        public void Save()
+        public async Task SaveAsync()
         {
-            Model.Save();
+            await Model.SaveAsync().ConfigureAwait(false);
         }
         #endregion
 
@@ -58,7 +59,7 @@ namespace TjMott.Writer.ViewModels
             if (result != null)
             {
                 Model.Name = result;
-                Model.Save();
+                await Model.SaveAsync().ConfigureAwait(false);
             }
         }
 
@@ -68,17 +69,17 @@ namespace TjMott.Writer.ViewModels
             bool result = await dialog.ShowDialog<bool>(MainWindow);
             if (result)
             {
-                Model.Delete();
+                await Model.DeleteAsync().ConfigureAwait(false);
                 UniverseVm.DeleteSubItem(this);
             }
         }
 
-        public void UpdateStorySortIndices()
+        public async void UpdateStorySortIndices()
         {
             for (int i = 0; i < Stories.Count; i++)
             {
                 Stories[i].Model.SortIndex = i;
-                Stories[i].Save();
+                await Stories[i].SaveAsync().ConfigureAwait(false);
             }
         }
     }

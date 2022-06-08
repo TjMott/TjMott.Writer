@@ -41,7 +41,7 @@ namespace TjMott.Writer.Views
         #endregion
 
         private Document _sceneManuscript;
-        private QuillJsEditor _manuscriptEditor;
+        private QuillJsContainer _manuscriptEditor;
         private TextBlock _wordCountTextBlock;
 
         #region Unused constructor -- still needed to compile
@@ -66,7 +66,7 @@ namespace TjMott.Writer.Views
             
             _sceneManuscript = new Document(Scene.Model.Connection);
             _sceneManuscript.id = Scene.Model.DocumentId;
-            _sceneManuscript.Load();
+            _sceneManuscript.LoadAsync().Wait();
         }
 
         private void ZoomSlider_PropertyChanged(object sender, AvaloniaPropertyChangedEventArgs e)
@@ -91,7 +91,7 @@ namespace TjMott.Writer.Views
             Title = "Editing Scene: " + Scene.Model.Name;
 
             _wordCountTextBlock = this.FindControl<TextBlock>("wordCountTextBlock");
-            _manuscriptEditor = this.FindControl<QuillJsEditor>("manuscriptEditor");
+            _manuscriptEditor = this.FindControl<QuillJsContainer>("manuscriptEditor");
             _manuscriptEditor.EditorLoaded += _manuscriptEditor_EditorLoaded;
             _manuscriptEditor.TextChanged += _manuscriptEditor_TextChanged;
             this.Width = AppSettings.Default.editorWindowWidth;

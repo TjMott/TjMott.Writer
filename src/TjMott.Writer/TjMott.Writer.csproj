@@ -16,6 +16,16 @@
   </PropertyGroup>
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
+    <AvaloniaResource Remove="Assets\cef-linux64\lib\swiftshader\**" />
+    <AvaloniaResource Remove="Assets\cef-win64\lib\swiftshader\**" />
+    <AvaloniaXaml Remove="Assets\cef-linux64\lib\swiftshader\**" />
+    <AvaloniaXaml Remove="Assets\cef-win64\lib\swiftshader\**" />
+    <Compile Remove="Assets\cef-linux64\lib\swiftshader\**" />
+    <Compile Remove="Assets\cef-win64\lib\swiftshader\**" />
+    <EmbeddedResource Remove="Assets\cef-linux64\lib\swiftshader\**" />
+    <EmbeddedResource Remove="Assets\cef-win64\lib\swiftshader\**" />
+    <None Remove="Assets\cef-linux64\lib\swiftshader\**" />
+    <None Remove="Assets\cef-win64\lib\swiftshader\**" />
     <AvaloniaResource Remove="Assets\cef-linux64\lib\chrome-sandbox" />
     <AvaloniaResource Remove="Assets\cef-linux64\lib\icudtl.dat" />
     <AvaloniaResource Remove="Assets\cef-linux64\lib\libcef.so" />
@@ -24,8 +34,6 @@
     <AvaloniaResource Remove="Assets\cef-linux64\lib\libvk_swiftshader.so" />
     <AvaloniaResource Remove="Assets\cef-linux64\lib\libvulkan.so.1" />
     <AvaloniaResource Remove="Assets\cef-linux64\lib\snapshot_blob.bin" />
-    <AvaloniaResource Remove="Assets\cef-linux64\lib\swiftshader\libEGL.so" />
-    <AvaloniaResource Remove="Assets\cef-linux64\lib\swiftshader\libGLESv2.so" />
     <AvaloniaResource Remove="Assets\cef-linux64\lib\v8_context_snapshot.bin" />
     <AvaloniaResource Remove="Assets\cef-linux64\lib\vk_swiftshader_icd.json" />
     <AvaloniaResource Remove="Assets\cef-linux64\resources\chrome_100_percent.pak" />
@@ -96,8 +104,6 @@
     <AvaloniaResource Remove="Assets\cef-win64\lib\libEGL.dll" />
     <AvaloniaResource Remove="Assets\cef-win64\lib\libGLESv2.dll" />
     <AvaloniaResource Remove="Assets\cef-win64\lib\snapshot_blob.bin" />
-    <AvaloniaResource Remove="Assets\cef-win64\lib\swiftshader\libEGL.dll" />
-    <AvaloniaResource Remove="Assets\cef-win64\lib\swiftshader\libGLESv2.dll" />
     <AvaloniaResource Remove="Assets\cef-win64\lib\v8_context_snapshot.bin" />
     <AvaloniaResource Remove="Assets\cef-win64\lib\vk_swiftshader.dll" />
     <AvaloniaResource Remove="Assets\cef-win64\lib\vk_swiftshader_icd.json" />
@@ -244,12 +250,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\cef-linux64\lib\snapshot_blob.bin">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-linux64\lib\swiftshader\libEGL.so">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-linux64\lib\swiftshader\libGLESv2.so">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\cef-linux64\lib\v8_context_snapshot.bin">
@@ -462,10 +462,6 @@
     <Content Include="Assets\cef-win64\lib\snapshot_blob.bin">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\cef-win64\lib\swiftshader\libEGL.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\lib\swiftshader\libGLESv2.dll" />
     <Content Include="Assets\cef-win64\lib\v8_context_snapshot.bin">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -688,12 +684,12 @@
     <TrimmableAssembly Include="Avalonia.Themes.Default" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.10.14" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.10.14" />
+    <PackageReference Include="Avalonia" Version="0.10.15" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.10.15" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.14" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.14" />
-    <PackageReference Include="CefNet.Avalonia" Version="101.0.22117.1058" />
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.15" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.15" />
+    <PackageReference Include="CefNet.Avalonia" Version="102.0.22146.158" />
     <PackageReference Include="MessageBox.Avalonia" Version="2.0.0" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.5" />
     <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="6.0.5" />

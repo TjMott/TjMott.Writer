@@ -1,11 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Threading.Tasks;
 
 namespace TjMott.Writer.Models
 {
     public interface ISortable : INotifyPropertyChanged
     {
         long SortIndex { get; set; }
-        void Save();
+        Task SaveAsync();
     }
 }

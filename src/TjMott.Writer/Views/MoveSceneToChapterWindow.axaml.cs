@@ -40,7 +40,7 @@ namespace TjMott.Writer.Views
             this.FindControl<ListBox>("chapterListBox").SelectedItem = _scene.ChapterVm;
         }
 
-        private void okButton_Click(object sender, RoutedEventArgs e)
+        private async void okButton_Click(object sender, RoutedEventArgs e)
         {
             ChapterViewModel originalChapter = _scene.ChapterVm;
             ChapterViewModel newChapter = (ChapterViewModel)this.FindControl<ListBox>("chapterListBox").SelectedItem;
@@ -51,7 +51,7 @@ namespace TjMott.Writer.Views
                 newChapter.Scenes.AddToEnd(_scene);
                 _scene.ChapterVm = newChapter;
                 _scene.Model.ChapterId = newChapter.Model.id;
-                _scene.Model.Save();
+                await _scene.Model.SaveAsync().ConfigureAwait(false);
             }
             Close(true);
         }

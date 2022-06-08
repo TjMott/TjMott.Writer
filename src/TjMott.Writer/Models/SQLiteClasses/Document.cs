@@ -21,6 +21,8 @@ namespace TjMott.Writer.Models.SQLiteClasses
         }
         #endregion
 
+        public static IEnumerable<string> DocumentTypes = new List<string>() { "Manuscript", "Note", "Ticket" };
+
         #region Private variables
         private long _id;
         private long _universeId;
@@ -28,7 +30,7 @@ namespace TjMott.Writer.Models.SQLiteClasses
         private string _plainText;
         private long _wordCount;
         private bool _isEncrypted;
-        private bool _isNote;
+        private string _documentType;
         #endregion
 
         #region Database Properties
@@ -69,10 +71,10 @@ namespace TjMott.Writer.Models.SQLiteClasses
             set { _isEncrypted = value; OnPropertyChanged("IsEncrypted"); }
         }
         [DbField]
-        public bool IsNote
+        public string DocumentType
         {
-            get { return _isNote; }
-            set { _isNote = value; OnPropertyChanged("IsNote"); }
+            get { return _documentType; }
+            set { _documentType = value; OnPropertyChanged("DocumentType"); }
         }
 
         public SqliteConnection Connection { get; set; }
@@ -87,39 +89,39 @@ namespace TjMott.Writer.Models.SQLiteClasses
                 _dbHelper = new DbHelper<Document>(Connection);
         }
 
-        public void Create()
+        public async Task CreateAsync()
         {
-            _dbHelper.Insert(this);
-            Load();
+            await _dbHelper.InsertAsync(this).ConfigureAwait(false);
+            await LoadAsync().ConfigureAwait(false);
         }
 
-        public void Delete()
+        public async Task DeleteAsync()
         {
-            _dbHelper.Delete(this);
+            await _dbHelper.DeleteAsync(this).ConfigureAwait(false);
         }
 
-        public void Load()
+        public async Task LoadAsync()
         {
-            _dbHelper.Load(this);
+            await _dbHelper.LoadAsync(this).ConfigureAwait(false);
         }
 
-        public void Save()
+        public async Task SaveAsync()
         {
-            _dbHelper.Update(this);
+            await _dbHelper.UpdateAsync(this).ConfigureAwait(false);
         }
 
-        public static List<Document> GetAllDocuments(SqliteConnection connection)
+        public static async Task<List<Document>> LoadAll(SqliteConnection connection)
         {
             if (_dbHelper == null)
                 _dbHelper = new DbHelper<Document>(connection);
 
             List<Document> retval = new List<Document>();
-            List<long> ids = _dbHelper.GetAllIds();
+            List<long> ids = await _dbHelper.GetAllIdsAsync().ConfigureAwait(false);
             foreach (long id in ids)
             {
                 Document doc = new Document(connection);
                 doc.id = id;
-                doc.Load();
+                await doc.LoadAsync().ConfigureAwait(false);
                 retval.Add(doc);
             }
             return retval;

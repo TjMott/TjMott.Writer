@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace TjMott.Writer.Models
 {
     public interface IHasNameProperty
     {
         string Name { get; set; }
-        void Save();
-        void Load();
+        Task SaveAsync();
+        Task LoadAsync();
     }
 }

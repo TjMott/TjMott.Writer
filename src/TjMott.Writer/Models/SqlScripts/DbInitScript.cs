@@ -32,7 +32,7 @@ CREATE TABLE Document
     PlainText TEXT,
     WordCount INTEGER DEFAULT 0,
     IsEncrypted INTEGER DEFAULT 0,
-    IsNote INTEGER DEFAULT 0,
+    DocumentType TEXT NOT NULL DEFAULT 'Manuscript',
 
     FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE
 );
@@ -162,11 +162,21 @@ CREATE TABLE NoteCategory
 (
     id INTEGER PRIMARY KEY,
     UniverseId INTEGER NOT NULL,
-    ParentId INTEGER,
+    ParentId INTEGER DEFAULT NULL,
     Name TEXT DEFAULT 'New Category',
 
     FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE,
     FOREIGN KEY(ParentId) REFERENCES NoteCategory(id) ON DELETE SET NULL
+);
+
+CREATE TABLE NoteCategoryDocument
+(
+    id INTEGER PRIMARY KEY,
+    NoteDocumentId INTEGER NOT NULL,
+    NoteCategoryId INTEGER NOT NULL,
+
+    FOREIGN KEY(NoteDocumentId) REFERENCES NoteDocument(id) ON DELETE CASCADE,
+    FOREIGN KEY(NoteCategoryId) REFERENCES NoteCategory(id) ON DELETE SET NULL
 );
 
 
@@ -232,7 +242,7 @@ CREATE TRIGGER Document_au AFTER UPDATE ON Document BEGIN
   INSERT INTO Document_fts(rowid, PlainText) VALUES (new.id, new.PlainText);
 END;
 
-CREATE VIRTUAL TABLE NoteDocument_fts USING fts5(PlainText, Content=NoteDocument, content_rowid=id);
+CREATE VIRTUAL TABLE NoteDocument_fts USING fts5(Name, Content=NoteDocument, content_rowid=id);
 -- Table rebuild, just here for reference
 -- INSERT INTO NoteDocument_fts(NoteDocument_fts) VALUES ('rebuild');
 -- Triggers to keep NoteDocument_fts up-to-date

@@ -1,21 +1,27 @@
 ﻿using Avalonia.Controls;
+using MessageBox.Avalonia.DTO;
 using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Xml;
+using TjMott.Writer.ViewModels;
 
 namespace TjMott.Writer.Models.SqlScripts
 {
     public class Update3to4 : DbUpgrader
     {
+        private static List<string> _aesPasswords = new List<string>();
+
         private static string _script3to4 = @"
     DROP TABLE FlowDocument;
     DROP TABLE Scene_Old;
     DROP TABLE Chapter_Old;
     DROP TABLE Story_Old;
     DROP TABLE Category_Old;
+    DROP TABLE Ticket_Old;
     DROP TABLE MarkdownCategoryDocument;
     DROP TABLE MarkdownCategory;
     DROP TABLE MarkdownDocument;
@@ -31,17 +37,19 @@ namespace TjMott.Writer.Models.SqlScripts
 
         public override async Task<bool> DoUpgradeAsync(SqliteConnection connection, Window dialogOwner)
         {
-            bool result = await convertCategories(connection, dialogOwner);
-            result = await convertStories(connection, dialogOwner);
-            result = await convertChapters(connection, dialogOwner);
-            result = await convertScenes(connection, dialogOwner);
+            List<long> migratedMarkdownIds = new List<long>();
+            bool result = await convertCategories(connection, migratedMarkdownIds, dialogOwner);
+            result = await convertStories(connection, migratedMarkdownIds, dialogOwner);
+            result = await convertChapters(connection, migratedMarkdownIds, dialogOwner);
+            result = await convertScenes(connection, migratedMarkdownIds, dialogOwner);
+            result = await convertTickets(connection, migratedMarkdownIds, dialogOwner);
+            result = await convertNotes(connection, migratedMarkdownIds, dialogOwner);
 
-            // Execute script for v3 to v4 to eliminate MarkdownDocument/FlowDocument.
             result = await runScriptWithVersionCheckAsync(connection, _script3to4, 3, 4);
             return result;
         }
 
-        private async Task<bool> convertCategories(SqliteConnection connection, Window dialogOwner)
+        private async Task<bool> convertCategories(SqliteConnection connection, List<long> migratedMarkdownIds, Window dialogOwner)
         {
             DbCommandHelper cmdGetCategories = new DbCommandHelper(connection);
             cmdGetCategories.Command.CommandText = "SELECT id, UniverseId, Name, SortIndex, MarkdownDocumentId FROM Category_Old";
@@ -72,7 +80,11 @@ namespace TjMott.Writer.Models.SqlScripts
 
                     if (mdDocIdObj != DBNull.Value)
                     {
-                        // TODO: Migrate MarkdownDocument.
+                        // Migrate MarkdownDocument.
+                        long mdDocId = (long)mdDocIdObj;
+                        long newDocId = await migrateMarkdownDocument(connection, mdDocId, "Note");
+                        migratedMarkdownIds.Add(mdDocId);
+                        cmdInsertCategory.Parameters["@NoteId"].Value = newDocId;
                     }
 
                     int insertResult = await cmdInsertCategory.Command.ExecuteNonQueryAsync();
@@ -81,7 +93,7 @@ namespace TjMott.Writer.Models.SqlScripts
             return true;
         }
 
-        private async Task<bool> convertStories(SqliteConnection connection, Window dialogOwner)
+        private async Task<bool> convertStories(SqliteConnection connection, List<long> migratedMarkdownIds, Window dialogOwner)
         {
             DbCommandHelper cmdGetStories = new DbCommandHelper(connection);
             cmdGetStories.Command.CommandText = "SELECT id, UniverseId, CategoryId, Name, Subtitle, Author, Edition, ISBN, ASIN, SortIndex, MarkdownDocumentId, FlowDocumentId FROM Story_Old";
@@ -103,7 +115,7 @@ namespace TjMott.Writer.Models.SqlScripts
                     string isbn = storyReader.GetString(7);
                     string asin = storyReader.GetString(8);
                     long sortIndex = storyReader.GetInt64(9);
-                    object mdDocId = storyReader.GetValue(10);
+                    object mdDocIdObj = storyReader.GetValue(10);
                     object flowDocId = storyReader.GetValue(11);
 
                     cmdInsertStory.Parameters["@id"].Value = storyId;
@@ -121,13 +133,17 @@ namespace TjMott.Writer.Models.SqlScripts
 
                     if (categoryIdObj != DBNull.Value)
                         cmdInsertStory.Parameters["@CategoryId"].Value = (Int64)categoryIdObj;
-                    if (mdDocId != DBNull.Value)
+                    if (mdDocIdObj != DBNull.Value)
                     {
-                        // TODO: Migrate MarkdownDocument.
+                        // Migrate MarkdownDocument.
+                        long mdDocId = (long)mdDocIdObj;
+                        long newDocId = await migrateMarkdownDocument(connection, mdDocId, "Note");
+                        migratedMarkdownIds.Add(mdDocId);
+                        cmdInsertStory.Parameters["@NoteId"].Value = newDocId;
                     }
                     if (flowDocId != DBNull.Value)
                     {
-                        cmdInsertStory.Parameters["@CopyrightPageId"].Value = await migrateFlowDocument(connection, (Int64)flowDocId);
+                        cmdInsertStory.Parameters["@CopyrightPageId"].Value = await migrateFlowDocument(connection, (Int64)flowDocId, dialogOwner);
                     }
                     int insertResult = await cmdInsertStory.Command.ExecuteNonQueryAsync();
                 }
@@ -136,7 +152,7 @@ namespace TjMott.Writer.Models.SqlScripts
             return true;
         }
 
-        private async Task<bool> convertChapters(SqliteConnection connection, Window dialogOwner)
+        private async Task<bool> convertChapters(SqliteConnection connection, List<long> migratedMarkdownIds, Window dialogOwner)
         {
             DbCommandHelper cmdGetChapters = new DbCommandHelper(connection);
             cmdGetChapters.Command.CommandText = "SELECT id, StoryId, Name, SortIndex, MarkdownDocumentId FROM Chapter_Old";
@@ -162,7 +178,11 @@ namespace TjMott.Writer.Models.SqlScripts
 
                     if (mdDocIdObj != DBNull.Value)
                     {
-                        // TODO: Migrate MarkdownDocument.
+                        // Migrate MarkdownDocument.
+                        long mdDocId = (long)mdDocIdObj;
+                        long newDocId = await migrateMarkdownDocument(connection, mdDocId, "Note");
+                        migratedMarkdownIds.Add(mdDocId);
+                        cmdInsertChapter.Parameters["@NoteId"].Value = newDocId;
                     }
 
                     int insertResult = await cmdInsertChapter.Command.ExecuteNonQueryAsync();
@@ -171,17 +191,14 @@ namespace TjMott.Writer.Models.SqlScripts
             return true;
         }
 
-        private async Task<bool> convertScenes(SqliteConnection connection, Window dialogOwner)
+        private async Task<bool> convertScenes(SqliteConnection connection, List<long> migratedMarkdownIds, Window dialogOwner)
         {
             // Query all scenes, and convert FlowDocuments to Documents.
             DbCommandHelper cmdGetScenes = new DbCommandHelper(connection);
             cmdGetScenes.Command.CommandText = "SELECT id, ChapterId, Name, SortIndex, ColorA, ColorR, ColorG, ColorB, FlowDocumentId, MarkdownDocumentId FROM Scene_Old";
 
-            DbCommandHelper cmdUpdateScene = new DbCommandHelper(connection);
-            cmdUpdateScene.SetParameterizedQuery("INSERT INTO Scene(id, ChapterId, Name, SortIndex, ColorA, ColorR, ColorG, ColorB, DocumentId) VALUES (@id, @ChapterId, @Name, @SortIndex, @ColorA, @ColorR, @ColorG, @ColorB, @DocumentId)");
-
-            
-            
+            DbCommandHelper cmdInsertScene = new DbCommandHelper(connection);
+            cmdInsertScene.SetParameterizedQuery("INSERT INTO Scene(id, ChapterId, Name, SortIndex, ColorA, ColorR, ColorG, ColorB, DocumentId, NoteId) VALUES (@id, @ChapterId, @Name, @SortIndex, @ColorA, @ColorR, @ColorG, @ColorB, @DocumentId, @NoteId)");
 
             using (SqliteDataReader sceneReader = await cmdGetScenes.Command.ExecuteReaderAsync())
             {
@@ -198,37 +215,229 @@ namespace TjMott.Writer.Models.SqlScripts
                     long flowDocId = sceneReader.GetInt64(8);
                     object mdDocIdObj = sceneReader.GetValue(9);
 
+                    // Copy data over to new Scene table.
+                    cmdInsertScene.Parameters["@id"].Value = sceneId;
+                    cmdInsertScene.Parameters["@ChapterId"].Value = chapterId;
+                    cmdInsertScene.Parameters["@Name"].Value = name;
+                    cmdInsertScene.Parameters["@SortIndex"].Value = sortIndex;
+                    cmdInsertScene.Parameters["@ColorA"].Value = colorA;
+                    cmdInsertScene.Parameters["@ColorR"].Value = colorR;
+                    cmdInsertScene.Parameters["@ColorG"].Value = colorG;
+                    cmdInsertScene.Parameters["@ColorB"].Value = colorB;
+                    cmdInsertScene.Parameters["@NoteId"].Value = DBNull.Value;
+                    
                     if (mdDocIdObj != DBNull.Value)
                     {
-                        // TODO: Migrate markdown document.
+                        // Migrate MarkdownDocument.
+                        long mdDocId = (long)mdDocIdObj;
+                        long newDocId = await migrateMarkdownDocument(connection, mdDocId, "Note");
+                        migratedMarkdownIds.Add(mdDocId);
+                        cmdInsertScene.Parameters["@NoteId"].Value = newDocId;
                     }
 
                     // Get FlowDocument for this scene.
-                    long docId = await migrateFlowDocument(connection, flowDocId);
+                    long docId = await migrateFlowDocument(connection, flowDocId, dialogOwner);
+                    cmdInsertScene.Parameters["@DocumentId"].Value = docId;
 
-                    // Copy data over to new Scene table.
-                    cmdUpdateScene.Parameters["@id"].Value = sceneId;
-                    cmdUpdateScene.Parameters["@ChapterId"].Value = chapterId;
-                    cmdUpdateScene.Parameters["@Name"].Value = name;
-                    cmdUpdateScene.Parameters["@SortIndex"].Value = sortIndex;
-                    cmdUpdateScene.Parameters["@ColorA"].Value = colorA;
-                    cmdUpdateScene.Parameters["@ColorR"].Value = colorR;
-                    cmdUpdateScene.Parameters["@ColorG"].Value = colorG;
-                    cmdUpdateScene.Parameters["@ColorB"].Value = colorB;
-                    cmdUpdateScene.Parameters["@DocumentId"].Value = docId;
-                    int insertResult = await cmdUpdateScene.Command.ExecuteNonQueryAsync();
+                    int insertResult = await cmdInsertScene.Command.ExecuteNonQueryAsync();
                 }
             }
             return true;
         }
 
-        private async Task<long> migrateFlowDocument(SqliteConnection connection, long flowDocId)
+        private async Task<bool> convertTickets(SqliteConnection connection, List<long> migratedMarkdownIds, Window dialogOwner)
+        {
+            DbCommandHelper cmdGetTickets = new DbCommandHelper(connection);
+            cmdGetTickets.SetParameterizedQuery("SELECT id, UniverseId, Priority, Name, Status, DueDate, MarkdownDocumentId FROM Ticket_Old");
+
+            DbCommandHelper cmdInsertTicket = new DbCommandHelper(connection);
+            cmdInsertTicket.SetParameterizedQuery("INSERT INTO Ticket (id, Universeid, Priority, Name, Status, DueDate, DocumentId) VALUES (@id, @Universeid, @Priority, @Name, @Status, @DueDate, @DocumentId)");
+
+            using (SqliteDataReader ticketReader = await cmdGetTickets.Command.ExecuteReaderAsync())
+            {
+                while (await ticketReader.ReadAsync())
+                {
+                    long id = ticketReader.GetInt64(0);
+                    long universeId = ticketReader.GetInt64(1);
+                    long priority = ticketReader.GetInt64(2);
+                    string name = ticketReader.GetString(3);
+                    string status = ticketReader.GetString(4);
+                    string dueDate = ticketReader.GetString(5);
+                    object mdDocIdObj = ticketReader.GetValue(6);
+
+                    cmdInsertTicket.Parameters["@id"].Value = id;
+                    cmdInsertTicket.Parameters["@Universeid"].Value = universeId;
+                    cmdInsertTicket.Parameters["@Priority"].Value = priority;
+                    cmdInsertTicket.Parameters["@Name"].Value = name;
+                    cmdInsertTicket.Parameters["@Status"].Value = status;
+                    cmdInsertTicket.Parameters["@DueDate"].Value = dueDate;
+                    cmdInsertTicket.Parameters["@DocumentId"].Value = DBNull.Value;
+
+                    if (mdDocIdObj != DBNull.Value)
+                    {
+                        long mdDocId = (long)mdDocIdObj;
+                        long newDocId = await migrateMarkdownDocument(connection, mdDocId, "Ticket");
+                        cmdInsertTicket.Parameters["@DocumentId"].Value = newDocId;
+                        migratedMarkdownIds.Add(mdDocId);
+                    }
+
+                    int insertResult = await cmdInsertTicket.Command.ExecuteNonQueryAsync();
+                }
+            }
+
+            return true;
+        }
+
+        private async Task<long> migrateMarkdownDocument(SqliteConnection connection, long markdownDocId, string documentType)
+        {
+            DbCommandHelper cmdGetMarkdownDoc = new DbCommandHelper(connection);
+            cmdGetMarkdownDoc.SetParameterizedQuery("SELECT id, UniverseId, MarkdownText, PlainText, Name FROM MarkdownDocument WHERE id = @id");
+            cmdGetMarkdownDoc.Parameters["@id"].Value = markdownDocId;
+
+            DbCommandHelper cmdInsertDoc = new DbCommandHelper(connection);
+            cmdInsertDoc.SetParameterizedQuery("INSERT INTO Document (UniverseId, Json, PlainText, WordCount, IsEncrypted, DocumentType) VALUES (@UniverseId, @Json, @PlainText, @WordCount, @IsEncrypted, @DocumentType)");
+
+            SqliteCommand cmdGetId = new SqliteCommand("select last_insert_rowid()", connection);
+
+            using (SqliteDataReader docReader = await cmdGetMarkdownDoc.Command.ExecuteReaderAsync())
+            {
+                await docReader.ReadAsync();
+                long id = docReader.GetInt64(0);
+                long universeId = docReader.GetInt64(1);
+                string markdownText = docReader.GetString(2);
+                string plainText = docReader.GetString(3);
+                string name = docReader.GetString(4);
+
+                // For now, dump the text into a single delta without really converting it.
+                dynamic json = new ExpandoObject();
+                json.ops = new List<dynamic>();
+                dynamic newDoc = new ExpandoObject();
+                newDoc.insert = markdownText;
+                json.ops.Add(newDoc);
+
+                // Insert the new Document.
+                cmdInsertDoc.Parameters["@UniverseId"].Value = universeId;
+                cmdInsertDoc.Parameters["@PlainText"].Value = plainText;
+                cmdInsertDoc.Parameters["@Json"].Value = Newtonsoft.Json.JsonConvert.SerializeObject(json, Newtonsoft.Json.Formatting.Indented);
+                cmdInsertDoc.Parameters["@IsEncrypted"].Value = false;
+                cmdInsertDoc.Parameters["@DocumentType"].Value = documentType;
+                cmdInsertDoc.Parameters["@WordCount"].Value = markdownText.Split(new char[] { '\n', '\r', '\t' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Length;
+                int insertResult = await cmdInsertDoc.Command.ExecuteNonQueryAsync();
+                if (insertResult != 1)
+                    return -1;
+                // Get ID of new Document.
+                long docId = (long)await cmdGetId.ExecuteScalarAsync();
+                return docId;
+            }
+        }
+
+        private async Task<bool> convertNotes(SqliteConnection connection, List<long> migratedMarkdownIds, Window dialogOwner)
+        {
+            // Need to maintain mapping of IDs to properly convert note categories.
+            // The IDs change because we are merging both FlowDocuments and MarkdownDocuments into the new Document table.
+            // Category IDs etc will not change.
+            Dictionary<long, long> markdownToDocIdMapping = new Dictionary<long, long>();
+
+            SqliteCommand cmdGetId = new SqliteCommand("select last_insert_rowid()", connection);
+
+            DbCommandHelper cmdGetCategories = new DbCommandHelper(connection);
+            cmdGetCategories.SetParameterizedQuery("SELECT id, UniverseId, ParentId, Name FROM MarkdownCategory");
+
+            DbCommandHelper cmdInsertCategory = new DbCommandHelper(connection);
+            cmdInsertCategory.SetParameterizedQuery("INSERT INTO NoteCategory (id, UniverseId, ParentId, Name) VALUES (@id, @UniverseId, @ParentId, @Name)");
+
+            // First migrate the note categories.
+            using (SqliteDataReader catReader = await cmdGetCategories.Command.ExecuteReaderAsync())
+            {
+                while (await catReader.ReadAsync())
+                {
+                    long id = catReader.GetInt64(0);
+                    long universeId = catReader.GetInt64(1);
+                    object parentIdObj = catReader.GetValue(2);
+                    string name = catReader.GetString(3);
+
+                    cmdInsertCategory.Parameters["@id"].Value = id;
+                    cmdInsertCategory.Parameters["@UniverseId"].Value = universeId;
+                    cmdInsertCategory.Parameters["@ParentId"].Value = DBNull.Value;
+                    cmdInsertCategory.Parameters["@Name"].Value = name;
+
+                    if (parentIdObj != DBNull.Value)
+                    {
+                        cmdInsertCategory.Parameters["@ParentId"].Value = (long)parentIdObj;
+                    }
+
+                    int insertResult = await cmdInsertCategory.Command.ExecuteNonQueryAsync();
+                }
+            }
+
+            DbCommandHelper cmdGetDocs = new DbCommandHelper(connection);
+            cmdGetDocs.SetParameterizedQuery("SELECT id, UniverseId, MarkdownText, PlainText, Name, IsSpecial FROM MarkdownDocument");
+
+            DbCommandHelper cmdInsertNoteDoc = new DbCommandHelper(connection);
+            cmdInsertNoteDoc.SetParameterizedQuery("INSERT INTO NoteDocument (UniverseId, DocumentId, Name) VALUES (@UniverseId, @DocumentId, @Name)");
+
+            // Now migrate note documents that were not already migrated as part of scenes/chapters/tickets etc.
+            using (SqliteDataReader docReader = await cmdGetDocs.Command.ExecuteReaderAsync())
+            {
+                while (await docReader.ReadAsync())
+                {
+                    long id = docReader.GetInt64(0);
+                    long universeId = docReader.GetInt64(1);
+                    string name = docReader.GetString(4);
+
+                    // Skip if this MarkdownDoc was already converted, which can
+                    // happen if it was attached to some other item (chapter, scene, ticket, etc)
+                    if (migratedMarkdownIds.Contains(id))
+                        continue;
+
+                    // Convert to Document.
+                    long docId = await migrateMarkdownDocument(connection, id, "Note");
+
+                    // Create NoteDocument entry.
+                    cmdInsertNoteDoc.Parameters["@UniverseId"].Value = universeId;
+                    cmdInsertNoteDoc.Parameters["@DocumentId"].Value = docId;
+                    cmdInsertNoteDoc.Parameters["@Name"].Value = name;
+                    int insertResult = await cmdInsertNoteDoc.Command.ExecuteNonQueryAsync();
+
+                    // Get new ID, save mapping.
+                    long newId = (long)await cmdGetId.ExecuteScalarAsync();
+                    markdownToDocIdMapping[id] = newId;
+
+                    // Probably not needed.
+                    migratedMarkdownIds.Add(id);
+                }
+            }
+
+            // Migrate the category/document mappings.
+            DbCommandHelper cmdGetCatDocs = new DbCommandHelper(connection);
+            cmdGetCatDocs.SetParameterizedQuery("SELECT id, MarkdownCategoryId, MarkdownDocumentId FROM MarkdownCategoryDocument");
+
+            DbCommandHelper cmdInsertCatDoc = new DbCommandHelper(connection);
+            cmdInsertCatDoc.SetParameterizedQuery("INSERT INTO NoteCategoryDocument (NoteDocumentId, NoteCategoryId) VALUES (@NoteDocumentId, @NoteCategoryId)");
+
+            using (SqliteDataReader catDocReader = await cmdGetCatDocs.Command.ExecuteReaderAsync())
+            {
+                while (await catDocReader.ReadAsync())
+                {
+                    long id = catDocReader.GetInt64(0);
+                    long markdownCatId = catDocReader.GetInt64(1);
+                    long markdownDocId = catDocReader.GetInt64(2);
+
+                    cmdInsertCatDoc.Parameters["@NoteDocumentId"].Value = markdownToDocIdMapping[markdownDocId];
+                    cmdInsertCatDoc.Parameters["@NoteCategoryId"].Value = markdownCatId;
+                    int insertResult = await cmdInsertCatDoc.Command.ExecuteNonQueryAsync();
+                }
+            }
+            return true;
+        }
+
+        private async Task<long> migrateFlowDocument(SqliteConnection connection, long flowDocId, Window dialogOwner)
         {
             DbCommandHelper cmdGetFlowDocument = new DbCommandHelper(connection);
             cmdGetFlowDocument.SetParameterizedQuery("SELECT id, UniverseId, Xml, PlainText, WordCount, IsEncrypted FROM FlowDocument WHERE id = @id");
 
             DbCommandHelper cmdInsertDocument = new DbCommandHelper(connection);
-            cmdInsertDocument.SetParameterizedQuery("INSERT INTO Document(UniverseId, Json, PlainText, WordCount, IsEncrypted) VALUES (@universeId, @json, @plainText, @wordCount, @isEncrypted)");
+            cmdInsertDocument.SetParameterizedQuery("INSERT INTO Document(UniverseId, Json, PlainText, WordCount, IsEncrypted, DocumentType) VALUES (@universeId, @json, @plainText, @wordCount, @isEncrypted, @DocumentType)");
             
             SqliteCommand cmdGetId = new SqliteCommand("select last_insert_rowid()", connection);
 
@@ -242,15 +451,66 @@ namespace TjMott.Writer.Models.SqlScripts
                 long wordCount = flowDocReader.GetInt64(4);
                 bool isEncrypted = flowDocReader.GetBoolean(5);
                 string json = "";
+                string aesKey = "";
+                bool decrypted = true;
 
                 if (isEncrypted)
                 {
-                    // TODO
+                    decrypted = false;
+                    if (_aesPasswords.Count == 0)
+                    {
+                        MessageBoxInputParams mbp = new MessageBoxInputParams();
+                        mbp.IsPassword = true;
+                        mbp.ContentTitle = "FlowDocument is encrypted";
+                        mbp.ContentMessage = "Enter your AES password.";
+                        mbp.Icon = MessageBox.Avalonia.Enums.Icon.Question;
+                        mbp.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                        var msgbox = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxInputWindow(mbp);
+                        var msgboxResult = await msgbox.ShowDialog(dialogOwner);
+                        if (msgboxResult.Button == "Confirm")
+                        {
+                            _aesPasswords.Add(msgboxResult.Message);
+                        }
+                    }
+                    for (int i = 0; i < _aesPasswords.Count; i++)
+                    {
+                        string tmpPass = _aesPasswords[i];
+                        try
+                        {
+                            xml = AESHelper.AesDecrypt(xml, tmpPass);
+                            aesKey = tmpPass;
+                            decrypted = true;
+                            break;
+                        }
+                        catch (CryptographicException)
+                        {
+                            if (i == _aesPasswords.Count - 1)
+                            {
+                                MessageBoxInputParams mbp = new MessageBoxInputParams();
+                                mbp.IsPassword = true;
+                                mbp.ContentTitle = "FlowDocument is encrypted";
+                                mbp.ContentMessage = "Enter your AES password.";
+                                mbp.Icon = MessageBox.Avalonia.Enums.Icon.Question;
+                                mbp.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                                var msgbox = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxInputWindow(mbp);
+                                var msgboxResult = await msgbox.ShowDialog(dialogOwner);
+                                if (msgboxResult.Button == "Confirm")
+                                {
+                                    _aesPasswords.Add(msgboxResult.Message);
+                                }
+                            }
+                        }
+                    }
                 }
-                else
+                if (decrypted)
                 {
                     // Convert FlowDocument XML to QuillJS JSON.
                     json = await Task.Run(() => FlowDocToJsonConverter.Convert(xml));
+                }
+
+                if (isEncrypted)
+                {
+                    json = AESHelper.AesEncrypt(json, aesKey);
                 }
 
                 // Insert Document into database.
@@ -259,6 +519,7 @@ namespace TjMott.Writer.Models.SqlScripts
                 cmdInsertDocument.Parameters["@plainText"].Value = plainText;
                 cmdInsertDocument.Parameters["@wordCount"].Value = wordCount;
                 cmdInsertDocument.Parameters["@isEncrypted"].Value = isEncrypted;
+                cmdInsertDocument.Parameters["@DocumentType"].Value = "Manuscript";
                 int insertResult = await cmdInsertDocument.Command.ExecuteNonQueryAsync();
                 if (insertResult != 1)
                     return -1;

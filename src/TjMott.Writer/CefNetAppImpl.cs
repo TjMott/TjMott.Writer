@@ -1,46 +1,124 @@
 ﻿using CefNet;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace TjMott.Writer
 {
     internal class CefNetAppImpl : CefNetApplication
     {
+        internal static bool InitSuccess { get; private set; } = false;
+        internal static string InitErrorMessage { get; private set; }
         internal static CefNetAppImpl CefInstance { get; private set; }
-        internal static void Initialize()
+        internal static bool Initialize()
         {
-            string cefPath = Directory.GetCurrentDirectory();
-            if (PlatformInfo.IsWindows)
+            try
             {
-                cefPath = Path.Join(cefPath, "Assets", "cef-win64");
-            }
-            else if (PlatformInfo.IsLinux)
-            {
-                cefPath = Path.Join(cefPath, "Assets", "cef-linux64");
-            }
-            else
-            {
-                throw new ApplicationException("Unsupported operating system detected.");
-            }
-            if (!Environment.Is64BitOperatingSystem)
-            {
-                throw new ApplicationException("This application requires a 64-bit operating system.");
-            }
-            if (!Environment.Is64BitProcess)
-            {
-                throw new ApplicationException("Process started as a 32-bit process on a 64-bit OS. 64-bit process required.");
-            }
-            CefSettings settings = new CefSettings();
-            settings.MultiThreadedMessageLoop = true;
-            settings.WindowlessRenderingEnabled = true;
-            settings.ResourcesDirPath = Path.Join(cefPath, "resources");
-            settings.LocalesDirPath = Path.Join(cefPath, "resources", "locales");
-            //settings.LogSeverity = CefLogSeverity.Debug;
-            settings.LogSeverity = CefLogSeverity.Disable;
+                string cefPath = Directory.GetCurrentDirectory();
+                if (PlatformInfo.IsWindows)
+                {
+                    cefPath = Path.Join(cefPath, "Assets", "cef-win64");
+                }
+                else if (PlatformInfo.IsLinux)
+                {
+                    cefPath = Path.Join(cefPath, "Assets", "cef-linux64");
+                }
+                else
+                {
+                    InitErrorMessage = "Unsupported operating system detected.";
+                    InitSuccess = false;
+                    return InitSuccess;
+                }
+                if (!Environment.Is64BitOperatingSystem)
+                {
+                    InitErrorMessage = "This application requires a 64-bit operating system.";
+                    InitSuccess = false;
+                    return InitSuccess;
+                }
+                if (!Environment.Is64BitProcess)
+                {
+                    InitErrorMessage = "Process started as a 32-bit process on a 64-bit OS. 64-bit process required.";
+                    InitSuccess = false;
+                    return InitSuccess;
+                }
+                string libPath = Path.Combine(cefPath, "lib");
+                string resourcesPath = Path.Join(cefPath, "resources");
+                string localesPath = Path.Join(cefPath, "resources", "locales");
 
-            string libPath = Path.Combine(cefPath, "lib");
-            CefInstance = new CefNetAppImpl();
-            CefInstance.Initialize(libPath, settings);
+                // Used to test CEF initialization error display stuff.
+                //InitErrorMessage = "Pretending that CEF failed to initialize, to test error messages and how we inform the user of this.";
+                //InitSuccess = false;
+                //return InitSuccess;
+
+                // Sanity check on common CEF issues.
+                if (!Directory.Exists(cefPath))
+                {
+                    InitErrorMessage = string.Format("Expected to find CEF at {0}, but that directory does not exist.", cefPath);
+                    InitSuccess = false;
+                    return InitSuccess;
+                }
+                if (!Directory.Exists(libPath))
+                {
+                    InitErrorMessage = string.Format("Expected to find CEF libraries at {0}, but that directory does not exist.", libPath);
+                    InitSuccess = false;
+                    return InitSuccess;
+                }
+                if (!Directory.Exists(resourcesPath))
+                {
+                    InitErrorMessage = string.Format("Expected to find CEF resources at {0}, but that directory does not exist.", resourcesPath);
+                    InitSuccess = false;
+                    return InitSuccess;
+                }
+                if (!Directory.Exists(localesPath))
+                {
+                    InitErrorMessage = string.Format("Expected to find CEF locales at {0}, but that directory does not exist.", localesPath);
+                    InitSuccess = false;
+                    return InitSuccess;
+                }
+                if (Directory.GetFiles(libPath).Length == 0)
+                {
+                    InitErrorMessage = string.Format("CEF library folder {0} is empty!", libPath);
+                    InitSuccess = false;
+                    return InitSuccess;
+                }
+                if (Directory.GetFiles(resourcesPath).Length == 0)
+                {
+                    InitErrorMessage = string.Format("CEF resources folder {0} is empty!", resourcesPath);
+                    InitSuccess = false;
+                    return InitSuccess;
+                }
+                if (!Directory.Exists(localesPath))
+                {
+                    InitErrorMessage = string.Format("CEF locales folder {0} is empty!", localesPath);
+                    InitSuccess = false;
+                    return InitSuccess;
+                }
+                if (!File.Exists(Path.Join(libPath, "icudtl.dat")))
+                {
+                    InitErrorMessage = string.Format("File {0} does not exist!", Path.Join(libPath, "icudtl.dat"));
+                    InitSuccess = false;
+                    return InitSuccess;
+                }
+
+                CefSettings settings = new CefSettings();
+                settings.MultiThreadedMessageLoop = true;
+                settings.WindowlessRenderingEnabled = true;
+                settings.ResourcesDirPath = resourcesPath;
+                settings.LocalesDirPath = localesPath;
+                //settings.LogSeverity = CefLogSeverity.Debug;
+                settings.LogSeverity = CefLogSeverity.Disable;
+
+                CefInstance = new CefNetAppImpl();
+                CefInstance.Initialize(libPath, settings);
+                InitSuccess = true;
+                return InitSuccess;
+            }
+            catch (Exception ex)
+            {
+                InitErrorMessage = ex.Message;
+                InitSuccess = false;
+                return InitSuccess;
+            }
         }
         protected override void OnBeforeCommandLineProcessing(string processType, CefCommandLine commandLine)
         {

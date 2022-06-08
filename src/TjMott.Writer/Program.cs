@@ -14,15 +14,7 @@ namespace TjMott.Writer
         public static void Main(string[] args)
         {
             // Initialize CEF.
-            try
-            {
-                CefNetAppImpl.Initialize();
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine("Exception of type {0} thrown during app initialization: {1}", ex.GetType().Name, ex.Message);
-                return;
-            }
+            CefNetAppImpl.Initialize();
             BuildAvaloniaApp()
             .StartWithClassicDesktopLifetime(args);
         }

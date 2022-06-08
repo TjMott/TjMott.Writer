@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using TjMott.Writer.Models.Attributes;
 
@@ -188,27 +189,25 @@ namespace TjMott.Writer.Models.SQLiteClasses
             ASIN = "";
             SortIndex = 0;
         }
-
-
-        public void Load()
+        public async Task LoadAsync()
         {
-            _dbHelper.Load(this);
+            await _dbHelper.LoadAsync(this).ConfigureAwait(false);
         }
 
-        public void Create()
+        public async Task CreateAsync()
         {
-            _dbHelper.Insert(this);
-            Load();
+            await _dbHelper.InsertAsync(this).ConfigureAwait(false);
+            await LoadAsync().ConfigureAwait(false);
         }
 
-        public void Save()
+        public async Task SaveAsync()
         {
-            _dbHelper.Update(this);
+            await _dbHelper.UpdateAsync(this).ConfigureAwait(false);
         }
 
-        public void Delete()
+        public async Task DeleteAsync()
         {
-            _dbHelper.Delete(this);
+            await _dbHelper.DeleteAsync(this).ConfigureAwait(false);
         }
 
         public Story Clone()
@@ -222,18 +221,18 @@ namespace TjMott.Writer.Models.SQLiteClasses
             return story;
         }
 
-        public static List<Story> GetAllStories(SqliteConnection connection)
+        public static async Task<List<Story>> LoadAll(SqliteConnection connection)
         {
             if (_dbHelper == null)
                 _dbHelper = new DbHelper<Story>(connection);
 
             List<Story> retval = new List<Story>();
-            List<long> ids = _dbHelper.GetAllIds();
+            List<long> ids = await _dbHelper.GetAllIdsAsync().ConfigureAwait(false);
             foreach (long id in ids)
             {
                 Story story = new Story(connection);
                 story.id = id;
-                story.Load();
+                await story.LoadAsync().ConfigureAwait(false);
                 retval.Add(story);
             }
             return retval;

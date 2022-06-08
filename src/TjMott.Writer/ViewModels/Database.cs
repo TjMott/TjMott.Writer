@@ -2,6 +2,7 @@
 using ReactiveUI;
 using System.Linq;
 using System.Reactive;
+using System.Threading.Tasks;
 using TjMott.Writer.Models.SQLiteClasses;
 using TjMott.Writer.Models.SqlScripts;
 using TjMott.Writer.Views;
@@ -103,14 +104,14 @@ namespace TjMott.Writer.ViewModels
             CreateUniverseCommand = ReactiveCommand.Create(CreateUniverse);
         }
 
-        public void Load()
+        public async Task LoadAsync()
         {
             // Load database entities and create viewmodels.
-            var universes = Universe.GetAllUniverses(_connection).Select(i => new UniverseViewModel(i, this)).ToList();
-            var categories = Category.GetAllSeries(_connection).Select(i => new CategoryViewModel(i)).ToList();
-            var stories = Story.GetAllStories(_connection).Select(i => new StoryViewModel(i)).ToList();
-            var chapters = Chapter.GetAllChapters(_connection).Select(i => new ChapterViewModel(i)).ToList();
-            var scenes = Scene.GetAllScenes(_connection).Select(i => new SceneViewModel(i)).ToList();
+            var universes = (await Universe.LoadAll(_connection)).Select(i => new UniverseViewModel(i, this)).ToList();
+            var categories = (await Category.LoadAll(_connection)).Select(i => new CategoryViewModel(i)).ToList();
+            var stories = (await Story.LoadAll(_connection)).Select(i => new StoryViewModel(i)).ToList();
+            var chapters = (await Chapter.LoadAll(_connection)).Select(i => new ChapterViewModel(i)).ToList();
+            var scenes = (await Scene.GetAllScenes(_connection)).Select(i => new SceneViewModel(i)).ToList();
 
             // Link up objects.
             foreach (var chapter in chapters)
@@ -204,7 +205,7 @@ namespace TjMott.Writer.ViewModels
                 {
                     uni.SortIndex = Universes.Max(i => i.Model.SortIndex) + 1;
                 }
-                uni.Create();
+                await uni.CreateAsync().ConfigureAwait(false);
                 UniverseViewModel vm = new UniverseViewModel(uni, this);
                 Universes.Add(vm);
 
