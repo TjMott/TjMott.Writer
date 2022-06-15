@@ -3,7 +3,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace TjMott.Writer.ViewModels
+namespace TjMott.Writer.Models
 {
     static class AESHelper
     {

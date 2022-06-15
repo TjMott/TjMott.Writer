@@ -6,7 +6,7 @@
              x:Class="TjMott.Writer.Controls.QuillJsContainer">
 	<Grid>
 		
-		<Grid x:Name="aesPasswordContainer" RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,*,Auto" IsVisible="False">
+		<Grid x:Name="aesPasswordContainer" RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,Auto,Auto" IsVisible="False">
 			<Grid.Styles>
 				<Style Selector="TextBlock">
 					<Setter Property="VerticalAlignment" Value="Center" />
@@ -18,8 +18,8 @@
 			</Grid.Styles>
 			<TextBlock FontSize="18" FontWeight="Bold" Grid.ColumnSpan="3" Margin="0,0,0,20">This document is password-protected.</TextBlock>
 			<TextBlock Grid.Row="1">Document Password</TextBlock>
-			<TextBox x:Name="passwordTextBox" Grid.Row="1" Grid.Column="1" PasswordChar="*" />
-			<Button Content="Unlock" Grid.Row="1" Grid.Column="2" Click="decryptButton_Click" />
+			<TextBox x:Name="passwordTextBox" Grid.Row="1" Grid.Column="1" PasswordChar="*" MinWidth="350" />
+			<Button Content="Unlock" Grid.Row="1" Grid.Column="2" Click="unlockButton_Click" />
 		</Grid>
 		<Grid x:Name="webViewContainer" IsVisible="True">
 			

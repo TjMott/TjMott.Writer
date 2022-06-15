@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TjMott.Writer.Models.Attributes;
+using TjMott.Writer.ViewModels;
 
 namespace TjMott.Writer.Models.SQLiteClasses
 {
@@ -27,10 +28,13 @@ namespace TjMott.Writer.Models.SQLiteClasses
         private long _id;
         private long _universeId;
         private string _json;
+        private string _decryptedJson;
         private string _plainText;
         private long _wordCount;
         private bool _isEncrypted;
         private string _documentType;
+        private bool _isUnlocked;
+        private string _cachedPassword;
         #endregion
 
         #region Database Properties
@@ -50,7 +54,7 @@ namespace TjMott.Writer.Models.SQLiteClasses
         public string Json
         {
             get { return _json; }
-            set { _json = value; OnPropertyChanged("Json"); }
+            set { _json = value; OnPropertyChanged("Json"); OnPropertyChanged("PublicJson"); }
         }
         [DbField]
         public string PlainText
@@ -80,6 +84,43 @@ namespace TjMott.Writer.Models.SQLiteClasses
         public SqliteConnection Connection { get; set; }
         #endregion
 
+        public string PublicJson
+        {
+            get
+            {
+                if (IsEncrypted)
+                {
+                    if (IsUnlocked)
+                        return _decryptedJson;
+                    else
+                        return "{ \"ops\": [ { \"insert\": \"This document is password-protected and locked.\" } ] }";
+                }
+                else
+                {
+                    return _json;
+                }
+            }
+            set
+            {
+                if (IsEncrypted)
+                {
+                    if (IsUnlocked)
+                        _decryptedJson = value;
+                }
+                else
+                {
+                    _json = value;
+                }
+                OnPropertyChanged("PublicJson");
+            }
+        }
+
+        public bool IsUnlocked
+        {
+            get { return _isUnlocked; }
+            private set { _isUnlocked = value; OnPropertyChanged("IsUnlocked"); }
+        }
+
         private static DbHelper<Document> _dbHelper;
 
         public Document(SqliteConnection connection)
@@ -103,10 +144,22 @@ namespace TjMott.Writer.Models.SQLiteClasses
         public async Task LoadAsync()
         {
             await _dbHelper.LoadAsync(this).ConfigureAwait(false);
+            IsUnlocked = !IsEncrypted;
         }
 
         public async Task SaveAsync()
         {
+            if (IsEncrypted)
+            {
+                if (IsUnlocked && _cachedPassword != null)
+                {
+                    Json = AESHelper.AesEncrypt(_decryptedJson, _cachedPassword);
+                }
+                else
+                {
+                    return;
+                }
+            }
             await _dbHelper.UpdateAsync(this).ConfigureAwait(false);
         }
 
@@ -127,5 +180,43 @@ namespace TjMott.Writer.Models.SQLiteClasses
             return retval;
         }
 
+        public void Unlock(string password)
+        {
+            if (!IsEncrypted) return;
+            if (IsUnlocked) return;
+            string decrypted = AESHelper.AesDecrypt(_json, password);
+            _cachedPassword = password;
+            IsUnlocked = true;
+            PublicJson = decrypted;
+        }
+
+        public void Lock()
+        {
+            if (!IsEncrypted) return;
+            if (!IsUnlocked) return;
+            _decryptedJson = "";
+            _cachedPassword = "";
+            IsUnlocked = false;
+        }
+
+        public async Task Encrypt(string password)
+        {
+            if (IsEncrypted) return;
+            string encrypted = AESHelper.AesEncrypt(PublicJson, password);
+            _cachedPassword = password;
+            _json = encrypted;
+            IsEncrypted = true;
+            IsUnlocked = false;
+            await SaveAsync().ConfigureAwait(false);
+        }
+
+        public void Decrypt(string password)
+        {
+            if (!IsEncrypted) return;
+            string decrypted = AESHelper.AesDecrypt(_json, password);
+            IsEncrypted = false;
+            IsUnlocked = true;
+            PublicJson = decrypted;
+        }
     }
 }

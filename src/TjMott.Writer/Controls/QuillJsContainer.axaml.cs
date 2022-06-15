@@ -2,13 +2,11 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using CefNet.Avalonia;
 using CefNet.JSInterop;
 using SixLabors.Fonts;
 using System;
-using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using TjMott.Writer.Models.SQLiteClasses;
@@ -23,32 +21,45 @@ namespace TjMott.Writer.Controls
         private QuillJsEditor _editor;
         private bool _isInitialized = false;
 
+        public static readonly DirectProperty<QuillJsContainer, Document> DocumentProperty =
+            AvaloniaProperty.RegisterDirect<QuillJsContainer, Document>(nameof(Document), o => o.Document, (o, v) => o.Document = v);
         private Document _document;
         public Document Document
         {
             get { return _document; }
             set
             {
-                _document = value;
-                if (IsInitialized)
+                SetAndRaise(DocumentProperty, ref _document, value);
+                if (_isInitialized)
                 {
-                    loadDocument().Wait();
+                    _ = loadDocument();
                 }
             }
         }
 
+        private static readonly DirectProperty<QuillJsContainer, double> ZoomLevelProperty =
+            AvaloniaProperty.RegisterDirect<QuillJsContainer, double>(nameof(ZoomLevel), o => o.ZoomLevel, (o, v) => o.ZoomLevel = v);
         private double _zoomLevel = AppSettings.Default.editorZoom;
         public double ZoomLevel
         {
             get { return _zoomLevel; }
             set 
             { 
-                _zoomLevel = value;
+                SetAndRaise(ZoomLevelProperty, ref _zoomLevel, value);
                 if (_editor != null)
                 {
                     _editor.ZoomLevel = value;
                 }
             }
+        }
+
+        private static readonly DirectProperty<QuillJsContainer, bool> AllowUserEditingProperty =
+            AvaloniaProperty.RegisterDirect<QuillJsContainer, bool>(nameof(AllowUserEditing), o => o.AllowUserEditing, (o, v) => o.AllowUserEditing = v);
+        private bool _allowUserEditing = true;
+        public bool AllowUserEditing
+        {
+            get { return _allowUserEditing; }
+            set {  SetAndRaise(AllowUserEditingProperty, ref _allowUserEditing, value); }
         }
 
         public QuillJsContainer()
@@ -85,8 +96,9 @@ namespace TjMott.Writer.Controls
             else if (e.Title == "loaded")
             {
                 IsEnabled = true;
+                await setIsReadOnly(true);
                 if (_document != null)
-                    await loadDocument().ConfigureAwait(false);
+                    await loadDocument();
                 if (EditorLoaded != null)
                     EditorLoaded(this, new EventArgs());
             }
@@ -151,16 +163,21 @@ namespace TjMott.Writer.Controls
 
         private async Task loadDocument()
         {
-            if (Document.IsEncrypted)
+            if (Document.IsEncrypted && !Document.IsUnlocked)
             {
                 this.FindControl<Grid>("aesPasswordContainer").IsVisible = true;
                 this.FindControl<Grid>("webViewContainer").IsVisible = false;
+                this.FindControl<TextBox>("passwordTextBox").Focus();
             }
             else
             {
                 this.FindControl<Grid>("aesPasswordContainer").IsVisible = false;
                 this.FindControl<Grid>("webViewContainer").IsVisible = true;
-                await SetJsonText(Document.Json).ConfigureAwait(false);
+                await SetJsonText(Document.PublicJson).ConfigureAwait(false);
+                if (AllowUserEditing)
+                    await setIsReadOnly(false);
+                else
+                    await setIsReadOnly(true);
             }
         }
 
@@ -183,6 +200,18 @@ namespace TjMott.Writer.Controls
             window.initEditor();
         }
 
+        private async Task setIsReadOnly(bool isReadOnly)
+        {
+            dynamic scriptableObject = await _editor.GetMainFrame().GetScriptableObjectAsync(CancellationToken.None).ConfigureAwait(false);
+            dynamic window = scriptableObject.window;
+            dynamic quill = window.editor;
+            if (isReadOnly)
+                quill.disable();
+            else
+                quill.enable();
+            window.showToolbar(!isReadOnly);
+        }
+
         public async Task Save()
         {
             Document.Json = await GetJsonText();
@@ -202,12 +231,96 @@ namespace TjMott.Writer.Controls
         public async void Revert()
         {
             await Document.LoadAsync().ConfigureAwait(false);
-            await SetJsonText(Document.Json).ConfigureAwait(false);
+            await SetJsonText(Document.PublicJson).ConfigureAwait(false);
         }
 
-        private void decryptButton_Click(object sender, RoutedEventArgs e)
+        public async void Lock()
+        {
+            if (await HasUnsavedEdits())
+            {
+                var msgBox = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Save Before Locking?",
+                    "Your document has unsaved edits. Save before locking? You will lose your changes if you answer no!",
+                    MessageBox.Avalonia.Enums.ButtonEnum.YesNoCancel,
+                    MessageBox.Avalonia.Enums.Icon.Question,
+                    WindowStartupLocation.CenterOwner);
+                var msgBoxResult = await msgBox.ShowDialog(getOwner());
+                if (msgBoxResult == MessageBox.Avalonia.Enums.ButtonResult.Yes)
+                {
+                    await Save();
+                }
+                else if (msgBoxResult == MessageBox.Avalonia.Enums.ButtonResult.Cancel)
+                {
+                    return;
+                }
+            }
+            Document.Lock();
+            await SetJsonText(Document.PublicJson);
+            this.FindControl<Grid>("aesPasswordContainer").IsVisible = true;
+            this.FindControl<Grid>("webViewContainer").IsVisible = false;
+            this.FindControl<TextBox>("passwordTextBox").Focus();
+            await setIsReadOnly(true);
+        }
+
+        public async void Encrypt()
         {
 
         }
+
+        public async void Decrypt()
+        {
+
+        }
+
+        public async Task<bool> HasUnsavedEdits()
+        {
+            if (Document.IsUnlocked)
+            {
+                string editorCopy = await GetJsonText().ConfigureAwait(true);
+                return editorCopy != Document.PublicJson;
+            }
+            return false;
+        }
+
+        private async void unlockButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (Document.IsEncrypted && !Document.IsUnlocked)
+            {
+                string password = this.FindControl<TextBox>("passwordTextBox").Text;
+                try
+                {
+                    Document.Unlock(password);
+                    this.FindControl<TextBox>("passwordTextBox").Text = "";
+                    this.FindControl<Grid>("aesPasswordContainer").IsVisible = false;
+                    this.FindControl<Grid>("webViewContainer").IsVisible = true;
+                    await SetJsonText(Document.PublicJson);
+                    if (AllowUserEditing)
+                        await setIsReadOnly(false);
+                    else
+                        await setIsReadOnly(true);
+                }
+                catch (CryptographicException)
+                {
+                    this.FindControl<TextBox>("passwordTextBox").Text = "";
+                    var msgBox = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Invalid Password",
+                        "Incorrect password, your document could not be unlocked.",
+                        MessageBox.Avalonia.Enums.ButtonEnum.Ok,
+                        MessageBox.Avalonia.Enums.Icon.Error,
+                        WindowStartupLocation.CenterOwner);
+                    await msgBox.Show(getOwner());
+                    
+                }
+            }
+        }
+
+        private Window getOwner()
+        {
+            IControl parent = this.Parent;
+            while (parent != null && parent is not Window)
+            {
+                parent = parent.Parent;
+            }
+            return parent as Window;
+        }
+        
     }
 }

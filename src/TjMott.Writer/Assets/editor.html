@@ -77,6 +77,19 @@
             document.title = "TextChanged";
         }
 
+        function showToolbar(visible) {
+            if (visible)
+            {
+                document.getElementsByClassName("ql-toolbar")[0].style.visibility = 'visible';
+                document.getElementsByClassName("ql-toolbar")[0].style.display = null;
+            }
+            else
+            {
+                document.getElementsByClassName("ql-toolbar")[0].style.visibility = 'hidden';
+                document.getElementsByClassName("ql-toolbar")[0].style.display = 'none';
+            }
+        }
+
         function initEditor() {
 
             // Initialize fonts.

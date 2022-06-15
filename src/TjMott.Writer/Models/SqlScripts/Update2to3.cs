@@ -216,12 +216,12 @@ namespace TjMott.Writer.Models.SqlScripts
         Name TEXT DEFAULT 'New Note',
 
         FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE,
-        FOREIGN KEY(DocumentId) REFERENCES Document(DocumentId) ON DELETE CASCADE
+        FOREIGN KEY(DocumentId) REFERENCES Document(id) ON DELETE CASCADE
     );
 
     -- Delete Document when NoteDocument is deleted.
     CREATE TRIGGER NoteDocument_ad AFTER DELETE ON NoteDocument BEGIN
-      DELETE FROM NoteDucment WHERE id = (old.DocumentId);
+      DELETE FROM NoteDocument WHERE id = (old.DocumentId);
     END;
 
     CREATE VIRTUAL TABLE NoteDocument_fts USING fts5(Name, Content=NoteDocument, content_rowid=id);
