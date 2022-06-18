@@ -6,7 +6,7 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="TjMott.Writer.Views.SceneEditorWindow"
         Title="SceneEditorWindow">
-	<Grid RowDefinitions="Auto,*">
+	<Grid RowDefinitions="Auto,*,28">
 		<Menu>
 			<MenuItem Header="File">
 				<MenuItem x:Name="saveButton" Header="Save" Command="{Binding ElementName=manuscriptEditor, Path=Save}" IsEnabled="False" />
@@ -22,5 +22,7 @@
 		<Border Grid.Row="1" BorderBrush="DarkGray" BorderThickness="1">
 			<controls:QuillJsContainer x:Name="manuscriptEditor" Margin="5" />
 		</Border>
+		
+		<TextBlock Grid.Row="2" x:Name="statusBarTextBlock" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5" />
 	</Grid>
 </Window>

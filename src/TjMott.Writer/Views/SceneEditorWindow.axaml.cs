@@ -67,6 +67,7 @@ namespace TjMott.Writer.Views
             
             _sceneManuscript = new Document(Scene.Model.Connection);
             _sceneManuscript.id = Scene.Model.DocumentId;
+            AddHandler(KeyDownEvent, onKeyDown);
         }
 
         private async void _manuscriptEditor_EditorLoaded(object sender, EventArgs e)
@@ -111,10 +112,13 @@ namespace TjMott.Writer.Views
                 var msgBoxResult = await msgBox.ShowDialog(this);
                 if (msgBoxResult == MessageBox.Avalonia.Enums.ButtonResult.Yes)
                 {
+                    setStatusText("Saving document...", 0);
                     await _manuscriptEditor.Save();
+                    setStatusText("Document saved.", 0);
                 }
                 else if (msgBoxResult == MessageBox.Avalonia.Enums.ButtonResult.Cancel)
                 {
+                    setStatusText("Close cancelled.", 5000);
                     return;
                 }
             }
@@ -144,6 +148,26 @@ namespace TjMott.Writer.Views
             this.FindControl<MenuItem>("lockButton").IsEnabled = _sceneManuscript.IsEncrypted && _sceneManuscript.IsUnlocked;
             this.FindControl<MenuItem>("encryptButton").IsEnabled = !_sceneManuscript.IsEncrypted;
             this.FindControl<MenuItem>("decryptButton").IsEnabled = _sceneManuscript.IsEncrypted;
+        }
+
+        private async void onKeyDown(object sender, Avalonia.Input.KeyEventArgs e)
+        {
+            if (e.Key == Avalonia.Input.Key.S && e.KeyModifiers == Avalonia.Input.KeyModifiers.Control)
+            {
+                setStatusText("Saving document...", 0);
+                await _sceneManuscript.SaveAsync();
+                setStatusText("Document saved.", 5000);
+            }
+        }
+
+        private async void setStatusText(string text, int timeoutMillis)
+        {
+            this.FindControl<TextBlock>("statusBarTextBlock").Text = text;
+            if (timeoutMillis > 0)
+            {
+                await Task.Delay(timeoutMillis);
+                this.FindControl<TextBlock>("statusBarTextBlock").Text = "";
+            }
         }
     }
 }

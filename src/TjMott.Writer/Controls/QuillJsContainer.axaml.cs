@@ -108,8 +108,8 @@ namespace TjMott.Writer.Controls
             // the HTML title anyway.
             if (e.Title == "readyForInit" && !_isInitialized)
             {
-                await setTextZoom(ZoomLevel);
                 await initEditor().ConfigureAwait(false);
+                await setTextZoom(ZoomLevel);
             }
             else if (e.Title == "loaded")
             {
