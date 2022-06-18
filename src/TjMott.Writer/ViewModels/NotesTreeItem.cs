@@ -19,13 +19,16 @@ namespace TjMott.Writer.ViewModels
         public ObservableCollection<NotesTreeItem> Children { get; private set; }
 
         public ReactiveCommand<Window, Unit> RenameCommand { get; }
+        public ReactiveCommand<Window, Unit> DeleteCommand { get; }
 
         public NotesTreeItem()
         {
             Children = new ObservableCollection<NotesTreeItem>();
             RenameCommand = ReactiveCommand.Create<Window>(Rename);
+            DeleteCommand = ReactiveCommand.Create<Window>(Delete);
         }
 
         public abstract void Rename(Window dialogOwner);
+        public abstract void Delete(Window dialogOwner);
     }
 }

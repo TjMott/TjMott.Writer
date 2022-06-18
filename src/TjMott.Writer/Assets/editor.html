@@ -38,6 +38,10 @@
         bottom:5em !important;
     }
 
+    .text-zoom {
+        font-size:100%;
+    }
+
     p {
         text-indent: 1.5em;
         margin-bottom: 0.5em !important;
@@ -51,7 +55,7 @@
 	<link href="quilljs/quill.snow.css" rel="stylesheet">
 
 	<!-- Create the editor container -->
-	<div id="quill-container">
+	<div id="quill-container" class="text-zoom">
 
 	</div>
 
@@ -88,6 +92,10 @@
                 document.getElementsByClassName("ql-toolbar")[0].style.visibility = 'hidden';
                 document.getElementsByClassName("ql-toolbar")[0].style.display = 'none';
             }
+        }
+
+        function setTextZoom(zoom) {
+            document.getElementsByClassName("ql-editor")[0].style["zoom"] = zoom;
         }
 
         function initEditor() {

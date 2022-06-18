@@ -26,5 +26,10 @@ namespace TjMott.Writer.ViewModels
                 await Model.SaveAsync();
             }
         }
+
+        public override async void Delete(Window dialogOwner)
+        {
+
+        }
     }
 }

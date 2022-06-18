@@ -3,7 +3,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="TjMott.Writer.Controls.QuillJsContainer">
+             x:Class="TjMott.Writer.Controls.QuillJsContainer"
+			 HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+			 VerticalAlignment="Stretch" VerticalContentAlignment="Stretch">
 	<Grid>
 		
 		<Grid x:Name="aesPasswordContainer" RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,Auto,Auto" IsVisible="False">
@@ -21,11 +23,11 @@
 			<TextBox x:Name="passwordTextBox" Grid.Row="1" Grid.Column="1" PasswordChar="*" MinWidth="350" />
 			<Button Content="Unlock" Grid.Row="1" Grid.Column="2" Click="unlockButton_Click" />
 		</Grid>
-		<Grid x:Name="webViewContainer" IsVisible="True" RowDefinitions="*,Auto">
+		<Grid x:Name="webViewContainer" IsVisible="True" RowDefinitions="*,Auto" Margin="5,0">
 			<TextBlock x:Name="wordCountTextBlock" Text="Word Count:" Grid.Row="1" VerticalAlignment="Center" />
 			<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="1">
-				<TextBlock Text="Zoom" Margin="0,0,10,0" VerticalAlignment="Center" />
-				<Slider Minimum="1" Maximum="10" x:Name="zoomSlider" Width="200" VerticalAlignment="Center" />
+				<TextBlock x:Name="zoomTextBlock" Text="Zoom:" Margin="0,0,10,0" VerticalAlignment="Center" />
+				<Slider Minimum="0.1" Maximum="10" x:Name="zoomSlider" Width="200" VerticalAlignment="Center" />
 			</StackPanel>
 		</Grid>
 		

@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 using CefNet.JSInterop;
 using SixLabors.Fonts;
 using System;
@@ -57,7 +58,14 @@ namespace TjMott.Writer.Controls
         public bool AllowUserEditing
         {
             get { return _allowUserEditing; }
-            set { SetAndRaise(AllowUserEditingProperty, ref _allowUserEditing, value); }
+            set 
+            { 
+                SetAndRaise(AllowUserEditingProperty, ref _allowUserEditing, value);
+                if (_editor != null)
+                {
+                    _ = setIsReadOnly(!value);
+                }
+            }
         }
 
         public QuillJsContainer()
@@ -89,7 +97,7 @@ namespace TjMott.Writer.Controls
             {
                 _zoomLevel = (double)e.NewValue;
                 if (_editor != null)
-                    _editor.ZoomLevel = _zoomLevel;
+                    _ = setTextZoom(_zoomLevel);
             }
         }
 
@@ -100,7 +108,7 @@ namespace TjMott.Writer.Controls
             // the HTML title anyway.
             if (e.Title == "readyForInit" && !_isInitialized)
             {
-                _editor.ZoomLevel = ZoomLevel;
+                await setTextZoom(ZoomLevel);
                 await initEditor().ConfigureAwait(false);
             }
             else if (e.Title == "loaded")
@@ -196,9 +204,9 @@ namespace TjMott.Writer.Controls
         private async Task initEditor()
         {
             _isInitialized = true;
-            _editor.ZoomLevel = ZoomLevel;
             dynamic scriptableObject = await _editor.GetMainFrame().GetScriptableObjectAsync(CancellationToken.None).ConfigureAwait(false);
             dynamic window = scriptableObject.window;
+            await setTextZoom(ZoomLevel);
 
             // Enumerate installed fonts, add them to the Quill editor.
             FontCollection col = new FontCollection();
@@ -273,6 +281,8 @@ namespace TjMott.Writer.Controls
             await setIsReadOnly(true);
         }
 
+        
+
         public async void Encrypt()
         {
 
@@ -293,7 +303,20 @@ namespace TjMott.Writer.Controls
             return false;
         }
 
-        private async void unlockButton_Click(object sender, RoutedEventArgs e)
+        private void unlockButton_Click(object sender, RoutedEventArgs e)
+        {
+            unlock();
+        }
+
+        private void passwordBox_KeyDown(object sender, Avalonia.Input.KeyEventArgs e)
+        {
+            if (e.Key == Avalonia.Input.Key.Enter)
+            {
+                unlock();
+            }
+        }
+
+        private async void unlock()
         {
             if (Document.IsEncrypted && !Document.IsUnlocked)
             {
@@ -319,9 +342,17 @@ namespace TjMott.Writer.Controls
                         MessageBox.Avalonia.Enums.Icon.Error,
                         WindowStartupLocation.CenterOwner);
                     await msgBox.Show(getOwner());
-                    
+
                 }
             }
+        }
+
+        private async Task setTextZoom(double zoom)
+        {
+            dynamic scriptableObject = await _editor.GetMainFrame().GetScriptableObjectAsync(CancellationToken.None).ConfigureAwait(false);
+            dynamic window = scriptableObject.window;
+            window.setTextZoom(zoom.ToString("P"));
+            Dispatcher.UIThread.Post(() => this.FindControl<TextBlock>("zoomTextBlock").Text = string.Format("Zoom: {0:P0}", zoom));
         }
 
         private Window getOwner()
