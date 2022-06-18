@@ -72,6 +72,7 @@ namespace TjMott.Writer.Views
         private async void _manuscriptEditor_EditorLoaded(object sender, EventArgs e)
         {
             _manuscriptEditor.EditorLoaded -= _manuscriptEditor_EditorLoaded;
+            _manuscriptEditor.ZoomLevel = AppSettings.Default.editorZoom;
             await _sceneManuscript.LoadAsync();
             updateMenuItems();
             _manuscriptEditor.Document = _sceneManuscript;
@@ -92,16 +93,9 @@ namespace TjMott.Writer.Views
             _wordCountTextBlock = this.FindControl<TextBlock>("wordCountTextBlock");
             _manuscriptEditor = this.FindControl<QuillJsContainer>("manuscriptEditor");
             _manuscriptEditor.EditorLoaded += _manuscriptEditor_EditorLoaded;
-            _manuscriptEditor.TextChanged += _manuscriptEditor_TextChanged;
             this.Width = AppSettings.Default.editorWindowWidth;
             this.Height = AppSettings.Default.editorWindowHeight;
             Closing += SceneEditorWindow_Closing;
-        }
-
-        private async void _manuscriptEditor_TextChanged(object sender, EventArgs e)
-        {
-            int wordCount = await _manuscriptEditor.GetWordCount();
-            _wordCountTextBlock.Text = string.Format("Word Count: {0}", wordCount);
         }
 
         private async void SceneEditorWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -134,7 +128,8 @@ namespace TjMott.Writer.Views
                 _windows.Remove(Scene.Model.id);
             AppSettings.Default.editorWindowWidth = this.Width;
             AppSettings.Default.editorWindowHeight = this.Height;
-            AppSettings.Default.editorZoom = this.FindControl<Slider>("zoomSlider").Value;
+            if (_manuscriptEditor != null)
+                AppSettings.Default.editorZoom = _manuscriptEditor.ZoomLevel;
             AppSettings.Default.Save();
             Close();
         }

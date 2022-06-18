@@ -30,26 +30,24 @@ namespace TjMott.Writer.Controls
             set
             {
                 SetAndRaise(DocumentProperty, ref _document, value);
-                if (_isInitialized)
+                if (_isInitialized && _document != null)
                 {
                     _ = loadDocument();
                 }
+                IsVisible = Document != null;
             }
         }
 
         private static readonly DirectProperty<QuillJsContainer, double> ZoomLevelProperty =
             AvaloniaProperty.RegisterDirect<QuillJsContainer, double>(nameof(ZoomLevel), o => o.ZoomLevel, (o, v) => o.ZoomLevel = v);
-        private double _zoomLevel = AppSettings.Default.editorZoom;
+        private double _zoomLevel = 1.0;
         public double ZoomLevel
         {
             get { return _zoomLevel; }
             set 
             { 
                 SetAndRaise(ZoomLevelProperty, ref _zoomLevel, value);
-                if (_editor != null)
-                {
-                    _editor.ZoomLevel = value;
-                }
+                this.FindControl<Slider>("zoomSlider").Value = _zoomLevel;
             }
         }
 
@@ -59,7 +57,7 @@ namespace TjMott.Writer.Controls
         public bool AllowUserEditing
         {
             get { return _allowUserEditing; }
-            set {  SetAndRaise(AllowUserEditingProperty, ref _allowUserEditing, value); }
+            set { SetAndRaise(AllowUserEditingProperty, ref _allowUserEditing, value); }
         }
 
         public QuillJsContainer()
@@ -77,10 +75,21 @@ namespace TjMott.Writer.Controls
                 _editor.DocumentTitleChanged += _editor_DocumentTitleChanged;
 
                 this.FindControl<Grid>("webViewContainer").Children.Add(_editor);
+                this.FindControl<Slider>("zoomSlider").PropertyChanged += zoomSlider_PropertyChanged;
             }
             else
             {
                 this.FindControl<Grid>("webViewContainer").Children.Add(new EditorCefErrorDisplay());
+            }
+        }
+
+        private void zoomSlider_PropertyChanged(object sender, AvaloniaPropertyChangedEventArgs e)
+        {
+            if (e.Property.Name == "Value")
+            {
+                _zoomLevel = (double)e.NewValue;
+                if (_editor != null)
+                    _editor.ZoomLevel = _zoomLevel;
             }
         }
 
@@ -91,6 +100,7 @@ namespace TjMott.Writer.Controls
             // the HTML title anyway.
             if (e.Title == "readyForInit" && !_isInitialized)
             {
+                _editor.ZoomLevel = ZoomLevel;
                 await initEditor().ConfigureAwait(false);
             }
             else if (e.Title == "loaded")
@@ -106,6 +116,8 @@ namespace TjMott.Writer.Controls
             {
                 if (TextChanged != null)
                     TextChanged(this, new EventArgs());
+                int wordCount = await GetWordCount();
+                this.FindControl<TextBlock>("wordCountTextBlock").Text = string.Format("Word Count: {0}", wordCount);
             }
         }
 

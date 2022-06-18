@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reactive;
+using Avalonia.Controls;
+using ReactiveUI;
 
 namespace TjMott.Writer.ViewModels
 {
@@ -19,9 +18,14 @@ namespace TjMott.Writer.ViewModels
         public UniverseViewModel UniverseVm { get; protected set; }
         public ObservableCollection<NotesTreeItem> Children { get; private set; }
 
+        public ReactiveCommand<Window, Unit> RenameCommand { get; }
+
         public NotesTreeItem()
         {
             Children = new ObservableCollection<NotesTreeItem>();
+            RenameCommand = ReactiveCommand.Create<Window>(Rename);
         }
+
+        public abstract void Rename(Window dialogOwner);
     }
 }

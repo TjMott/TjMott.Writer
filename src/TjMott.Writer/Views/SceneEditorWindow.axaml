@@ -6,7 +6,7 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="TjMott.Writer.Views.SceneEditorWindow"
         Title="SceneEditorWindow">
-	<Grid RowDefinitions="Auto,*,Auto">
+	<Grid RowDefinitions="Auto,*">
 		<Menu>
 			<MenuItem Header="File">
 				<MenuItem x:Name="saveButton" Header="Save" Command="{Binding ElementName=manuscriptEditor, Path=Save}" IsEnabled="False" />
@@ -21,19 +21,6 @@
 
 		<Border Grid.Row="1" BorderBrush="DarkGray" BorderThickness="1">
 			<controls:QuillJsContainer x:Name="manuscriptEditor" Margin="5" />
-		</Border>
-
-		<Border BorderBrush="DarkGray" BorderThickness="1" Grid.Row="2" Margin="12,5">
-			<Grid>
-				<StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-					<TextBlock x:Name="wordCountTextBlock" Text="Word Count:" />
-				</StackPanel>
-
-				<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-					<TextBlock Text="Zoom" Margin="0,0,10,0" VerticalAlignment="Center" />
-					<Slider Minimum="1" Maximum="10" x:Name="zoomSlider" Width="200" VerticalAlignment="Center" Value="{Binding ElementName=manuscriptEditor, Path=ZoomLevel}" />
-				</StackPanel>
-			</Grid>
 		</Border>
 	</Grid>
 </Window>

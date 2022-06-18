@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:controls="clr-namespace:TjMott.Writer.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="TjMott.Writer.Views.TicketTrackerView">
 	<Grid RowDefinitions="Auto,*,*" ColumnDefinitions="*,Auto">
@@ -61,6 +62,7 @@
 				<Image Source="/Assets/Images/icons8-edit-40.png" />
 			</Button>
 		</StackPanel>
-		
+
+		<controls:QuillJsContainer Grid.Row="2" AllowUserEditing="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
 	</Grid>
 </UserControl>

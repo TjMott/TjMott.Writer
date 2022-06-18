@@ -14,6 +14,32 @@ namespace TjMott.Writer.ViewModels
         public ObservableCollection<NotesTreeItem> Items { get; private set; }
         public ObservableCollection<NoteCategoryViewModel> Categories { get; private set; }
 
+
+        private string _selectedName = "No Document Selected";
+        public string SelectedName { get { return _selectedName; } private set { _selectedName = value; OnPropertyChanged("SelectedName"); } }
+
+        private NotesTreeItem _selectedNote;
+        public NotesTreeItem SelectedNote 
+        { 
+            get { return _selectedNote; } 
+            set 
+            {
+                if (_selectedNote != null && _selectedNote != value && _selectedNote is NoteDocumentViewModel)
+                    (_selectedNote as NoteDocumentViewModel).UnloadDocument();
+                _selectedNote = value; 
+                OnPropertyChanged("SelectedNote");
+                if (_selectedNote != null && _selectedNote is NoteDocumentViewModel)
+                {
+                    (_selectedNote as NoteDocumentViewModel).LoadDocument();
+                    SelectedName = (_selectedNote as NoteDocumentViewModel).Model.Name;
+                }
+                else
+                {
+                    SelectedName = "No Document Selected";
+                }
+            } 
+        }
+
         public NotesTree(UniverseViewModel universe)
         {
             UniverseVm = universe;
