@@ -8,6 +8,7 @@ using ReactiveUI;
 using System.Reactive;
 using TjMott.Writer.Views;
 using System.Threading.Tasks;
+using Avalonia.Controls;
 
 namespace TjMott.Writer.ViewModels
 {
@@ -31,11 +32,11 @@ namespace TjMott.Writer.ViewModels
         #endregion
 
         #region ICommands
-        public ReactiveCommand<Unit, Unit> RenameCommand { get; }
-        public ReactiveCommand<Unit, Unit> DeleteCommand { get; }
+        public ReactiveCommand<Window, Unit> RenameCommand { get; }
+        public ReactiveCommand<Window, Unit> DeleteCommand { get; }
         public ReactiveCommand<Unit, Unit> EncryptCommand { get; }
         public ReactiveCommand<Unit, Unit> DecryptCommand { get; }
-        public ReactiveCommand<Unit, Unit> MoveToChapterCommand { get; }
+        public ReactiveCommand<Window, Unit> MoveToChapterCommand { get; }
         #endregion
 
         public long GetWordCount()
@@ -90,20 +91,20 @@ namespace TjMott.Writer.ViewModels
             Model = model;
             Model.PropertyChanged += Model_PropertyChanged;
 
-            RenameCommand = ReactiveCommand.Create(Rename);
-            DeleteCommand = ReactiveCommand.Create(Delete);
+            RenameCommand = ReactiveCommand.Create<Window>(Rename);
+            DeleteCommand = ReactiveCommand.Create<Window>(Delete);
             EncryptCommand = ReactiveCommand.Create(Encrypt);
             DecryptCommand = ReactiveCommand.Create(Decrypt);
-            MoveToChapterCommand = ReactiveCommand.Create(MoveToChapter);
+            MoveToChapterCommand = ReactiveCommand.Create<Window>(MoveToChapter);
             
             // Inits the IsEncrypted field.
             CanDecrypt();
         }
 
-        public async void Rename()
+        public async void Rename(Window owner)
         {
             NameItemWindow dialog = new NameItemWindow(Model.Name);
-            string result = await dialog.ShowDialog<string>(MainWindow);
+            string result = await dialog.ShowDialog<string>(owner);
             if (result != null)
             {
                 Model.Name = result;
@@ -111,10 +112,10 @@ namespace TjMott.Writer.ViewModels
             }
         }
 
-        public async void Delete()
+        public async void Delete(Window owner)
         {
             ConfirmDeleteWindow dialog = new ConfirmDeleteWindow(string.Format("Scene: {0}", Model.Name));
-            bool result = await dialog.ShowDialog<bool>(MainWindow);
+            bool result = await dialog.ShowDialog<bool>(owner);
             if (result)
             {
                 await Model.DeleteAsync().ConfigureAwait(false);
@@ -122,10 +123,10 @@ namespace TjMott.Writer.ViewModels
             }
         }
 
-        public void MoveToChapter()
+        public void MoveToChapter(Window owner)
         {
             MoveSceneToChapterWindow d = new MoveSceneToChapterWindow(this);
-            d.ShowDialog<bool>(MainWindow);
+            d.ShowDialog<bool>(owner);
         }
 
         /*public void ExportToWord(Docx.DocX doc)

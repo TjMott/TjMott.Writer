@@ -1,4 +1,5 @@
-﻿using ReactiveUI;
+﻿using Avalonia.Controls;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -119,14 +120,14 @@ namespace TjMott.Writer.ViewModels
 
         #region ICommands
         public ReactiveCommand<Unit, Unit> SelectUniverseCommand { get; }
-        public ReactiveCommand<Unit, Unit> CreateCategoryCommand { get; }
-        public ReactiveCommand<Unit, Unit> CreateStoryCommand { get; }
+        public ReactiveCommand<Window, Unit> CreateCategoryCommand { get; }
+        public ReactiveCommand<Window, Unit> CreateStoryCommand { get; }
         public ReactiveCommand<Unit, Unit> MoveItemUpCommand { get; }
         public ReactiveCommand<Unit, Unit> MoveItemDownCommand { get; }
         public ReactiveCommand<Unit, Unit> OpenEditorCommand { get; }
         public ReactiveCommand<Unit, Unit> ExportToWordCommand { get; }
-        public ReactiveCommand<Unit, Unit> ShowWordCountCommand { get; }
-        public ReactiveCommand<Unit, Unit> RenameCommand { get; }
+        public ReactiveCommand<Window, Unit> ShowWordCountCommand { get; }
+        public ReactiveCommand<Window, Unit> RenameCommand { get; }
         public ReactiveCommand<Unit, Unit> OpenNoteCommand { get; }
         #endregion
 
@@ -141,14 +142,14 @@ namespace TjMott.Writer.ViewModels
             Database = database;
             model.PropertyChanged += Model_PropertyChanged;
             SelectUniverseCommand = ReactiveCommand.Create(SelectUniverse);
-            CreateCategoryCommand = ReactiveCommand.Create(CreateCategory);
-            CreateStoryCommand = ReactiveCommand.Create(CreateStory);
+            CreateCategoryCommand = ReactiveCommand.Create<Window>(CreateCategory);
+            CreateStoryCommand = ReactiveCommand.Create<Window>(CreateStory);
             MoveItemUpCommand = ReactiveCommand.Create(MoveItemUp, this.WhenAny(x => x.SelectedTreeViewItem.SortIndex, (item) => CanMoveItemUp()));
             MoveItemDownCommand = ReactiveCommand.Create(MoveItemDown, this.WhenAny(x => x.SelectedTreeViewItem.SortIndex, (item) => CanMoveItemDown()));
             OpenEditorCommand = ReactiveCommand.Create(OpenEditor, this.WhenAny(x => x.SelectedTreeViewItem, (item) => (item.Value as SceneViewModel) != null));
             ExportToWordCommand = ReactiveCommand.Create(ExportToWord, this.WhenAny(x => x.SelectedTreeViewItem, (item) => (item.Value as IExportToWordDocument) != null));
-            ShowWordCountCommand = ReactiveCommand.Create(ShowWordCount, this.WhenAny(x => x.SelectedTreeViewItem, (item) => (item.Value as IGetWordCount) != null));
-            RenameCommand = ReactiveCommand.Create(Rename);
+            ShowWordCountCommand = ReactiveCommand.Create<Window>(ShowWordCount, this.WhenAny(x => x.SelectedTreeViewItem, (item) => (item.Value as IGetWordCount) != null));
+            RenameCommand = ReactiveCommand.Create<Window>(Rename);
             OpenNoteCommand = ReactiveCommand.Create(OpenOrCreateNoteForItem, this.WhenAny(x => x.SelectedTreeViewItem, (item) => item.Value != null));
 
             initializeAsync();
@@ -189,10 +190,10 @@ namespace TjMott.Writer.ViewModels
             Database.SelectedUniverse = this;
         }
 
-        public async void CreateCategory()
+        public async void CreateCategory(Window owner)
         {
             NameItemWindow dialog = new NameItemWindow("New Category");
-            string result = await dialog.ShowDialog<string>(MainWindow);
+            string result = await dialog.ShowDialog<string>(owner);
             if (!string.IsNullOrWhiteSpace(result))
             {
                 Category category = new Category(Model.Connection);
@@ -209,14 +210,14 @@ namespace TjMott.Writer.ViewModels
             }
        }
 
-        public async void CreateStory()
+        public async void CreateStory(Window owner)
         {
             Story story = new Story(Model.Connection);
             story.UniverseId = Model.id;
 
             EditStoryPropertiesWindow dialog = new EditStoryPropertiesWindow();
             dialog.DataContext = new EditStoryPropertiesWindowViewModel(story, Categories);
-            bool result = await dialog.ShowDialog<bool>(MainWindow);
+            bool result = await dialog.ShowDialog<bool>(owner);
             if (result)
             {
                 if (story.CategoryId == null)
@@ -433,10 +434,10 @@ namespace TjMott.Writer.ViewModels
             }
         }
 
-        public async void Rename()
+        public async void Rename(Window owner)
         {
             NameItemWindow dialog = new NameItemWindow(Model.Name);
-            string result = await dialog.ShowDialog<string>(MainWindow);
+            string result = await dialog.ShowDialog<string>(owner);
             if (result != null)
             {
                 Model.Name = result;
@@ -509,11 +510,11 @@ namespace TjMott.Writer.ViewModels
             }*/
         }
 
-        public void ShowWordCount()
+        public void ShowWordCount(Window owner)
         {
             IGetWordCount item = SelectedTreeViewItem as IGetWordCount;
             var dialog = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Word Count", string.Format("Word Count: {0}", item.GetWordCount()), MessageBox.Avalonia.Enums.ButtonEnum.Ok, MessageBox.Avalonia.Enums.Icon.Info);
-            dialog.ShowDialog(MainWindow);
+            dialog.ShowDialog(owner);
         }
 
         public void OpenOrCreateNoteForItem()

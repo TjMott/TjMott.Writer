@@ -155,6 +155,9 @@ namespace TjMott.Writer
             commandLine.AppendSwitchWithValue("override-metrics-upload-url", "");
             commandLine.AppendSwitchWithValue("realtime-reporting-url", "");
 
+            // Allows changing URL during print.
+            commandLine.AppendSwitch("allow-file-access-from-files");
+
             //if (PlatformInfo.IsLinux)
             {
                 // Needed to prevent crash on Linux.

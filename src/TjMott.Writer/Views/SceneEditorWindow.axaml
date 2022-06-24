@@ -8,13 +8,14 @@
         Title="SceneEditorWindow">
 	<Grid RowDefinitions="Auto,*,28">
 		<Menu>
-			<MenuItem Header="File">
+			<MenuItem Header="Document">
 				<MenuItem x:Name="saveButton" Header="Save" Command="{Binding ElementName=manuscriptEditor, Path=Save}" IsEnabled="False" />
 				<MenuItem x:Name="revertButton" Header="Revert" Command="{Binding ElementName=manuscriptEditor, Path=Revert}" IsEnabled="False" />
 				<MenuItem x:Name="exportButton" Header="Export" IsEnabled="False" />
 				<MenuItem x:Name="lockButton" Header="Lock" Command="{Binding ElementName=manuscriptEditor, Path=Lock}" IsEnabled="False" />
 				<MenuItem x:Name="encryptButton" Header="Encrypt" Command="{Binding ElementName=manuscriptEditor, Path=Encrypt}" IsEnabled="False" />
 				<MenuItem x:Name="decryptButton" Header="Decrypt" Command="{Binding ElementName=manuscriptEditor, Path=Decrypt}" IsEnabled="False" />
+				<MenuItem x:Name="printButton" Header="Print" Click="printButton_Click" IsEnabled="False" />
 				<MenuItem Header="Close" />
 			</MenuItem>
 		</Menu>

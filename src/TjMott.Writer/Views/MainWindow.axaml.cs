@@ -9,7 +9,6 @@ namespace TjMott.Writer.Views
         public MainWindow()
         {
             InitializeComponent();
-            ViewModelBase.MainWindow = this;
 
             Width = AppSettings.Default.mainWindowWidth;
             Height = AppSettings.Default.mainWindowHeight;

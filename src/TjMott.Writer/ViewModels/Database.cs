@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.Sqlite;
+﻿using Avalonia.Controls;
+using Microsoft.Data.Sqlite;
 using ReactiveUI;
 using System.Linq;
 using System.Reactive;
@@ -63,7 +64,7 @@ namespace TjMott.Writer.ViewModels
         #endregion
 
         #region Commands
-        public ReactiveCommand<Unit, Unit> CreateUniverseCommand { get; }
+        public ReactiveCommand<Window, Unit> CreateUniverseCommand { get; }
         #endregion
 
         public Database(string filename)
@@ -101,7 +102,7 @@ namespace TjMott.Writer.ViewModels
             Universes = new SortBySortIndexBindingList<UniverseViewModel>();
             Instance = this;
 
-            CreateUniverseCommand = ReactiveCommand.Create(CreateUniverse);
+            CreateUniverseCommand = ReactiveCommand.Create<Window>(CreateUniverse);
         }
 
         public async Task LoadAsync()
@@ -189,10 +190,10 @@ namespace TjMott.Writer.ViewModels
             _connection = null;
         }
 
-        public async void CreateUniverse()
+        public async void CreateUniverse(Window owner)
         {
             NameItemWindow dialog = new NameItemWindow("New Universe");
-            string result = await dialog.ShowDialog<string>(MainWindow);
+            string result = await dialog.ShowDialog<string>(owner);
             if (!string.IsNullOrWhiteSpace(result))
             {
                 Universe uni = new Universe(_connection);

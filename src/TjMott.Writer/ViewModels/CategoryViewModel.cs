@@ -1,4 +1,5 @@
-﻿using ReactiveUI;
+﻿using Avalonia.Controls;
+using ReactiveUI;
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -29,8 +30,8 @@ namespace TjMott.Writer.ViewModels
         #endregion
 
         #region ICommands
-        public ReactiveCommand<Unit, Unit> RenameCommand { get; }
-        public ReactiveCommand<Unit, Unit> DeleteCommand { get; }
+        public ReactiveCommand<Window, Unit> RenameCommand { get; }
+        public ReactiveCommand<Window, Unit> DeleteCommand { get; }
         #endregion
 
         #region Properties
@@ -48,14 +49,14 @@ namespace TjMott.Writer.ViewModels
             Model = model;
             Stories = new SortBySortIndexBindingList<StoryViewModel>();
             Model.PropertyChanged += Model_PropertyChanged;
-            RenameCommand = ReactiveCommand.Create(Rename);
-            DeleteCommand = ReactiveCommand.Create(Delete);
+            RenameCommand = ReactiveCommand.Create<Window>(Rename);
+            DeleteCommand = ReactiveCommand.Create<Window>(Delete);
         }
 
-        public async void Rename()
+        public async void Rename(Window owner)
         {
             NameItemWindow dialog = new NameItemWindow(Model.Name);
-            string result = await dialog.ShowDialog<string>(MainWindow);
+            string result = await dialog.ShowDialog<string>(owner);
             if (result != null)
             {
                 Model.Name = result;
@@ -63,10 +64,10 @@ namespace TjMott.Writer.ViewModels
             }
         }
 
-        public async void Delete()
+        public async void Delete(Window owner)
         {
             ConfirmDeleteWindow dialog = new ConfirmDeleteWindow(string.Format("Category: {0}", Model.Name));
-            bool result = await dialog.ShowDialog<bool>(MainWindow);
+            bool result = await dialog.ShowDialog<bool>(owner);
             if (result)
             {
                 await Model.DeleteAsync().ConfigureAwait(false);

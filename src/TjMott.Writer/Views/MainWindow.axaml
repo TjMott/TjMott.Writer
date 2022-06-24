@@ -11,10 +11,6 @@
         Icon="/Assets/avalonia-logo.ico"
 		Closing="Window_Closing"
         Title="TJ Mott's Writer" Height="450" Width="800">
-
-    <Design.DataContext>
-        <vm:MainWindowViewModel/>
-    </Design.DataContext>
 	
 	<Grid>
 		<Grid.RowDefinitions>
@@ -25,12 +21,12 @@
 
 		<Menu>
 			<MenuItem Header="File">
-				<MenuItem Header="New" Command="{Binding NewFileCommand}"  />
-				<MenuItem Header="Open" Command="{Binding OpenFileCommand}" />
+				<MenuItem Header="New" Command="{Binding NewFileCommand}" CommandParameter="{Binding $parent[Window]}"  />
+				<MenuItem Header="Open" Command="{Binding OpenFileCommand}" CommandParameter="{Binding $parent[Window]}" />
 				<MenuItem Header="Quit" Command="{Binding QuitCommand}" />
 			</MenuItem>
 			<MenuItem Header="Universe">
-				<MenuItem Header="Create Universe" Command="{Binding Database.CreateUniverseCommand}" />
+				<MenuItem Header="Create Universe" Command="{Binding Database.CreateUniverseCommand}" CommandParameter="{Binding $parent[Window]}" />
 				<MenuItem x:Name="selectUniverseMenu" Header="Select Universe" Items="{Binding Database.Universes}">
 					<MenuItem.Styles>
 						<Style Selector="#selectUniverseMenu MenuItem">
@@ -44,21 +40,28 @@
 							<Setter Property="Command" Value="{Binding SelectUniverseCommand}" />
 						</Style>
 					</MenuItem.Styles>
-					
 				</MenuItem>
-				<MenuItem Header="Rename Universe" Command="{Binding Database.SelectedUniverse.RenameCommand}" />
+				<MenuItem Header="Rename Universe" Command="{Binding Database.SelectedUniverse.RenameCommand}" CommandParameter="{Binding $parent[Window]}" />
 				<Separator />
-				<MenuItem Header="Create New Category" Command="{Binding Database.SelectedUniverse.CreateCategoryCommand}" />
-				<MenuItem Header="Create New Story" Command="{Binding Database.SelectedUniverse.CreateStoryCommand}" />
+				<MenuItem Header="Create New Category" Command="{Binding Database.SelectedUniverse.CreateCategoryCommand}" CommandParameter="{Binding $parent[Window]}" />
+				<MenuItem Header="Create New Story" Command="{Binding Database.SelectedUniverse.CreateStoryCommand}" CommandParameter="{Binding $parent[Window]}" />
 				<Separator />
 				<MenuItem Header="Create New Notes Category" />
 				<MenuItem Header="Create New Note Document" />
 				<Separator />
 				<MenuItem Header="Spellcheck Dictionary" />
 			</MenuItem>
+			<MenuItem x:Name="windowsMenu" Header="Windows" Items="{Binding OpenWindowsViewModel.AllWindows}">
+				<MenuItem.Styles>
+					<Style Selector="#windowsMenu MenuItem">
+						<Setter Property="Header" Value="{Binding Name}" />
+						<Setter Property="Command" Value="{Binding Activate}" />
+					</Style>
+				</MenuItem.Styles>
+			</MenuItem>
 			<MenuItem Header="Help">
 				<MenuItem Header="Readme" />
-				<MenuItem Header="About" Command="{Binding AboutCommand}" />
+				<MenuItem Header="About" Command="{Binding AboutCommand}" CommandParameter="{Binding $parent[Window]}" />
 			</MenuItem>
 		</Menu>
 

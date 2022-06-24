@@ -1,58 +1,104 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="html-container">
 <head>
     <title>empty</title>
 	<style>
-	html, body {
-		position:absolute;
-        top:0;
-        left:0;
-        right:0;
-        bottom:2em;
-	}
+        @media screen, print {
+            #quill-container {
+                font-size: 12px;
+                font-family: Garamond;
+            }
 
-    .ql-container {
-        font-size:12px;
-        font-family:Garamond;
-    }
+            .ql-container {
+                font-size: 12px;
+                font-family: Garamond;
+            }
 
-    #quill-container {
-        font-size: 12px;
-        font-family: Garamond;
-    }
+            p {
+                text-indent: 1.5em;
+                margin-bottom: 0.5em !important;
+            }
+        }
 
-    .ql-snow .ql-picker.ql-size .ql-picker-label[data-value]::before, .ql-snow .ql-picker.ql-size .ql-picker-item[data-value]::before {
-        content: attr(data-value) !important;
-    }
+        @media screen {
+            .html-container {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 1.1em;
+            }
 
-    .ql-picker-options {
-        max-height:300px;
-        overflow-y:scroll;
-    }
+            #quill-container {
+                border-top: 1px solid #ccc !important;
+            }
 
-    .ql-editor {
-        position:absolute !important;
-        top:0 !important;
-        left:0 !important;
-        right:0 !important;
-        bottom:5em !important;
-    }
+            .ql-snow .ql-picker.ql-size .ql-picker-label[data-value]::before, .ql-snow .ql-picker.ql-size .ql-picker-item[data-value]::before {
+                content: attr(data-value) !important;
+            }
 
-    .text-zoom {
-        font-size:100%;
-    }
+            .ql-picker-options {
+                max-height: 300px;
+                overflow-y: scroll;
+            }
 
-    p {
-        text-indent: 1.5em;
-        margin-bottom: 0.5em !important;
-    }
+            .ql-editor {
+                position: absolute !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                bottom: 0 !important;
+            }
 
+            .text-zoom {
+                font-size: 100%;
+            }
+
+            .print-only {
+                visibility:collapse;
+                height: 0;
+                display:none;
+            }
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+
+            .print-only {
+                visibility: visible;
+            }
+
+            .ql-editor, .ql-editor * {
+                visibility: visible;
+            }
+
+            #quill-container {
+                border: none !important;
+            }
+
+            .ql-editor {
+                height: auto !important;
+                zoom: 125% !important;
+                border: none !important;
+            }
+
+            .ql-toolbar {
+                display:none;
+                visibility: collapse;
+                height: 0 !important;
+            }
+        }
 	</style>
 	
 </head>
-<body>
+<body class="html-container">
 	<!-- Include Quill stylesheet -->
 	<link href="quilljs/quill.snow.css" rel="stylesheet">
+
+    <!-- Header is used on print media -->
+    <h3 id="printTitle" class="print-only"></h3>
 
 	<!-- Create the editor container -->
 	<div id="quill-container" class="text-zoom">
@@ -66,6 +112,10 @@
 	//https://stackoverflow.com/questions/43728080/how-to-add-font-types-on-quill-js-with-toolbar-options
 
         fonts = [];
+
+        function setPrintTitle(title) {
+            document.getElementById("printTitle").innerText = title;
+        }
 
         function getFontName(font) {
             return font.toLowerCase().replace(/\s/g, "-");
@@ -85,12 +135,10 @@
             if (visible)
             {
                 document.getElementsByClassName("ql-toolbar")[0].style.visibility = 'visible';
-                document.getElementsByClassName("ql-toolbar")[0].style.display = null;
             }
             else
             {
                 document.getElementsByClassName("ql-toolbar")[0].style.visibility = 'hidden';
-                document.getElementsByClassName("ql-toolbar")[0].style.display = 'none';
             }
         }
 

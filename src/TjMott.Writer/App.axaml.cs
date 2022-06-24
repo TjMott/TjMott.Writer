@@ -17,10 +17,10 @@ namespace TjMott.Writer
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                desktop.MainWindow = new MainWindow
-                {
-                    DataContext = new MainWindowViewModel(),
-                };
+                MainWindow mainWindow = new MainWindow();
+                MainWindowViewModel vm = new MainWindowViewModel(mainWindow);
+                mainWindow.DataContext = vm;
+                desktop.MainWindow = mainWindow;
             }
 
             base.OnFrameworkInitializationCompleted();

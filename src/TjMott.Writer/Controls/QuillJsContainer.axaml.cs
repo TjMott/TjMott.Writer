@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
 using Avalonia.Threading;
 using CefNet.JSInterop;
 using SixLabors.Fonts;
@@ -81,7 +82,7 @@ namespace TjMott.Writer.Controls
             {
                 _editor = new QuillJsEditor();
                 _editor.DocumentTitleChanged += _editor_DocumentTitleChanged;
-
+                
                 this.FindControl<Grid>("webViewContainer").Children.Add(_editor);
                 this.FindControl<Slider>("zoomSlider").PropertyChanged += zoomSlider_PropertyChanged;
             }
@@ -279,6 +280,17 @@ namespace TjMott.Writer.Controls
             this.FindControl<Grid>("webViewContainer").IsVisible = false;
             this.FindControl<TextBox>("passwordTextBox").Focus();
             await setIsReadOnly(true);
+        }
+
+        public async void Print(string title)
+        {
+            if (_editor != null && _document.IsUnlocked)
+            {
+                dynamic scriptableObject = await _editor.GetMainFrame().GetScriptableObjectAsync(CancellationToken.None).ConfigureAwait(false);
+                dynamic window = scriptableObject.window;
+                window.setPrintTitle(title);
+                _editor.Print();
+            }
         }
 
         

@@ -1,4 +1,5 @@
-﻿using ReactiveUI;
+﻿using Avalonia.Controls;
+using ReactiveUI;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive;
@@ -29,9 +30,9 @@ namespace TjMott.Writer.ViewModels
         #endregion
 
         #region ICommands
-        public ReactiveCommand<Unit, Unit> RenameCommand { get; }
-        public ReactiveCommand<Unit, Unit> DeleteCommand { get; }
-        public ReactiveCommand<Unit, Unit> CreateSceneCommand { get; }
+        public ReactiveCommand<Window, Unit> RenameCommand { get; }
+        public ReactiveCommand<Window, Unit> DeleteCommand { get; }
+        public ReactiveCommand<Window, Unit> CreateSceneCommand { get; }
         public ReactiveCommand<Unit, Unit> ShowPacingCommand { get; }
         #endregion
 
@@ -48,16 +49,16 @@ namespace TjMott.Writer.ViewModels
             Model = model;
             Scenes = new SortBySortIndexBindingList<SceneViewModel>();
             Model.PropertyChanged += Model_PropertyChanged;
-            RenameCommand = ReactiveCommand.Create(RenameAsync);
-            DeleteCommand = ReactiveCommand.Create(DeleteAsync);
-            CreateSceneCommand = ReactiveCommand.Create(CreateScene);
+            RenameCommand = ReactiveCommand.Create<Window>(RenameAsync);
+            DeleteCommand = ReactiveCommand.Create<Window>(DeleteAsync);
+            CreateSceneCommand = ReactiveCommand.Create<Window>(CreateScene);
             ShowPacingCommand = ReactiveCommand.Create(ShowPacing);
         }
 
-        public async void RenameAsync()
+        public async void RenameAsync(Window owner)
         {
             NameItemWindow dialog = new NameItemWindow(Model.Name);
-            string result = await dialog.ShowDialog<string>(MainWindow);
+            string result = await dialog.ShowDialog<string>(owner);
             if (result != null)
             {
                 Model.Name = result;
@@ -65,10 +66,10 @@ namespace TjMott.Writer.ViewModels
             }
         }
 
-        public async void DeleteAsync()
+        public async void DeleteAsync(Window owner)
         {
             ConfirmDeleteWindow dialog = new ConfirmDeleteWindow(string.Format("Chapter: {0}", Model.Name));
-            bool result = await dialog.ShowDialog<bool>(MainWindow);
+            bool result = await dialog.ShowDialog<bool>(owner);
             if (result)
             {
                 await Model.DeleteAsync().ConfigureAwait(false);
@@ -76,10 +77,10 @@ namespace TjMott.Writer.ViewModels
             }
         }
 
-        public async void CreateScene()
+        public async void CreateScene(Window owner)
         {
             NameItemWindow dialog = new NameItemWindow("New Scene");
-            string result = await dialog.ShowDialog<string>(MainWindow);
+            string result = await dialog.ShowDialog<string>(owner);
             if (!string.IsNullOrWhiteSpace(result))
             {
                 Document doc = new Document(Model.Connection);

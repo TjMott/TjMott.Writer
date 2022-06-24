@@ -64,10 +64,27 @@ namespace TjMott.Writer.Views
 #if DEBUG
             this.AttachDevTools();
 #endif
-            
-            _sceneManuscript = new Document(Scene.Model.Connection);
-            _sceneManuscript.id = Scene.Model.DocumentId;
-            AddHandler(KeyDownEvent, onKeyDown);
+
+            if (!Avalonia.Controls.Design.IsDesignMode)
+            {
+                Title = "Editing Scene: " + Scene.Model.Name;
+
+                _wordCountTextBlock = this.FindControl<TextBlock>("wordCountTextBlock");
+                _manuscriptEditor = this.FindControl<QuillJsContainer>("manuscriptEditor");
+                _manuscriptEditor.EditorLoaded += _manuscriptEditor_EditorLoaded;
+                this.Width = AppSettings.Default.editorWindowWidth;
+                this.Height = AppSettings.Default.editorWindowHeight;
+                Closing += SceneEditorWindow_Closing;
+                _sceneManuscript = new Document(Scene.Model.Connection);
+                _sceneManuscript.id = Scene.Model.DocumentId;
+                AddHandler(KeyDownEvent, onKeyDown);
+                OpenWindowsViewModel.Instance.EditorWindows.Add(this);
+            }
+        }
+
+        private void InitializeComponent()
+        {
+            AvaloniaXamlLoader.Load(this);
         }
 
         private async void _manuscriptEditor_EditorLoaded(object sender, EventArgs e)
@@ -83,20 +100,6 @@ namespace TjMott.Writer.Views
         private void Document_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             updateMenuItems();
-        }
-
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-
-            Title = "Editing Scene: " + Scene.Model.Name;
-
-            _wordCountTextBlock = this.FindControl<TextBlock>("wordCountTextBlock");
-            _manuscriptEditor = this.FindControl<QuillJsContainer>("manuscriptEditor");
-            _manuscriptEditor.EditorLoaded += _manuscriptEditor_EditorLoaded;
-            this.Width = AppSettings.Default.editorWindowWidth;
-            this.Height = AppSettings.Default.editorWindowHeight;
-            Closing += SceneEditorWindow_Closing;
         }
 
         private async void SceneEditorWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -135,7 +138,19 @@ namespace TjMott.Writer.Views
             if (_manuscriptEditor != null)
                 AppSettings.Default.editorZoom = _manuscriptEditor.ZoomLevel;
             AppSettings.Default.Save();
+
+            if (OpenWindowsViewModel.Instance.EditorWindows.Contains(this))
+                OpenWindowsViewModel.Instance.EditorWindows.Remove(this);
+
             Close();
+        }
+
+        private void printButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_manuscriptEditor != null && _sceneManuscript.IsUnlocked)
+            {
+                _manuscriptEditor.Print(string.Format("Scene: {0}", Scene.Model.Name));
+            }
         }
 
         public SceneViewModel Scene { get; private set; }
@@ -148,6 +163,7 @@ namespace TjMott.Writer.Views
             this.FindControl<MenuItem>("lockButton").IsEnabled = _sceneManuscript.IsEncrypted && _sceneManuscript.IsUnlocked;
             this.FindControl<MenuItem>("encryptButton").IsEnabled = !_sceneManuscript.IsEncrypted;
             this.FindControl<MenuItem>("decryptButton").IsEnabled = _sceneManuscript.IsEncrypted;
+            this.FindControl<MenuItem>("printButton").IsEnabled = _sceneManuscript.IsUnlocked;
         }
 
         private async void onKeyDown(object sender, Avalonia.Input.KeyEventArgs e)

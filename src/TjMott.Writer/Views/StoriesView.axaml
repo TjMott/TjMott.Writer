@@ -15,25 +15,25 @@
 			<TreeView Items="{Binding SubItems}" SelectedItem="{Binding SelectedTreeViewItem}">
 				<TreeView.Resources>
 					<ContextMenu x:Key="categoryContextMenu">
-						<MenuItem Header="Rename Category" Command="{Binding RenameCommand}" />
-						<MenuItem Header="Delete Category" Command="{Binding DeleteCommand}" />
+						<MenuItem Header="Rename Category" Command="{Binding RenameCommand}" CommandParameter="{Binding $parent[Window]}" />
+						<MenuItem Header="Delete Category" Command="{Binding DeleteCommand}" CommandParameter="{Binding $parent[Window]}" />
 					</ContextMenu>
 					<ContextMenu x:Key="storyContextMenu">
-						<MenuItem Header="Add New Chapter" Command="{Binding CreateChapterCommand}" />
+						<MenuItem Header="Add New Chapter" Command="{Binding CreateChapterCommand}" CommandParameter="{Binding $parent[Window]}" />
 						<MenuItem Header="Show Pacing" Command="{Binding ShowPacingCommand}" />
-						<MenuItem Header="Edit Story Properties" Command="{Binding EditPropertiesCommand}" />
-						<MenuItem Header="Edit Copyright Page" Command="{Binding EditCopyrightPageCommand}" />
-						<MenuItem Header="Delete Story" Command="{Binding DeleteCommand}" />
+						<MenuItem Header="Edit Story Properties" Command="{Binding EditPropertiesCommand}" CommandParameter="{Binding $parent[Window]}" />
+						<MenuItem Header="Edit Copyright Page" Command="{Binding EditCopyrightPageCommand}" CommandParameter="{Binding $parent[Window]}" />
+						<MenuItem Header="Delete Story" Command="{Binding DeleteCommand}" CommandParameter="{Binding $parent[Window]}" />
 					</ContextMenu>
 					<ContextMenu x:Key="chapterContextMenu">
-						<MenuItem Header="Add New Scene" Command="{Binding CreateSceneCommand}" />
+						<MenuItem Header="Add New Scene" Command="{Binding CreateSceneCommand}" CommandParameter="{Binding $parent[Window]}" />
 						<MenuItem Header="Show Pacing" Command="{Binding ShowPacingCommand}" />
-						<MenuItem Header="Rename Chapter" Command="{Binding RenameCommand}"  />
+						<MenuItem Header="Rename Chapter" Command="{Binding RenameCommand}" CommandParameter="{Binding $parent[Window]}"  />
 						<MenuItem Header="Delete Chapter" Command="{Binding DeleteCommand}" />
 					</ContextMenu>
 					<ContextMenu x:Key="sceneContextMenu">
-						<MenuItem Header="Move to Chapter" Command="{Binding MoveToChapterCommand}" />
-						<MenuItem Header="Rename Scene" Command="{Binding RenameCommand}" />
+						<MenuItem Header="Move to Chapter" Command="{Binding MoveToChapterCommand}" CommandParameter="{Binding $parent[Window]}" />
+						<MenuItem Header="Rename Scene" Command="{Binding RenameCommand}" CommandParameter="{Binding $parent[Window]}" />
 						<MenuItem Header="Color">
 							<MenuItem Background="Black" />
 							<MenuItem Background="Gray" />
@@ -44,7 +44,7 @@
 							<MenuItem Background="Blue" />
 							<MenuItem Background="Violet" />
 						</MenuItem>
-						<MenuItem Header="Delete Scene" Command="{Binding DeleteCommand}" />
+						<MenuItem Header="Delete Scene" Command="{Binding DeleteCommand}" CommandParameter="{Binding $parent[Window]}" />
 						<MenuItem Header="Encrypt" Command="{Binding EncryptCommand}" />
 						<MenuItem Header="Decrypt" Command="{Binding DecryptCommand}" />
 					</ContextMenu>
@@ -111,7 +111,7 @@
 			<Button ToolTip.Tip="Move Down" Command="{Binding MoveItemDownCommand}" Classes="button">
 				<Image Source="/Assets/Images/icons8-down-arrow.png" />
 			</Button>
-			<Button ToolTip.Tip="Word Count" Command="{Binding ShowWordCountCommand}" Classes="button">
+			<Button ToolTip.Tip="Word Count" Command="{Binding ShowWordCountCommand}" CommandParameter="{Binding $parent[Window]}" Classes="button">
 				<Image Source="/Assets/Images/icons8-statistics-40.png" />
 			</Button>
 			<Button ToolTip.Tip="Export to Word" Command="{Binding ExportToWordCommand}" Classes="button">

@@ -13,31 +13,32 @@ namespace TjMott.Writer.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-
+        public OpenWindowsViewModel OpenWindowsViewModel { get; private set; }
         #region Commands
-        public ReactiveCommand<Unit, Unit> NewFileCommand { get; }
-        public ReactiveCommand<Unit, Unit> OpenFileCommand { get; }
+        public ReactiveCommand<Window, Unit> NewFileCommand { get; }
+        public ReactiveCommand<Window, Unit> OpenFileCommand { get; }
         public ReactiveCommand<Unit, Unit> QuitCommand { get; }
-        public ReactiveCommand<Unit, Unit> AboutCommand { get; }
+        public ReactiveCommand<Window, Unit> AboutCommand { get; }
         #endregion
 
         private Database _database;
         public Database Database { get => _database; set => this.RaiseAndSetIfChanged(ref _database, value); }
 
-        public MainWindowViewModel()
+        public MainWindowViewModel(Window owner)
         {
-            NewFileCommand = ReactiveCommand.Create(NewFile);
-            OpenFileCommand = ReactiveCommand.Create(OpenFile);
+            OpenWindowsViewModel = new OpenWindowsViewModel(owner);
+            NewFileCommand = ReactiveCommand.Create<Window>(NewFile);
+            OpenFileCommand = ReactiveCommand.Create<Window>(OpenFile);
             QuitCommand = ReactiveCommand.Create(Quit);
-            AboutCommand = ReactiveCommand.Create(ShowAbout);
-            initialize();
+            AboutCommand = ReactiveCommand.Create<Window>(ShowAbout);
+            initialize(owner);
         }
 
-        private async void initialize()
+        private async void initialize(Window owner)
         {
             // Delay to give main window a chance to show. ShowDialog below fails if
             // MainWindow isn't open yet.
-            while (!MainWindow.IsActive)
+            while (!owner.IsActive)
                 await Task.Delay(100);
 
             // Check that CEF initialized.
@@ -48,7 +49,7 @@ namespace TjMott.Writer.ViewModels
                     MessageBox.Avalonia.Enums.ButtonEnum.OkAbort,
                     MessageBox.Avalonia.Enums.Icon.Error,
                     WindowStartupLocation.CenterOwner);
-                var result = await msgbox.ShowDialog(MainWindow);
+                var result = await msgbox.ShowDialog(owner);
                 if (result == MessageBox.Avalonia.Enums.ButtonResult.Abort)
                 {
                     (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime).Shutdown(1);
@@ -58,16 +59,16 @@ namespace TjMott.Writer.ViewModels
 
             if (!string.IsNullOrWhiteSpace(AppSettings.Default.lastFile) && File.Exists(AppSettings.Default.lastFile))
             {
-                OpenDatabase(AppSettings.Default.lastFile);
+                OpenDatabase(AppSettings.Default.lastFile, owner);
             }
         }
 
-        public async void NewFile()
+        public async void NewFile(Window owner)
         {
             SaveFileDialog dialog = new SaveFileDialog();
             dialog.Filters.Add(FileDialogFilters.DatabaseFilter);
 
-            string path = await dialog.ShowAsync(MainWindow);
+            string path = await dialog.ShowAsync(owner);
             if (path != null)
             {
                 Database = new Database(path);
@@ -77,21 +78,21 @@ namespace TjMott.Writer.ViewModels
             }
         }
 
-        public async void OpenFile()
+        public async void OpenFile(Window owner)
         {
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Filters.Add(FileDialogFilters.DatabaseFilter);
             dialog.AllowMultiple = false;
 
-            string[] paths = await dialog.ShowAsync(MainWindow);
+            string[] paths = await dialog.ShowAsync(owner);
 
             if (paths != null && paths.Length == 1 && File.Exists(paths[0]))
             {
-                OpenDatabase(paths[0]);
+                OpenDatabase(paths[0], owner);
             }
         }
 
-        public async void OpenDatabase(string filename)
+        public async void OpenDatabase(string filename, Window owner)
         {
             Database = new Database(filename);
 
@@ -102,7 +103,7 @@ namespace TjMott.Writer.ViewModels
                     MessageBox.Avalonia.Enums.ButtonEnum.Ok,
                     MessageBox.Avalonia.Enums.Icon.Error,
                     WindowStartupLocation.CenterOwner);
-                await msgbox.ShowDialog(MainWindow);
+                await msgbox.ShowDialog(owner);
                 Database.Close();
                 Database = null;
                 return;
@@ -114,9 +115,9 @@ namespace TjMott.Writer.ViewModels
                 upgradeView.DataContext = new DatabaseUpgradeViewModel(Database);
                 // Delay to give main window a chance to show. ShowDialog below fails if
                 // MainWindow isn't open yet.
-                while (!MainWindow.IsActive)
+                while (!owner.IsActive)
                     await Task.Delay(100);
-                bool result = await upgradeView.ShowDialog<bool>(MainWindow);
+                bool result = await upgradeView.ShowDialog<bool>(owner);
                 if (!result)
                 {
                     // Upgrade error.
@@ -129,10 +130,10 @@ namespace TjMott.Writer.ViewModels
             AppSettings.Default.Save();
         }
 
-        public void ShowAbout()
+        public void ShowAbout(Window owner)
         {
             AboutWindow wnd = new AboutWindow();
-            wnd.ShowDialog(MainWindow);
+            wnd.ShowDialog(owner);
         }
 
         public void Quit()

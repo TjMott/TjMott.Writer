@@ -6,6 +6,7 @@ using ReactiveUI;
 using System.Reactive;
 using TjMott.Writer.Views;
 using System.Threading.Tasks;
+using Avalonia.Controls;
 
 namespace TjMott.Writer.ViewModels
 {
@@ -29,13 +30,13 @@ namespace TjMott.Writer.ViewModels
         #endregion
 
         #region ICommands
-        public ReactiveCommand<Unit, Unit> EditPropertiesCommand { get; }
+        public ReactiveCommand<Window, Unit> EditPropertiesCommand { get; }
 
-        public ReactiveCommand<Unit, Unit> DeleteCommand { get; }
+        public ReactiveCommand<Window, Unit> DeleteCommand { get; }
 
-        public ReactiveCommand<Unit, Unit> CreateChapterCommand { get; }
+        public ReactiveCommand<Window, Unit> CreateChapterCommand { get; }
 
-        public ReactiveCommand<Unit, Unit> EditCopyrightPageCommand { get; }
+        public ReactiveCommand<Window, Unit> EditCopyrightPageCommand { get; }
 
         public ReactiveCommand<Unit, Unit> ShowPacingCommand { get; }
         #endregion
@@ -65,18 +66,18 @@ namespace TjMott.Writer.ViewModels
             Chapters = new SortBySortIndexBindingList<ChapterViewModel>();
             Model.PropertyChanged += Model_PropertyChanged;
 
-            EditPropertiesCommand = ReactiveCommand.Create(EditProperties);
-            DeleteCommand = ReactiveCommand.Create(Delete);
-            CreateChapterCommand = ReactiveCommand.Create(CreateChapter);
-            EditCopyrightPageCommand = ReactiveCommand.Create(EditCopyrightPage);
+            EditPropertiesCommand = ReactiveCommand.Create<Window>(EditProperties);
+            DeleteCommand = ReactiveCommand.Create<Window>(Delete);
+            CreateChapterCommand = ReactiveCommand.Create<Window>(CreateChapter);
+            EditCopyrightPageCommand = ReactiveCommand.Create<Window>(EditCopyrightPage);
             ShowPacingCommand = ReactiveCommand.Create(ShowPacing);
         }
 
-        public async void EditProperties()
+        public async void EditProperties(Window owner)
         {
             EditStoryPropertiesWindow dialog = new EditStoryPropertiesWindow();
             dialog.DataContext = new EditStoryPropertiesWindowViewModel(Model, UniverseVm.Categories);
-            bool result = await dialog.ShowDialog<bool>(MainWindow);
+            bool result = await dialog.ShowDialog<bool>(owner);
             if (result)
             {
                 await Model.SaveAsync().ConfigureAwait(false);
@@ -84,7 +85,7 @@ namespace TjMott.Writer.ViewModels
             }
         }
 
-        public void EditCopyrightPage()
+        public void EditCopyrightPage(Window owner)
         {
             /*if (!Model.FlowDocumentId.HasValue)
             {
@@ -105,10 +106,10 @@ namespace TjMott.Writer.ViewModels
             }*/
         }
 
-        public async void Delete()
+        public async void Delete(Window owner)
         {
             ConfirmDeleteWindow dialog = new ConfirmDeleteWindow(string.Format("Story: {0}", Model.Name));
-            bool result = await dialog.ShowDialog<bool>(MainWindow);
+            bool result = await dialog.ShowDialog<bool>(owner);
             if (result)
             {
                 await Model.DeleteAsync().ConfigureAwait(false);
@@ -116,10 +117,10 @@ namespace TjMott.Writer.ViewModels
             }
         }
 
-        public async void CreateChapter()
+        public async void CreateChapter(Window owner)
         {
             NameItemWindow dialog = new NameItemWindow("New Chapter");
-            string result = await dialog.ShowDialog<string>(MainWindow);
+            string result = await dialog.ShowDialog<string>(owner);
             if (!string.IsNullOrWhiteSpace(result))
             {
                 Chapter chapter = new Chapter(Model.Connection);
