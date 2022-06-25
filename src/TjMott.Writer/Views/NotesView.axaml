@@ -9,6 +9,7 @@
 	<UserControl.Resources>
 		<ContextMenu x:Key="notesTreeContextMenu">
 			<MenuItem Header="Open In New Window" Command="{Binding OpenInNewWindow}" />
+			<MenuItem Header="Set Categories" Command="{Binding SetCategories}" CommandParameter="{Binding $parent[Window]}" />
 			<MenuItem Header="Rename" Command="{Binding RenameCommand}" CommandParameter="{Binding $parent[Window]}" />
 			<MenuItem Header="Delete" Command="{Binding DeleteCommand}" CommandParameter="{Binding $parent[Window]}" />
 		</ContextMenu>
@@ -35,6 +36,6 @@
 		<GridSplitter Grid.Column="1" Grid.RowSpan="2" Width="3" VerticalAlignment="Stretch" Cursor="SizeWestEast"
 					  ResizeDirection="Columns" ResizeBehavior="PreviousAndNext" Background="LightGray" />
 
-		<controls:QuillJsContainer Grid.Column="2" Grid.Row="1" Margin="5" AllowUserEditing="False" Document="{Binding SelectedNote.Document}" ZoomLevel="1" />
+		<controls:QuillJsContainer x:Name="notePreviewContainer" Grid.Column="2" Grid.Row="1" Margin="5" AllowUserEditing="False" Document="{Binding SelectedNote.Document}" />
 	</Grid>
 </UserControl>

@@ -43,7 +43,6 @@ namespace TjMott.Writer.Views
 
         private Document _sceneManuscript;
         private QuillJsContainer _manuscriptEditor;
-        private TextBlock _wordCountTextBlock;
 
         #region Unused constructor -- still needed to compile
         public SceneEditorWindow()
@@ -64,12 +63,16 @@ namespace TjMott.Writer.Views
 #if DEBUG
             this.AttachDevTools();
 #endif
+        }
+
+        private void InitializeComponent()
+        {
+            AvaloniaXamlLoader.Load(this);
 
             if (!Avalonia.Controls.Design.IsDesignMode)
             {
                 Title = "Editing Scene: " + Scene.Model.Name;
 
-                _wordCountTextBlock = this.FindControl<TextBlock>("wordCountTextBlock");
                 _manuscriptEditor = this.FindControl<QuillJsContainer>("manuscriptEditor");
                 _manuscriptEditor.EditorLoaded += _manuscriptEditor_EditorLoaded;
                 this.Width = AppSettings.Default.editorWindowWidth;
@@ -80,11 +83,6 @@ namespace TjMott.Writer.Views
                 AddHandler(KeyDownEvent, onKeyDown);
                 OpenWindowsViewModel.Instance.EditorWindows.Add(this);
             }
-        }
-
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
         }
 
         private async void _manuscriptEditor_EditorLoaded(object sender, EventArgs e)
@@ -135,8 +133,7 @@ namespace TjMott.Writer.Views
                 _windows.Remove(Scene.Model.id);
             AppSettings.Default.editorWindowWidth = this.Width;
             AppSettings.Default.editorWindowHeight = this.Height;
-            if (_manuscriptEditor != null)
-                AppSettings.Default.editorZoom = _manuscriptEditor.ZoomLevel;
+            AppSettings.Default.editorZoom = _manuscriptEditor.ZoomLevel;
             AppSettings.Default.Save();
 
             if (OpenWindowsViewModel.Instance.EditorWindows.Contains(this))
@@ -147,7 +144,7 @@ namespace TjMott.Writer.Views
 
         private void printButton_Click(object sender, RoutedEventArgs e)
         {
-            if (_manuscriptEditor != null && _sceneManuscript.IsUnlocked)
+            if (_sceneManuscript.IsUnlocked)
             {
                 _manuscriptEditor.Print(string.Format("Scene: {0}", Scene.Model.Name));
             }
@@ -171,7 +168,7 @@ namespace TjMott.Writer.Views
             if (e.Key == Avalonia.Input.Key.S && e.KeyModifiers == Avalonia.Input.KeyModifiers.Control)
             {
                 setStatusText("Saving document...", 0);
-                await _sceneManuscript.SaveAsync();
+                await _manuscriptEditor.Save();
                 setStatusText("Document saved.", 5000);
             }
         }

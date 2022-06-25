@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.Sqlite;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using TjMott.Writer.Models.Attributes;
 
@@ -91,6 +92,13 @@ namespace TjMott.Writer.Models.SQLiteClasses
                 retval.Add(doc);
             }
             return retval;
+        }
+
+        public static async Task<List<NoteCategoryDocument>> GetCategoriesForDocument(SqliteConnection connection, long docId)
+        {
+            List<NoteCategoryDocument> items = await LoadAll(connection);
+            items = items.Where(i => i.NoteDocumentId == docId).ToList();
+            return items;
         }
     }
 }

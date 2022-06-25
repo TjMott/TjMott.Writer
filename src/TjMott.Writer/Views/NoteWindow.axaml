@@ -2,17 +2,25 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:controls="clr-namespace:TjMott.Writer.Controls"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 		Closing="NoteWindow_Closing"
         x:Class="TjMott.Writer.Views.NoteWindow"
         Title="NoteWindow">
-	<Grid RowDefinitions="Auto,*">
+	<Grid RowDefinitions="Auto,*,28">
 		<Menu>
 			<MenuItem Header="Note">
-				<MenuItem Header="Save" />
-				<MenuItem Header="Revert" />
+				<MenuItem x:Name="saveButton" Header="Save" Command="{Binding ElementName=manuscriptEditor, Path=Save}" IsEnabled="False" />
+				<MenuItem x:Name="revertButton" Header="Revert" Command="{Binding ElementName=manuscriptEditor, Path=Revert}" IsEnabled="False" />
+				<MenuItem x:Name="exportButton" Header="Export" IsEnabled="False" />
+				<MenuItem x:Name="printButton" Header="Print" Click="printButton_Click" IsEnabled="False" />
 				<MenuItem Header="Close" />
 			</MenuItem>
 		</Menu>
+		<Border Grid.Row="1" BorderBrush="DarkGray" BorderThickness="1">
+			<controls:QuillJsContainer x:Name="noteEditor" Margin="5" />
+		</Border>
+
+		<TextBlock Grid.Row="2" x:Name="statusBarTextBlock" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5" />
 	</Grid>
 </Window>

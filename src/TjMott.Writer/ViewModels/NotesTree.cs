@@ -92,5 +92,72 @@ namespace TjMott.Writer.ViewModels
                 Items.Add(doc);
             }
         }
+
+        public void RemoveFromTree(NoteDocumentViewModel doc)
+        {
+            if (Items.Contains(doc))
+            {
+                Items.Remove(doc);
+            }
+            foreach (var c in Categories)
+            {
+                if (c.Children.Contains(doc))
+                {
+                    c.Children.Remove(doc);
+                }
+            }
+        }
+
+        public async Task UpdateDocumentCategories(NoteDocumentViewModel doc, IEnumerable<NoteCategoryViewModel> newCategories)
+        {
+            // First, load all document/category links.
+            var currentCategories = await NoteCategoryDocument.GetCategoriesForDocument(doc.Model.Connection, doc.Model.id);
+
+            // Delete any that were removed.
+            foreach (var cat in currentCategories)
+            {
+                NoteCategoryViewModel vm = Categories.SingleOrDefault(i => i.Model.id == cat.NoteCategoryId);
+                if (vm != null)
+                {
+                    await cat.DeleteAsync();
+                    vm.Children.Remove(doc);
+                }
+            }
+
+            // Add new ones.
+            foreach (var cat in newCategories)
+            {
+                NoteCategoryDocument link = currentCategories.SingleOrDefault(i => i.NoteCategoryId == cat.Model.id);
+                if (link == null)
+                {
+                    link = new NoteCategoryDocument(doc.Model.Connection);
+                    link.NoteCategoryId = cat.Model.id;
+                    link.NoteDocumentId = doc.Model.id;
+                    await link.CreateAsync();
+                }
+
+                if (!cat.Children.Contains(doc))
+                {
+                    cat.Children.Add(doc);
+                }
+            }
+
+            // Add/Remove from uncategorized as necessary.
+            if (newCategories.Count() == 0)
+            {
+                if (Items.Contains(doc))
+                {
+                    Items.Add(doc);
+                }
+            }
+            else
+            {
+                if (Items.Contains(doc))
+                {
+                    Items.Remove(doc);
+                }
+            }
+            
+        }
     }
 }

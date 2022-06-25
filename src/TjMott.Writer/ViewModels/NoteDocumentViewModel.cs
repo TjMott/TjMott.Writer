@@ -1,5 +1,7 @@
 ﻿using Avalonia.Controls;
+using ReactiveUI;
 using System;
+using System.Reactive;
 using TjMott.Writer.Models.SQLiteClasses;
 using TjMott.Writer.Views;
 
@@ -44,12 +46,25 @@ namespace TjMott.Writer.ViewModels
 
         public override async void Delete(Window dialogOwner)
         {
+            ConfirmDeleteWindow dialog = new ConfirmDeleteWindow(string.Format("Note Category: {0}{1}Its subitems will not be removed.", Model.Name, Environment.NewLine));
 
+            bool result = await dialog.ShowDialog<bool>(dialogOwner);
+            if (result)
+            {
+                await Model.DeleteAsync();
+                UniverseVm.NotesTree.RemoveFromTree(this);
+            }
         }
 
         public void OpenInNewWindow()
         {
+            NoteWindow.ShowEditorWindow(this);
+        }
 
+        public override async void SetCategories(Window dialogOwner)
+        {
+            EditNoteDocumentCategoriesWindow dialog = new EditNoteDocumentCategoriesWindow(this, UniverseVm.NotesTree);
+            await dialog.ShowDialog(dialogOwner);
         }
     }
 }

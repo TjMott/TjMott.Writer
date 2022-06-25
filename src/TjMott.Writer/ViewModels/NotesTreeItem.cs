@@ -30,5 +30,7 @@ namespace TjMott.Writer.ViewModels
 
         public abstract void Rename(Window dialogOwner);
         public abstract void Delete(Window dialogOwner);
+
+        public abstract void SetCategories(Window dialogOwner);
     }
 }
