@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Avalonia.Controls;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using TjMott.Writer.Models.SQLiteClasses;
+using TjMott.Writer.Views;
 
 namespace TjMott.Writer.ViewModels
 {
@@ -158,6 +160,48 @@ namespace TjMott.Writer.ViewModels
                 }
             }
             
+        }
+
+        public async void CreateNewNoteCategory(Window dialogOwner)
+        {
+            NameItemWindow nameItemWindow = new NameItemWindow("New Note Category");
+            string result = await nameItemWindow.ShowDialog<string>(dialogOwner);
+            if (!string.IsNullOrEmpty(result))
+            {
+                NoteCategory noteCategory = new NoteCategory(UniverseVm.Model.Connection);
+                noteCategory.UniverseId = UniverseVm.Model.id;
+                noteCategory.Name = result;
+                await noteCategory.CreateAsync();
+                NoteCategoryViewModel vm = new NoteCategoryViewModel(noteCategory, UniverseVm);
+                Categories.Add(vm);
+                Items.Add(vm);
+            }
+        }
+
+        public async void CreateNewNoteDocument(Window dialogOwner)
+        {
+            NameItemWindow nameItemWindow = new NameItemWindow("New Note Document");
+            string result = await nameItemWindow.ShowDialog<string>(dialogOwner);
+            if (!string.IsNullOrEmpty(result))
+            {
+                Document doc = new Document(UniverseVm.Model.Connection);
+                doc.UniverseId = UniverseVm.Model.id;
+                string json, plainText;
+                Document.GetNewDocumentContent(out json, out plainText);
+                doc.Json = json;
+                doc.PlainText = plainText;
+                doc.DocumentType = "Note";
+                await doc.CreateAsync();
+
+                NoteDocument noteDoc = new NoteDocument(UniverseVm.Model.Connection);
+                noteDoc.UniverseId = UniverseVm.Model.id;
+                noteDoc.Name = result;
+                noteDoc.DocumentId = doc.id;
+                await noteDoc.CreateAsync();
+
+                NoteDocumentViewModel vm = new NoteDocumentViewModel(noteDoc, UniverseVm);
+                Items.Add(vm);
+            }
         }
     }
 }

@@ -46,8 +46,8 @@
 				<MenuItem Header="Create New Category" Command="{Binding Database.SelectedUniverse.CreateCategoryCommand}" CommandParameter="{Binding $parent[Window]}" />
 				<MenuItem Header="Create New Story" Command="{Binding Database.SelectedUniverse.CreateStoryCommand}" CommandParameter="{Binding $parent[Window]}" />
 				<Separator />
-				<MenuItem Header="Create New Notes Category" />
-				<MenuItem Header="Create New Note Document" />
+				<MenuItem Header="Create New Notes Category" Command="{Binding Database.SelectedUniverse.NotesTree.CreateNewNoteCategory}" CommandParameter="{Binding $parent[Window]}" />
+				<MenuItem Header="Create New Note Document" Command="{Binding Database.SelectedUniverse.NotesTree.CreateNewNoteDocument}" CommandParameter="{Binding $parent[Window]}" />
 				<Separator />
 				<MenuItem Header="Spellcheck Dictionary" />
 			</MenuItem>

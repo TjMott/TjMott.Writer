@@ -14,6 +14,7 @@ namespace TjMott.Writer
         {
             try
             {
+                // NOTE: As of version 102.0.22146.158, CefNet requires libx11-dev to be installed.
                 string cefPath = Directory.GetCurrentDirectory();
                 if (PlatformInfo.IsWindows)
                 {

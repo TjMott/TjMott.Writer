@@ -218,5 +218,11 @@ namespace TjMott.Writer.Models.SQLiteClasses
             IsUnlocked = true;
             PublicJson = decrypted;
         }
+
+        public static void GetNewDocumentContent(out string json, out string plainText)
+        {
+            json = "{ \"ops\": [ { \"insert\": \"This is a new document.\" } ] }";
+            plainText = "This is a new document";
+        }
     }
 }
