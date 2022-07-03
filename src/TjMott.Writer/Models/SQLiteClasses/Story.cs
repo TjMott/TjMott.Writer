@@ -24,7 +24,6 @@ namespace TjMott.Writer.Models.SQLiteClasses
         private long _sortIndex;
         private long _universeId;
         private long? _categoryId;
-        private long? _noteId;
         private long? _copyrightPageId;
         private string _name;
         private string _subtitle;
@@ -146,16 +145,6 @@ namespace TjMott.Writer.Models.SQLiteClasses
             }
         }
 
-        [DbField]
-        public long? NoteId
-        {
-            get { return _noteId; }
-            set
-            {
-                _noteId = value;
-                OnPropertyChanged("NoteId");
-            }
-        }
         [DbField]
         public long? CopyrightPageId
         {

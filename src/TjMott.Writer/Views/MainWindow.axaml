@@ -73,10 +73,10 @@
 				<views:NotesView DataContext="{Binding Database.SelectedUniverse.NotesTree}" />
 			</TabItem>
 			<TabItem Header="Tickets">
-				<views:TicketTrackerView DataContext="{Binding Database.SelectedUniverse.TicketTrackerViewModel}" />
+				<TextBlock TextWrapping="Wrap" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Feature Not Yet Implemented" />
 			</TabItem>
 			<TabItem Header="Search">
-
+				<TextBlock TextWrapping="Wrap" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Feature Not Yet Implemented" />
 			</TabItem>
 		</TabControl>
 

@@ -102,9 +102,6 @@
 			<Button ToolTip.Tip="Open Editor" Command="{Binding OpenEditorCommand}" Classes="button">
 				<Image Source="/Assets/Images/icons8-typewriter-with-paper-40.png" />
 			</Button>
-			<Button ToolTip.Tip="Open Notes" Command="{Binding OpenNoteCommand}" Classes="button">
-				<Image Source="/Assets/Images/icons8-note-40.png" />
-			</Button>
 			<Button ToolTip.Tip="Move Up" Command="{Binding MoveItemUpCommand}" Classes="button">
 				<Image Source="/Assets/Images/icons8-up.png" />
 			</Button>

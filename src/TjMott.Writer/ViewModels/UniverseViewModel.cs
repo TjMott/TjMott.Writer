@@ -56,17 +56,6 @@ namespace TjMott.Writer.ViewModels
             }
         }*/
 
-       /* private SpellcheckDictionary _spellcheckDictionary;
-        public SpellcheckDictionary SpellcheckDictionary
-        {
-            get { return _spellcheckDictionary; }
-            private set
-            {
-                _spellcheckDictionary = value;
-                OnPropertyChanged("SpellcheckDictionary");
-            }
-        }*/
-
         private NotesTree _notesTree;
         public NotesTree NotesTree
         {
@@ -78,27 +67,6 @@ namespace TjMott.Writer.ViewModels
             }
         }
 
-        /*private FileBrowserViewModel _fileBrowserVm;
-        public FileBrowserViewModel FileBrowserViewModel
-        {
-            get { return _fileBrowserVm; }
-            set
-            {
-                _fileBrowserVm = value;
-                OnPropertyChanged("FileBrowserViewModel");
-            }
-        }*/
-
-        private TicketTrackerViewModel _ticketTracker;
-        public TicketTrackerViewModel TicketTrackerViewModel
-        {
-            get { return _ticketTracker; }
-            set
-            {
-                _ticketTracker = value;
-                OnPropertyChanged("TicketTrackerViewModel");
-            }
-        }
         #endregion
 
         #region ISortable implementation - pass through to model
@@ -128,7 +96,6 @@ namespace TjMott.Writer.ViewModels
         public ReactiveCommand<Unit, Unit> ExportToWordCommand { get; }
         public ReactiveCommand<Window, Unit> ShowWordCountCommand { get; }
         public ReactiveCommand<Window, Unit> RenameCommand { get; }
-        public ReactiveCommand<Unit, Unit> OpenNoteCommand { get; }
         #endregion
 
         public long GetWordCount()
@@ -150,7 +117,6 @@ namespace TjMott.Writer.ViewModels
             ExportToWordCommand = ReactiveCommand.Create(ExportToWord, this.WhenAny(x => x.SelectedTreeViewItem, (item) => (item.Value as IExportToWordDocument) != null));
             ShowWordCountCommand = ReactiveCommand.Create<Window>(ShowWordCount, this.WhenAny(x => x.SelectedTreeViewItem, (item) => (item.Value as IGetWordCount) != null));
             RenameCommand = ReactiveCommand.Create<Window>(Rename);
-            OpenNoteCommand = ReactiveCommand.Create(OpenOrCreateNoteForItem, this.WhenAny(x => x.SelectedTreeViewItem, (item) => item.Value != null));
 
             initializeAsync();
         }
@@ -165,14 +131,7 @@ namespace TjMott.Writer.ViewModels
             await NotesTree.LoadAsync().ConfigureAwait(false);
 
             /*SearchViewModel = new SearchViewModel();
-            SearchViewModel.SelectedUniverse = this;
-            SpellcheckDictionary = new SpellcheckDictionary(this);
-
-            FileBrowserViewModel = new FileBrowserViewModel(this);
-            FileBrowserViewModel.Load();*/
-
-            TicketTrackerViewModel = new TicketTrackerViewModel(this);
-            await TicketTrackerViewModel.LoadAsync().ConfigureAwait(false);
+            SearchViewModel.SelectedUniverse = this;*/
         }
 
         public void UpdateSubItemSortIndices()
@@ -515,46 +474,6 @@ namespace TjMott.Writer.ViewModels
             IGetWordCount item = SelectedTreeViewItem as IGetWordCount;
             var dialog = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Word Count", string.Format("Word Count: {0}", item.GetWordCount()), MessageBox.Avalonia.Enums.ButtonEnum.Ok, MessageBox.Avalonia.Enums.Icon.Info);
             dialog.ShowDialog(owner);
-        }
-
-        public void OpenOrCreateNoteForItem()
-        {
-            /*if (SelectedTreeViewItem == null)
-                return;
-
-            IHasMarkdownDocument item = null;
-
-            if (SelectedTreeViewItem is CategoryViewModel)
-                item = (SelectedTreeViewItem as CategoryViewModel).Model;
-            else if (SelectedTreeViewItem is StoryViewModel)
-                item = (SelectedTreeViewItem as StoryViewModel).Model;
-            else if (SelectedTreeViewItem is ChapterViewModel)
-                item = (SelectedTreeViewItem as ChapterViewModel).Model;
-            else if (SelectedTreeViewItem is SceneViewModel)
-                item = (SelectedTreeViewItem as SceneViewModel).Model;
-
-            if (item == null)
-                return;
-
-            MarkdownDocument doc = null;
-
-            if (item.MarkdownDocumentId.HasValue)
-            {
-                doc = new MarkdownDocument(Model.Connection);
-                doc.id = item.MarkdownDocumentId.Value;
-                doc.Load();
-            }
-            else
-            {
-                doc = MarkdownDocumentViewModel.CreateDocForItem(item, Model.id, true, (item as IHasNameProperty).Name);
-            }
-
-            if (doc != null)
-            {
-                MarkdownDocumentViewModel vm = new MarkdownDocumentViewModel(doc, this);
-                vm.OpenInWindow();
-            }*/
-            
         }
     }
 }

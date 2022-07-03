@@ -43,16 +43,9 @@ CREATE TABLE Category
     UniverseId INTEGER,
     Name TEXT DEFAULT 'New Category',
     SortIndex INTEGER DEFAULT 0,
-    NoteId INTEGER DEFAULT NULL,
 
-    FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE,
-    FOREIGN KEY(NoteId) REFERENCES Document(id)
+    FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE
 );
-
--- Delete note Document after its Category is deleted.
-CREATE TRIGGER Category_NoteDoc_ad AFTER DELETE ON Category BEGIN
-  DELETE FROM Document WHERE id = (old.NoteId);
-END;
 
 
 CREATE TABLE Story
@@ -67,18 +60,15 @@ CREATE TABLE Story
     ISBN TEXT DEFAULT '',
     ASIN TEXT DEFAULT '',
     SortIndex INTEGER DEFAULT 0,
-    NoteId INTEGER DEFAULT NULL,
     CopyrightPageId INTEGER DEFAULT NULL,
 
     FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE,
     FOREIGN KEY(CategoryId) REFERENCES Category(id) ON DELETE SET NULL,
-    FOREIGN KEY(NoteId) REFERENCES Document(id),
     FOREIGN KEY(CopyrightPageId) REFERENCES Document(id)
 );
 
 -- Delete note Document after its Story is deleted.
 CREATE TRIGGER Story_NoteDoc_ad AFTER DELETE ON Story BEGIN
-  DELETE FROM Document WHERE id = (old.NoteId);
   DELETE FROM Document WHERE id = (old.CopyrightPageId);
 END;
 
@@ -88,16 +78,9 @@ CREATE TABLE Chapter
     StoryId INTEGER,
     Name TEXT DEFAULT 'New Chapter',
     SortIndex INTEGER DEFAULT 0,
-    NoteId INTEGER DEFAULT NULL,
 
-    FOREIGN KEY(StoryId) REFERENCES Story(id) ON DELETE CASCADE,
-    FOREIGN KEY(NoteId) REFERENCES Document(id)
+    FOREIGN KEY(StoryId) REFERENCES Story(id) ON DELETE CASCADE
 );
-
--- Delete note Document after its chapter is deleted.
-CREATE TRIGGER Chapter_NoteDoc_ad AFTER DELETE ON Chapter BEGIN
-  DELETE FROM Document WHERE id = (old.NoteId);
-END;
 
 CREATE TABLE Scene
 (
@@ -110,36 +93,14 @@ CREATE TABLE Scene
     ColorG INTEGER DEFAULT 0,
     ColorB INTEGER DEFAULT 0,
     DocumentId INTEGER DEFAULT NULL,
-    NoteId INTEGER DEFAULT NULL,
 
     FOREIGN KEY(ChapterId) REFERENCES Chapter(id) ON DELETE CASCADE,
-    FOREIGN KEY(DocumentId) REFERENCES Document(id),
-    FOREIGN KEY(NoteId) REFERENCES Document(id)
+    FOREIGN KEY(DocumentId) REFERENCES Document(id)
 );
 
 -- Delete Document after its scene is deleted.
 CREATE TRIGGER Scene_Doc_ad AFTER DELETE ON Scene BEGIN
-  DELETE FROM Document WHERE id = (old.DocumentId);
   DELETE FROM Document WHERE id = (old.NoteId);
-END;
-
-CREATE TABLE Ticket
-(
-    id INTEGER PRIMARY KEY,
-    UniverseId INTEGER,
-    Priority INTEGER DEFAULT 2,
-    Name TEXT DEFAULT 'New Ticket',
-    Status TEXT DEFAULT 'Not Started',
-    DueDate TEXT DEFAULT '',
-    DocumentId INTEGER DEFAULT NULL,
-
-    FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE,
-    FOREIGN KEY(DocumentId) REFERENCES Document(id)
-);
-
--- Delete note Document after its ticket is deleted.
-CREATE TRIGGER Ticket_NoteDoc_ad AFTER DELETE ON Ticket BEGIN
-  DELETE FROM Document WHERE id = (old.DocumentId);
 END;
 
 CREATE TABLE NoteDocument

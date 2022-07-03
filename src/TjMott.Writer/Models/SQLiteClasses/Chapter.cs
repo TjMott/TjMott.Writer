@@ -26,7 +26,6 @@ namespace TjMott.Writer.Models.SQLiteClasses
         private long _storyId;
         private long _sortIndex;
         private string _name;
-        private long? _noteId;
         #endregion
 
         #region Database Properties
@@ -71,17 +70,6 @@ namespace TjMott.Writer.Models.SQLiteClasses
             {
                 _name = value;
                 OnPropertyChanged("Name");
-            }
-        }
-
-        [DbField]
-        public long? NoteId
-        {
-            get { return _noteId; }
-            set
-            {
-                _noteId = value;
-                OnPropertyChanged("NoteId");
             }
         }
         #endregion
