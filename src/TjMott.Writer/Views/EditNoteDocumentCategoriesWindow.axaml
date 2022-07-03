@@ -8,7 +8,7 @@
 		WindowStartupLocation="CenterOwner"
         Title="Set Note Document Categories" Height="450" Width="600">
 	<Grid RowDefinitions="Auto,Auto,*,Auto" ColumnDefinitions="*,Auto,*" Margin="5">
-		<TextBlock TextWrapping="Wrap" Grid.ColumnSpan="3" Margin="0,5,0,15">Use this window to assign categories to this note document. WARNING: Due to a bug in the Avalonia UI TreeView implementation (https://github.com/AvaloniaUI/Avalonia/issues/3393), adding a document to multiple categories may cause a crash. I recommend not doing that for now.</TextBlock>
+		<TextBlock TextWrapping="Wrap" Grid.ColumnSpan="3" Margin="0,5,0,15">Use this window to assign categories to this note document. WARNING: Due to a bug in the Avalonia UI TreeView implementation (https://github.com/AvaloniaUI/Avalonia/issues/3393), adding a document to multiple categories is not currently supported.</TextBlock>
 		<TextBlock Text="Available Categories" Grid.Row="1" />
 		<TextBlock Text="Selected Categories" Grid.Row="1" Grid.Column="2" />
 

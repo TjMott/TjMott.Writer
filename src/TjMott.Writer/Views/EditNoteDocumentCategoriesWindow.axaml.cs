@@ -55,7 +55,7 @@ namespace TjMott.Writer.Views
         private void selectCategory_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             ListBox lb = this.FindControl<ListBox>("availableCategoriesListBox");
-            if (lb.SelectedItem != null)
+            if (lb.SelectedItem != null && _selectedCategories.Count == 0)
             {
                 NoteCategoryViewModel category  = (NoteCategoryViewModel)lb.SelectedItem;
                 _availableCategories.Remove(category);
