@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using ReactiveUI;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive;
@@ -121,10 +122,9 @@ namespace TjMott.Writer.ViewModels
 
         public void ShowPacing()
         {
-            /*var chapters = new List<ChapterViewModel>();
+            var chapters = new List<ChapterViewModel>();
             chapters.Add(this);
-            PacingWindow wnd = new PacingWindow(chapters);
-            wnd.Show();*/
+            PacingWindow.ShowPacingWindow(chapters, string.Format("Pacing: {0}", Model.Name), "chapter_" + Model.id);
         }
 
         /*public void ExportToWord(Docx.DocX doc)

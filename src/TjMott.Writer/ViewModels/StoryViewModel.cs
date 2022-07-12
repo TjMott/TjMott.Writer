@@ -154,8 +154,7 @@ namespace TjMott.Writer.ViewModels
 
         public void ShowPacing()
         {
-            //PacingWindow wnd = new PacingWindow(Chapters);
-            //wnd.Show();
+            PacingWindow.ShowPacingWindow(Chapters, string.Format("Pacing: {0}", Model.Name), "story_" + Model.id);
         }
 
         /*public void ExportToWord(Docx.DocX doc)
