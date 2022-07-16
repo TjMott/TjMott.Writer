@@ -63,6 +63,17 @@
 				<MenuItem Header="Readme" />
 				<MenuItem Header="About" Command="{Binding AboutCommand}" CommandParameter="{Binding $parent[Window]}" />
 			</MenuItem>
+			<MenuItem Header="Debug" IsVisible="{Binding ShowDebugMenu}">
+				<MenuItem Header="Show Quill Hashes" Command="{Binding ShowQuillHashes}" CommandParameter="{Binding $parent[Window]}" />
+				<MenuItem Header="Database">
+					<MenuItem Header="Reload" Command="{Binding Database.LoadAsync}" />
+					<MenuItem Header="Vacuum" Command="{Binding Database.Vacuum}" />
+					<Separator />
+					<MenuItem Header="Start Transaction" Command="{Binding Database.StartTransactionCommand}" />
+					<MenuItem Header="Commit Transaction" Command="{Binding Database.CommitTransactionCommand}" />
+					<MenuItem Header="Rollback Transaction" Command="{Binding Database.RollbackTransactionCommand}" />
+				</MenuItem>
+			</MenuItem>
 		</Menu>
 
 		<TabControl Grid.Row="1">

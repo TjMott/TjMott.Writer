@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using System.Reactive;
 using System.Threading.Tasks;
+using TjMott.Writer.Controls;
 using TjMott.Writer.Models.SQLiteClasses;
 using TjMott.Writer.Views;
 
@@ -13,13 +14,24 @@ namespace TjMott.Writer.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
+        public bool ShowDebugMenu
+        {
+            get
+            {
+#if DEBUG
+                return true;
+#else
+                return false;
+#endif
+            }
+        }
         public OpenWindowsViewModel OpenWindowsViewModel { get; private set; }
-        #region Commands
+#region Commands
         public ReactiveCommand<Window, Unit> NewFileCommand { get; }
         public ReactiveCommand<Window, Unit> OpenFileCommand { get; }
         public ReactiveCommand<Unit, Unit> QuitCommand { get; }
         public ReactiveCommand<Window, Unit> AboutCommand { get; }
-        #endregion
+#endregion
 
         private Database _database;
         public Database Database { get => _database; set => this.RaiseAndSetIfChanged(ref _database, value); }
@@ -48,6 +60,26 @@ namespace TjMott.Writer.ViewModels
                     CefNetAppImpl.InitErrorMessage + Environment.NewLine + "You can try to continue using the application, but you will not be able to open Documents.",
                     MessageBox.Avalonia.Enums.ButtonEnum.OkAbort,
                     MessageBox.Avalonia.Enums.Icon.Error,
+                    WindowStartupLocation.CenterOwner);
+                var result = await msgbox.ShowDialog(owner);
+                if (result == MessageBox.Avalonia.Enums.ButtonResult.Abort)
+                {
+                    (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime).Shutdown(1);
+                    return;
+                }
+            }
+
+            // Check QuillJS hashes.
+            bool quillVerified = await QuillJsEditor.VerifyHashes();
+            if (!quillVerified)
+            {
+                var msgbox = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Editor Initialization Error",
+                       "Editor assets failed SHA256 hash verification. Your installation" + Environment.NewLine +
+                       "may have been corrupted by malware. You can continue to use the" + Environment.NewLine + 
+                       "application, but you may face data corruption or malware issues." + Environment.NewLine +
+                       "It is recommended you reinstall first.",
+                    MessageBox.Avalonia.Enums.ButtonEnum.OkAbort,
+                    MessageBox.Avalonia.Enums.Icon.Warning,
                     WindowStartupLocation.CenterOwner);
                 var result = await msgbox.ShowDialog(owner);
                 if (result == MessageBox.Avalonia.Enums.ButtonResult.Abort)
@@ -141,6 +173,12 @@ namespace TjMott.Writer.ViewModels
             if (Database != null)
                 Database.Close();
             (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime).Shutdown();
+        }
+
+        public async void ShowQuillHashes(Window owner)
+        {
+            QuillHashWindow wnd = new QuillHashWindow();
+            await wnd.ShowDialog(owner);
         }
     }
 }

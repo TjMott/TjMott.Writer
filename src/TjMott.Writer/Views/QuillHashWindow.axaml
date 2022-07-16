@@ -1,0 +1,24 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" Width="800" Height="450"
+        x:Class="TjMott.Writer.Views.QuillHashWindow"
+		WindowStartupLocation="CenterOwner"
+        Title="Quill Asset Hashes">
+	<Grid RowDefinitions="Auto,*" Margin="5">
+		<TextBlock TextWrapping="Wrap">This view is for development purposes only. It shows you the SHA256 hashes of the QuillJS assets. You can use this data to updated the expected hashes in QuillJsEditor.cs whenever Quill is updated or you otherwise make changes.</TextBlock>
+
+		<DataGrid x:Name="hashesDataGrid" Grid.Row="1" IsReadOnly="True" Margin="0,5,0,0">
+			<DataGrid.Columns>
+				<DataGridTextColumn Header="File" Binding="{Binding FileName}" />
+				<DataGridTemplateColumn Header="SHA256 Hash">
+					<DataTemplate>
+						<TextBox IsReadOnly="True" Text="{Binding ActualHash}" />
+					</DataTemplate>
+				</DataGridTemplateColumn>
+				<DataGridTextColumn Header="Expected Hash" Binding="{Binding ExpectedHash}" />
+			</DataGrid.Columns>
+		</DataGrid>
+	</Grid>
+</Window>

@@ -57,6 +57,9 @@ namespace TjMott.Writer.ViewModels
             }
         }
 
+        private bool _isInTransaction = false;
+        public bool IsInTransaction { get => _isInTransaction; private set => this.RaiseAndSetIfChanged(ref _isInTransaction, value); }
+
         public static Database Instance { get; private set; }
 
         public SortBySortIndexBindingList<UniverseViewModel> Universes { get; private set; }
@@ -65,6 +68,9 @@ namespace TjMott.Writer.ViewModels
 
         #region Commands
         public ReactiveCommand<Window, Unit> CreateUniverseCommand { get; }
+        public ReactiveCommand<Unit, Unit> StartTransactionCommand { get; }
+        public ReactiveCommand<Unit, Unit> CommitTransactionCommand { get; }
+        public ReactiveCommand<Unit, Unit> RollbackTransactionCommand { get; }
         #endregion
 
         public Database(string filename)
@@ -103,10 +109,16 @@ namespace TjMott.Writer.ViewModels
             Instance = this;
 
             CreateUniverseCommand = ReactiveCommand.Create<Window>(CreateUniverse);
+
+            StartTransactionCommand = ReactiveCommand.Create(startTransaction, this.WhenAnyValue(i => i.IsInTransaction, (bool v) => !v));
+            CommitTransactionCommand = ReactiveCommand.Create(commitTransaction, this.WhenAnyValue(i => i.IsInTransaction, (bool v) => v));
+            RollbackTransactionCommand = ReactiveCommand.Create(rollbackTransaction, this.WhenAnyValue(i => i.IsInTransaction, (bool v) => v));
         }
 
         public async Task LoadAsync()
         {
+            Universes.Clear();
+
             // Load database entities and create viewmodels.
             var universes = (await Universe.LoadAll(_connection)).Select(i => new UniverseViewModel(i, this)).ToList();
             var categories = (await Category.LoadAll(_connection)).Select(i => new CategoryViewModel(i)).ToList();
@@ -173,16 +185,9 @@ namespace TjMott.Writer.ViewModels
 
         public void Close()
         {
-            //foreach (var u in Universes)
-            //    u.SpellcheckDictionary.Close();
-
             if (Connection != null)
             {
-                // Compact the database.
-                using (SqliteCommand cmd = new SqliteCommand("VACUUM;", Connection))
-                {
-                    cmd.ExecuteNonQuery();
-                }
+                Vacuum();
             }
 
             _connection.Close();
@@ -212,6 +217,55 @@ namespace TjMott.Writer.ViewModels
 
                 if (Universes.Count == 1)
                     SelectedUniverse = vm;
+            }
+        }
+
+        private async void startTransaction()
+        {
+            if (_isInTransaction) return;
+
+            using (var cmd = new SqliteCommand("BEGIN TRANSACTION;", Connection))
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+
+            IsInTransaction = true;
+        }
+
+        private async void commitTransaction()
+        {
+            if (!_isInTransaction) return;
+
+            using (var cmd = new SqliteCommand("COMMIT TRANSACTION;", Connection))
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+
+            IsInTransaction = false;
+        }
+
+        private async void rollbackTransaction()
+        {
+            if (!_isInTransaction) return;
+
+            using (var cmd = new SqliteCommand("ROLLBACK TRANSACTION;", Connection))
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+            await LoadAsync();
+
+            IsInTransaction = false;
+        }
+
+        public void Vacuum()
+        {
+            if (Connection != null)
+            {
+                // Compact the database.
+                using (SqliteCommand cmd = new SqliteCommand("VACUUM;", Connection))
+                {
+                    cmd.ExecuteNonQuery();
+                }
             }
         }
 
