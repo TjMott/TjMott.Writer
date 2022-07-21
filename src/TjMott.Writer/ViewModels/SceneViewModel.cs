@@ -34,8 +34,6 @@ namespace TjMott.Writer.ViewModels
         #region ICommands
         public ReactiveCommand<Window, Unit> RenameCommand { get; }
         public ReactiveCommand<Window, Unit> DeleteCommand { get; }
-        public ReactiveCommand<Unit, Unit> EncryptCommand { get; }
-        public ReactiveCommand<Unit, Unit> DecryptCommand { get; }
         public ReactiveCommand<Window, Unit> MoveToChapterCommand { get; }
         #endregion
 
@@ -93,8 +91,6 @@ namespace TjMott.Writer.ViewModels
 
             RenameCommand = ReactiveCommand.Create<Window>(Rename);
             DeleteCommand = ReactiveCommand.Create<Window>(Delete);
-            EncryptCommand = ReactiveCommand.Create(Encrypt);
-            DecryptCommand = ReactiveCommand.Create(Decrypt);
             MoveToChapterCommand = ReactiveCommand.Create<Window>(MoveToChapter);
             
             // Inits the IsEncrypted field.
@@ -146,18 +142,6 @@ namespace TjMott.Writer.ViewModels
             }
         }*/
 
-        public void Encrypt()
-        {
-            /*FlowDocument fd = new FlowDocument(Model.Connection);
-            fd.id = Model.FlowDocumentId;
-            fd.Load();
-            FlowDocumentViewModel vm = new FlowDocumentViewModel(fd, DialogOwner);
-            fd.IsEncrypted = true;
-            vm.GetAesPassword(true);
-            vm.Save();
-            IsEncrypted = true;*/
-        }
-
         public bool CanEncrypt()
         {
             Document fd = new Document(Model.Connection);
@@ -165,29 +149,6 @@ namespace TjMott.Writer.ViewModels
             fd.LoadAsync().Wait();
             IsEncrypted = fd.IsEncrypted;
             return !fd.IsEncrypted;
-        }
-
-        public void Decrypt()
-        {
-            /*try
-            {
-                FlowDocument fd = new FlowDocument(Model.Connection);
-                fd.id = Model.FlowDocumentId;
-                fd.Load();
-                FlowDocumentViewModel vm = new FlowDocumentViewModel(fd, DialogOwner);
-                fd.IsEncrypted = false;
-                fd.Save();
-                vm.Save();
-                IsEncrypted = false;
-            }
-            catch (CryptographicException)
-            {
-                MessageBox.Show("Invalid password. Decryption operation canceled.", "Invalid password", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            catch (ApplicationException)
-            {
-                MessageBox.Show("Invalid password. Decryption operation canceled.", "Invalid password", MessageBoxButton.OK, MessageBoxImage.Error);
-            }*/
         }
 
         public bool CanDecrypt()

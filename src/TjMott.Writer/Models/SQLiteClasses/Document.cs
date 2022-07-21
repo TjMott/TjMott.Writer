@@ -203,20 +203,21 @@ namespace TjMott.Writer.Models.SQLiteClasses
         {
             if (IsEncrypted) return;
             string encrypted = AESHelper.AesEncrypt(PublicJson, password);
+            _decryptedJson = PublicJson;
             _cachedPassword = password;
             _json = encrypted;
             IsEncrypted = true;
-            IsUnlocked = false;
-            await SaveAsync().ConfigureAwait(false);
+            await SaveAsync();
         }
 
-        public void Decrypt(string password)
+        public async Task Decrypt(string password)
         {
             if (!IsEncrypted) return;
             string decrypted = AESHelper.AesDecrypt(_json, password);
             IsEncrypted = false;
             IsUnlocked = true;
             PublicJson = decrypted;
+            await SaveAsync();
         }
 
         public static void GetNewDocumentContent(out string json, out string plainText)

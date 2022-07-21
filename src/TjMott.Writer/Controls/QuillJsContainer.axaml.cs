@@ -12,6 +12,7 @@ using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using TjMott.Writer.Models.SQLiteClasses;
+using TjMott.Writer.Views;
 
 namespace TjMott.Writer.Controls
 {
@@ -34,7 +35,7 @@ namespace TjMott.Writer.Controls
                 SetAndRaise(DocumentProperty, ref _document, value);
                 if (_isInitialized && _document != null)
                 {
-                    _ = loadDocument();
+                    loadDocument();
                 }
                 IsVisible = Document != null;
             }
@@ -117,7 +118,7 @@ namespace TjMott.Writer.Controls
                 IsEnabled = true;
                 await setIsReadOnly(true);
                 if (_document != null)
-                    await loadDocument();
+                    loadDocument();
                 if (EditorLoaded != null)
                     EditorLoaded(this, new EventArgs());
             }
@@ -182,23 +183,15 @@ namespace TjMott.Writer.Controls
             return words.Length;
         }
 
-        private async Task loadDocument()
+        private void loadDocument()
         {
             if (Document.IsEncrypted && !Document.IsUnlocked)
             {
-                this.FindControl<Grid>("aesPasswordContainer").IsVisible = true;
-                this.FindControl<Grid>("webViewContainer").IsVisible = false;
-                this.FindControl<TextBox>("passwordTextBox").Focus();
+                setLockedState();
             }
             else
             {
-                this.FindControl<Grid>("aesPasswordContainer").IsVisible = false;
-                this.FindControl<Grid>("webViewContainer").IsVisible = true;
-                await SetJsonText(Document.PublicJson).ConfigureAwait(false);
-                if (AllowUserEditing)
-                    await setIsReadOnly(false);
-                else
-                    await setIsReadOnly(true);
+                setUnlockedState();
             }
         }
 
@@ -275,11 +268,7 @@ namespace TjMott.Writer.Controls
                 }
             }
             Document.Lock();
-            await SetJsonText(Document.PublicJson);
-            this.FindControl<Grid>("aesPasswordContainer").IsVisible = true;
-            this.FindControl<Grid>("webViewContainer").IsVisible = false;
-            this.FindControl<TextBox>("passwordTextBox").Focus();
-            await setIsReadOnly(true);
+            setLockedState();
         }
 
         public async void Print(string title)
@@ -297,12 +286,62 @@ namespace TjMott.Writer.Controls
 
         public async void Encrypt()
         {
+            if (await HasUnsavedEdits())
+            {
+                var msgBox = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Document is Unsaved",
+                        "Your document has unsaved changes. Save these changes before encrypting?",
+                        MessageBox.Avalonia.Enums.ButtonEnum.YesNoCancel,
+                        MessageBox.Avalonia.Enums.Icon.Question,
+                        WindowStartupLocation.CenterOwner);
+                var msgBoxResult = await msgBox.Show(getOwner());
+                if (msgBoxResult == MessageBox.Avalonia.Enums.ButtonResult.Yes)
+                {
+                    await Save();
+                }
+                else if (msgBoxResult == MessageBox.Avalonia.Enums.ButtonResult.No)
+                {
 
+                }
+                else if (msgBoxResult == MessageBox.Avalonia.Enums.ButtonResult.Cancel)
+                {
+                    return;
+                }
+            }
+            EncryptWindow wnd = new EncryptWindow();
+            string password = await wnd.ShowDialog<string>(getOwner());
+            if (!string.IsNullOrEmpty(password))
+            {
+                await Document.Encrypt(password);
+                if (Document.IsEncrypted)
+                {
+                    setLockedState();
+                }
+            }
         }
-
         public async void Decrypt()
         {
-
+            DecryptWindow wnd = new DecryptWindow();
+            string password = await wnd.ShowDialog<string>(getOwner());
+            if (!string.IsNullOrEmpty(password))
+            {
+                try
+                {
+                    await Document.Decrypt(password);
+                    if (!Document.IsEncrypted)
+                    {
+                        setUnlockedState();
+                    }
+                }
+                catch (CryptographicException)
+                {
+                    var msgBox = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Invalid Password",
+                        "Incorrect password, your document could not be decrypted.",
+                        MessageBox.Avalonia.Enums.ButtonEnum.Ok,
+                        MessageBox.Avalonia.Enums.Icon.Error,
+                        WindowStartupLocation.CenterOwner);
+                    await msgBox.Show(getOwner());
+                }
+            }
         }
 
         public async Task<bool> HasUnsavedEdits()
@@ -336,14 +375,7 @@ namespace TjMott.Writer.Controls
                 try
                 {
                     Document.Unlock(password);
-                    this.FindControl<TextBox>("passwordTextBox").Text = "";
-                    this.FindControl<Grid>("aesPasswordContainer").IsVisible = false;
-                    this.FindControl<Grid>("webViewContainer").IsVisible = true;
-                    await SetJsonText(Document.PublicJson);
-                    if (AllowUserEditing)
-                        await setIsReadOnly(false);
-                    else
-                        await setIsReadOnly(true);
+                    setUnlockedState();
                 }
                 catch (CryptographicException)
                 {
@@ -357,6 +389,27 @@ namespace TjMott.Writer.Controls
 
                 }
             }
+        }
+
+        private async void setUnlockedState()
+        {
+            this.FindControl<TextBox>("passwordTextBox").Text = "";
+            this.FindControl<Grid>("aesPasswordContainer").IsVisible = false;
+            this.FindControl<Grid>("webViewContainer").IsVisible = true;
+            await SetJsonText(Document.PublicJson);
+            if (AllowUserEditing)
+                await setIsReadOnly(false);
+            else
+                await setIsReadOnly(true);
+        }
+
+        private async void setLockedState()
+        {
+            this.FindControl<Grid>("aesPasswordContainer").IsVisible = true;
+            this.FindControl<Grid>("webViewContainer").IsVisible = false;
+            this.FindControl<TextBox>("passwordTextBox").Focus();
+            await setIsReadOnly(true);
+            await SetJsonText(Document.PublicJson);
         }
 
         private async Task setTextZoom(double zoom)

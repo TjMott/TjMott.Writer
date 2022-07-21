@@ -45,8 +45,6 @@
 							<MenuItem Background="Violet" />
 						</MenuItem>
 						<MenuItem Header="Delete Scene" Command="{Binding DeleteCommand}" CommandParameter="{Binding $parent[Window]}" />
-						<MenuItem Header="Encrypt" Command="{Binding EncryptCommand}" />
-						<MenuItem Header="Decrypt" Command="{Binding DecryptCommand}" />
 					</ContextMenu>
 				</TreeView.Resources>
 				<TreeView.Styles>

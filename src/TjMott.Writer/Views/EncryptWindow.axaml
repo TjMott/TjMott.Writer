@@ -1,0 +1,32 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" Width="400" Height="150"
+        x:Class="TjMott.Writer.Views.EncryptWindow"
+		Activated="EncryptWindow_Activated"
+		CanResize="False" WindowStartupLocation="CenterOwner"
+        Title="Encrypt Item">
+	<Grid RowDefinitions="Auto,Auto,Auto,*" ColumnDefinitions="Auto,*" Margin="5">
+		<Grid.Styles>
+			<Style Selector="TextBox">
+				<Setter Property="Margin" Value="4" />
+			</Style>
+			<Style Selector="TextBlock">
+				<Setter Property="VerticalAlignment" Value="Center" />
+			</Style>
+		</Grid.Styles>
+		<TextBlock TextWrapping="Wrap" Text="Enter a password to encrypt this item." Grid.ColumnSpan="2" />
+		
+		<TextBlock Grid.Row="1" Text="Password" />
+		<TextBlock Grid.Row="2" Text="Confirm Password" />
+		
+		<TextBox x:Name="passwordBox" Grid.Row="1" Grid.Column="1" PasswordChar="*" />
+		<TextBox x:Name="confirmPasswordBox" Grid.Row="2" Grid.Column="1" PasswordChar="*" KeyDown="passwordBox_KeyDown" />
+
+		<StackPanel Grid.Row="3" Grid.ColumnSpan="2" Classes="dialogButtonPanel">
+			<Button Content="OK" Click="okButton_Click" />
+			<Button Content="Cancel" Click="cancelButton_Click" />
+		</StackPanel>
+	</Grid>
+</Window>

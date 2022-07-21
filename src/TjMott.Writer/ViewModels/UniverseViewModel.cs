@@ -8,7 +8,7 @@ using System.Reactive;
 using System.Threading.Tasks;
 using TjMott.Writer.Models;
 using TjMott.Writer.Models.SQLiteClasses;
-using TjMott.Writer.ViewModels;
+using TjMott.Writer.ViewModels.Search;
 using TjMott.Writer.Views;
 
 namespace TjMott.Writer.ViewModels
@@ -45,7 +45,7 @@ namespace TjMott.Writer.ViewModels
             }
         }
 
-        /*private SearchViewModel _searchViewModel;
+        private SearchViewModel _searchViewModel;
         public SearchViewModel SearchViewModel
         {
             get { return _searchViewModel; }
@@ -54,7 +54,7 @@ namespace TjMott.Writer.ViewModels
                 _searchViewModel = value;
                 OnPropertyChanged("SearchViewModel");
             }
-        }*/
+        }
 
         private NotesTree _notesTree;
         public NotesTree NotesTree
@@ -130,8 +130,8 @@ namespace TjMott.Writer.ViewModels
             NotesTree = new NotesTree(this);
             await NotesTree.LoadAsync().ConfigureAwait(false);
 
-            /*SearchViewModel = new SearchViewModel();
-            SearchViewModel.SelectedUniverse = this;*/
+            SearchViewModel = new SearchViewModel();
+            SearchViewModel.SelectedUniverse = this;
         }
 
         public void UpdateSubItemSortIndices()

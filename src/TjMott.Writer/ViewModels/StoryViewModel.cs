@@ -85,25 +85,26 @@ namespace TjMott.Writer.ViewModels
             }
         }
 
-        public void EditCopyrightPage(Window owner)
+        public async void EditCopyrightPage(Window owner)
         {
-            /*if (!Model.FlowDocumentId.HasValue)
+            if (!Model.CopyrightPageId.HasValue)
             {
-                FlowDocument doc = new FlowDocument(Model.Connection);
+                Document doc = new Document(Model.Connection);
                 doc.UniverseId = Model.UniverseId;
                 doc.IsEncrypted = false;
                 doc.WordCount = 0;
                 doc.PlainText = "";
-                doc.Xml = FlowDocumentViewModel.GetEmptyFlowDocXml();
-                doc.Create();
+                doc.Json = "";
+                doc.DocumentType = "CopyrightPage";
+                await doc.CreateAsync();
 
-                Model.FlowDocumentId = doc.id;
-                Model.Save();
+                Model.CopyrightPageId = doc.id;
+                await Model.SaveAsync();
             }
-            if (Model.FlowDocumentId.HasValue)
+            if (Model.CopyrightPageId.HasValue)
             {
-                FlowDocumentEditorWindow.ShowEditorWindow(Model.FlowDocumentId.Value, Model.Connection, UniverseVm.SpellcheckDictionary, string.Format("Copyright Page: {0}", Model.Name));
-            }*/
+                EditCopyrightPageWindow.ShowEditorWindow(this);
+            }
         }
 
         public async void Delete(Window owner)

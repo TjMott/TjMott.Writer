@@ -20,7 +20,7 @@
 			</Grid.Styles>
 			<TextBlock FontSize="18" FontWeight="Bold" Grid.ColumnSpan="3" Margin="0,0,0,20">This document is password-protected.</TextBlock>
 			<TextBlock Grid.Row="1">Document Password</TextBlock>
-			<TextBox x:Name="passwordTextBox" Grid.Row="1" Grid.Column="1" PasswordChar="*" MinWidth="350" />
+			<TextBox x:Name="passwordTextBox" Grid.Row="1" Grid.Column="1" PasswordChar="*" MinWidth="350" KeyDown="passwordBox_KeyDown" />
 			<Button Content="Unlock" Grid.Row="1" Grid.Column="2" Click="unlockButton_Click" />
 		</Grid>
 		<Grid x:Name="webViewContainer" IsVisible="True" RowDefinitions="*,Auto" Margin="5,0">

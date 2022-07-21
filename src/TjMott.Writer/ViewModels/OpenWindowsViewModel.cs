@@ -41,6 +41,8 @@ namespace TjMott.Writer.ViewModels
 
         private ObservableCollection<Window> _editorWindows;
         public ObservableCollection<Window> EditorWindows { get => _editorWindows; private set => this.RaiseAndSetIfChanged(ref _editorWindows, value); }
+        private ObservableCollection<Window> _copyrightWindows;
+        public ObservableCollection<Window> CopyrightWindows { get => _copyrightWindows; private set => this.RaiseAndSetIfChanged(ref _copyrightWindows, value); }
 
 
         private ObservableCollection<Window> _notesWindows;
@@ -54,12 +56,14 @@ namespace TjMott.Writer.ViewModels
             Instance = this;
             MainWindow = mainWindow;
             EditorWindows = new ObservableCollection<Window>();
+            CopyrightWindows = new ObservableCollection<Window>();
             NotesWindows = new ObservableCollection<Window>();
             PacingWindows = new ObservableCollection<Window>();
 
             EditorWindows.CollectionChanged += (o, e) => this.RaisePropertyChanged(nameof(AllWindows));
             NotesWindows.CollectionChanged += (o, e) => this.RaisePropertyChanged(nameof(AllWindows));
             PacingWindows.CollectionChanged += (o, e) => this.RaisePropertyChanged(nameof(AllWindows));
+            CopyrightWindows.CollectionChanged += (o, e) => this.RaisePropertyChanged(nameof(AllWindows));
         }
 
         public IEnumerable<OpenWindowsViewModelItem> AllWindows
@@ -73,6 +77,10 @@ namespace TjMott.Writer.ViewModels
                 foreach (var w in EditorWindows)
                 {
                     windows.Add(new OpenWindowsViewModelItem(w, "Document - " + w.Title));
+                }
+                foreach (var w in CopyrightWindows)
+                {
+                    windows.Add(new OpenWindowsViewModelItem(w, "Copyright Page - " + w.Title));
                 }
 
                 foreach (var w in NotesWindows)
