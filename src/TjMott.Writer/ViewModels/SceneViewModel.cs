@@ -89,15 +89,15 @@ namespace TjMott.Writer.ViewModels
             Model = model;
             Model.PropertyChanged += Model_PropertyChanged;
 
-            RenameCommand = ReactiveCommand.Create<Window>(Rename);
-            DeleteCommand = ReactiveCommand.Create<Window>(Delete);
-            MoveToChapterCommand = ReactiveCommand.Create<Window>(MoveToChapter);
+            RenameCommand = ReactiveCommand.CreateFromTask<Window>(Rename);
+            DeleteCommand = ReactiveCommand.CreateFromTask<Window>(Delete);
+            MoveToChapterCommand = ReactiveCommand.CreateFromTask<Window>(MoveToChapter);
             
             // Inits the IsEncrypted field.
             CanDecrypt();
         }
 
-        public async void Rename(Window owner)
+        public async Task Rename(Window owner)
         {
             NameItemWindow dialog = new NameItemWindow(Model.Name);
             string result = await dialog.ShowDialog<string>(owner);
@@ -108,7 +108,7 @@ namespace TjMott.Writer.ViewModels
             }
         }
 
-        public async void Delete(Window owner)
+        public async Task Delete(Window owner)
         {
             ConfirmDeleteWindow dialog = new ConfirmDeleteWindow(string.Format("Scene: {0}", Model.Name));
             bool result = await dialog.ShowDialog<bool>(owner);
@@ -119,10 +119,10 @@ namespace TjMott.Writer.ViewModels
             }
         }
 
-        public void MoveToChapter(Window owner)
+        public async Task MoveToChapter(Window owner)
         {
             MoveSceneToChapterWindow d = new MoveSceneToChapterWindow(this);
-            d.ShowDialog<bool>(owner);
+            await d.ShowDialog<bool>(owner);
         }
 
         /*public void ExportToWord(Docx.DocX doc)

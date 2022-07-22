@@ -1,7 +1,6 @@
 ﻿using Avalonia.Controls;
-using ReactiveUI;
 using System;
-using System.Reactive;
+using System.Threading.Tasks;
 using TjMott.Writer.Models.SQLiteClasses;
 using TjMott.Writer.Views;
 
@@ -33,7 +32,7 @@ namespace TjMott.Writer.ViewModels
             Document = null;
         }
 
-        public override async void Rename(Window dialogOwner)
+        public override async Task Rename(Window dialogOwner)
         {
             NameItemWindow renameDialog = new NameItemWindow(Model.Name);
             string newName = await renameDialog.ShowDialog<string>(dialogOwner);
@@ -44,7 +43,7 @@ namespace TjMott.Writer.ViewModels
             }
         }
 
-        public override async void Delete(Window dialogOwner)
+        public override async Task Delete(Window dialogOwner)
         {
             ConfirmDeleteWindow dialog = new ConfirmDeleteWindow(string.Format("Note Category: {0}{1}Its subitems will not be removed.", Model.Name, Environment.NewLine));
 
@@ -61,7 +60,7 @@ namespace TjMott.Writer.ViewModels
             NoteWindow.ShowEditorWindow(this);
         }
 
-        public override async void SetCategories(Window dialogOwner)
+        public override async Task SetCategories(Window dialogOwner)
         {
             EditNoteDocumentCategoriesWindow dialog = new EditNoteDocumentCategoriesWindow(this, UniverseVm.NotesTree);
             await dialog.ShowDialog(dialogOwner);

@@ -13,7 +13,8 @@ namespace TjMott.Writer.ViewModels
     {
         public UniverseViewModel UniverseVm { get; private set; }
 
-        public ObservableCollection<NotesTreeItem> Items { get; private set; }
+        public ObservableCollection<NoteDocumentViewModel> Notes { get; private set; }
+        public ObservableCollection<NotesTreeItem> Tree { get; private set; }
         public ObservableCollection<NoteCategoryViewModel> Categories { get; private set; }
 
 
@@ -45,13 +46,15 @@ namespace TjMott.Writer.ViewModels
         public NotesTree(UniverseViewModel universe)
         {
             UniverseVm = universe;
-            Items = new ObservableCollection<NotesTreeItem>();
+            Tree = new ObservableCollection<NotesTreeItem>();
+            Notes = new ObservableCollection<NoteDocumentViewModel>();
             Categories = new ObservableCollection<NoteCategoryViewModel>();
         }
 
         public async Task LoadAsync()
         {
-            Items.Clear();
+            Notes.Clear();
+            Tree.Clear();
             Categories.Clear();
 
             // Load DB models for this universe.
@@ -63,13 +66,17 @@ namespace TjMott.Writer.ViewModels
             List<NoteCategoryViewModel> categories = dbCategories.Select(i => new NoteCategoryViewModel(i, UniverseVm)).ToList();
             List<NoteDocumentViewModel> docs = dbDocs.Select(i => new NoteDocumentViewModel(i, UniverseVm)).ToList();
 
+            foreach (var doc in docs)
+                Notes.Add(doc);
+
+
             // Link up categories.
             foreach (var cat in categories)
             {
                 Categories.Add(cat);
                 if (cat.Model.ParentId == null)
                 {
-                    Items.Add(cat);
+                    Tree.Add(cat);
                 }
                 else
                 {
@@ -91,15 +98,15 @@ namespace TjMott.Writer.ViewModels
             // Find any documents that are not in a category.
             foreach (var doc in docs.Where(i => i.Parent == null).ToList())
             {
-                Items.Add(doc);
+                Tree.Add(doc);
             }
         }
 
         public void RemoveFromTree(NoteDocumentViewModel doc)
         {
-            if (Items.Contains(doc))
+            if (Tree.Contains(doc))
             {
-                Items.Remove(doc);
+                Tree.Remove(doc);
             }
             foreach (var c in Categories)
             {
@@ -147,16 +154,16 @@ namespace TjMott.Writer.ViewModels
             // Add/Remove from uncategorized as necessary.
             if (newCategories.Count() == 0)
             {
-                if (Items.Contains(doc))
+                if (Tree.Contains(doc))
                 {
-                    Items.Add(doc);
+                    Tree.Add(doc);
                 }
             }
             else
             {
-                if (Items.Contains(doc))
+                if (Tree.Contains(doc))
                 {
-                    Items.Remove(doc);
+                    Tree.Remove(doc);
                 }
             }
             
@@ -174,7 +181,7 @@ namespace TjMott.Writer.ViewModels
                 await noteCategory.CreateAsync();
                 NoteCategoryViewModel vm = new NoteCategoryViewModel(noteCategory, UniverseVm);
                 Categories.Add(vm);
-                Items.Add(vm);
+                Tree.Add(vm);
             }
         }
 
@@ -200,7 +207,7 @@ namespace TjMott.Writer.ViewModels
                 await noteDoc.CreateAsync();
 
                 NoteDocumentViewModel vm = new NoteDocumentViewModel(noteDoc, UniverseVm);
-                Items.Add(vm);
+                Tree.Add(vm);
             }
         }
     }

@@ -57,7 +57,7 @@ namespace TjMott.Writer.Views
             AvaloniaXamlLoader.Load(this);
             if (!Avalonia.Controls.Design.IsDesignMode)
             {
-                Title = "Editing Scene: " + _noteDocViewModel.Model.Name;
+                Title = "Editing Note: " + _noteDocViewModel.Model.Name;
 
                 _documentEditor = this.FindControl<QuillJsContainer>("noteEditor");
                 _documentEditor.EditorLoaded += _documentEditor_EditorLoaded;

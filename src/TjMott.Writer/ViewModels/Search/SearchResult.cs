@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.Sqlite;
+﻿using Avalonia.Controls;
+using Microsoft.Data.Sqlite;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -73,10 +74,8 @@ namespace TjMott.Writer.ViewModels.Search
                     .Replace("\n", "");
         }
 
-        protected ReactiveCommand<Unit, Unit> _renameCommand;
-        public abstract ReactiveCommand<Unit, Unit> RenameCommand { get; }
+        public ReactiveCommand<Window, Unit> RenameCommand { get; protected set; }
 
-        protected ReactiveCommand<Unit, Unit> _editCommand;
-        public abstract ReactiveCommand<Unit, Unit> EditCommand { get; }
+        public ReactiveCommand<Window, Unit> EditCommand { get; protected set; }
     }
 }

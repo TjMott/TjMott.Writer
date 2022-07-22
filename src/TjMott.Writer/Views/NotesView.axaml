@@ -21,7 +21,7 @@
 				   FontWeight="Bold" />
 
 		<Border Grid.Row="1" Margin="5" BorderBrush="DarkGray" BorderThickness="1">
-			<TreeView Items="{Binding Items}" SelectedItem="{Binding SelectedNote}">
+			<TreeView Items="{Binding Tree}" SelectedItem="{Binding SelectedNote}">
 				<TreeView.DataTemplates>
 					<TreeDataTemplate DataType="{x:Type viewModels:NoteCategoryViewModel}" ItemsSource="{Binding Children}">
 						<TextBlock Text="{Binding Model.Name}" ContextMenu="{StaticResource notesTreeContextMenu}" />

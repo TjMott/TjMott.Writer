@@ -50,13 +50,13 @@ namespace TjMott.Writer.ViewModels
             Model = model;
             Scenes = new SortBySortIndexBindingList<SceneViewModel>();
             Model.PropertyChanged += Model_PropertyChanged;
-            RenameCommand = ReactiveCommand.Create<Window>(RenameAsync);
-            DeleteCommand = ReactiveCommand.Create<Window>(DeleteAsync);
-            CreateSceneCommand = ReactiveCommand.Create<Window>(CreateScene);
+            RenameCommand = ReactiveCommand.CreateFromTask<Window>(RenameAsync);
+            DeleteCommand = ReactiveCommand.CreateFromTask<Window>(DeleteAsync);
+            CreateSceneCommand = ReactiveCommand.CreateFromTask<Window>(CreateScene);
             ShowPacingCommand = ReactiveCommand.Create(ShowPacing);
         }
 
-        public async void RenameAsync(Window owner)
+        public async Task RenameAsync(Window owner)
         {
             NameItemWindow dialog = new NameItemWindow(Model.Name);
             string result = await dialog.ShowDialog<string>(owner);
@@ -67,7 +67,7 @@ namespace TjMott.Writer.ViewModels
             }
         }
 
-        public async void DeleteAsync(Window owner)
+        public async Task DeleteAsync(Window owner)
         {
             ConfirmDeleteWindow dialog = new ConfirmDeleteWindow(string.Format("Chapter: {0}", Model.Name));
             bool result = await dialog.ShowDialog<bool>(owner);
@@ -78,7 +78,7 @@ namespace TjMott.Writer.ViewModels
             }
         }
 
-        public async void CreateScene(Window owner)
+        public async Task CreateScene(Window owner)
         {
             NameItemWindow dialog = new NameItemWindow("New Scene");
             string result = await dialog.ShowDialog<string>(owner);

@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using System;
+using System.Threading.Tasks;
 using TjMott.Writer.Models.SQLiteClasses;
 using TjMott.Writer.Views;
 
@@ -16,7 +17,7 @@ namespace TjMott.Writer.ViewModels
             UniverseVm = universe;
         }
 
-        public override async void Rename(Window dialogOwner)
+        public override async Task Rename(Window dialogOwner)
         {
             NameItemWindow renameDialog = new NameItemWindow(Model.Name);
             string newName = await renameDialog.ShowDialog<string>(dialogOwner);
@@ -27,7 +28,7 @@ namespace TjMott.Writer.ViewModels
             }
         }
 
-        public override async void Delete(Window dialogOwner)
+        public override async Task Delete(Window dialogOwner)
         {
             ConfirmDeleteWindow dialog = new ConfirmDeleteWindow(string.Format("Note Category: {0}{1}Its subitems will not be removed.", Model.Name, Environment.NewLine));
 
@@ -65,9 +66,9 @@ namespace TjMott.Writer.ViewModels
                 else
                 {
                     // No parent. Re-assign this node's children to the root.
-                    if (UniverseVm.NotesTree.Items.Contains(this))
+                    if (UniverseVm.NotesTree.Tree.Contains(this))
                     {
-                        UniverseVm.NotesTree.Items.Remove(this);
+                        UniverseVm.NotesTree.Tree.Remove(this);
                         foreach (var item in Children)
                         {
                             if (item is NoteCategoryViewModel)
@@ -76,12 +77,12 @@ namespace TjMott.Writer.ViewModels
                                 child.Parent = null;
                                 child.Model.ParentId = null;
                                 await child.Model.SaveAsync();
-                                UniverseVm.NotesTree.Items.Add(child);
+                                UniverseVm.NotesTree.Tree.Add(child);
                             }
                             else
                             {
                                 NoteDocumentViewModel child = (NoteDocumentViewModel)item;
-                                UniverseVm.NotesTree.Items.Add(child);
+                                UniverseVm.NotesTree.Tree.Add(child);
                             }
                         }
                     }
@@ -89,7 +90,7 @@ namespace TjMott.Writer.ViewModels
             }
         }
 
-        public override async void SetCategories(Window dialogOwner)
+        public override async Task SetCategories(Window dialogOwner)
         {
 
         }

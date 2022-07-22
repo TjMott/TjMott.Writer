@@ -66,14 +66,14 @@ namespace TjMott.Writer.ViewModels
             Chapters = new SortBySortIndexBindingList<ChapterViewModel>();
             Model.PropertyChanged += Model_PropertyChanged;
 
-            EditPropertiesCommand = ReactiveCommand.Create<Window>(EditProperties);
-            DeleteCommand = ReactiveCommand.Create<Window>(Delete);
-            CreateChapterCommand = ReactiveCommand.Create<Window>(CreateChapter);
-            EditCopyrightPageCommand = ReactiveCommand.Create<Window>(EditCopyrightPage);
+            EditPropertiesCommand = ReactiveCommand.CreateFromTask<Window>(EditProperties);
+            DeleteCommand = ReactiveCommand.CreateFromTask<Window>(Delete);
+            CreateChapterCommand = ReactiveCommand.CreateFromTask<Window>(CreateChapter);
+            EditCopyrightPageCommand = ReactiveCommand.CreateFromTask<Window>(EditCopyrightPage);
             ShowPacingCommand = ReactiveCommand.Create(ShowPacing);
         }
 
-        public async void EditProperties(Window owner)
+        public async Task EditProperties(Window owner)
         {
             EditStoryPropertiesWindow dialog = new EditStoryPropertiesWindow();
             dialog.DataContext = new EditStoryPropertiesWindowViewModel(Model, UniverseVm.Categories);
@@ -85,7 +85,7 @@ namespace TjMott.Writer.ViewModels
             }
         }
 
-        public async void EditCopyrightPage(Window owner)
+        public async Task EditCopyrightPage(Window owner)
         {
             if (!Model.CopyrightPageId.HasValue)
             {
@@ -107,7 +107,7 @@ namespace TjMott.Writer.ViewModels
             }
         }
 
-        public async void Delete(Window owner)
+        public async Task Delete(Window owner)
         {
             ConfirmDeleteWindow dialog = new ConfirmDeleteWindow(string.Format("Story: {0}", Model.Name));
             bool result = await dialog.ShowDialog<bool>(owner);
@@ -118,7 +118,7 @@ namespace TjMott.Writer.ViewModels
             }
         }
 
-        public async void CreateChapter(Window owner)
+        public async Task CreateChapter(Window owner)
         {
             NameItemWindow dialog = new NameItemWindow("New Chapter");
             string result = await dialog.ShowDialog<string>(owner);

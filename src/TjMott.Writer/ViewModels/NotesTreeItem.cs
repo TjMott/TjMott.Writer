@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Reactive;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using ReactiveUI;
 
@@ -24,13 +25,13 @@ namespace TjMott.Writer.ViewModels
         public NotesTreeItem()
         {
             Children = new ObservableCollection<NotesTreeItem>();
-            RenameCommand = ReactiveCommand.Create<Window>(Rename);
-            DeleteCommand = ReactiveCommand.Create<Window>(Delete);
+            RenameCommand = ReactiveCommand.CreateFromTask<Window>(Rename);
+            DeleteCommand = ReactiveCommand.CreateFromTask<Window>(Delete);
         }
 
-        public abstract void Rename(Window dialogOwner);
-        public abstract void Delete(Window dialogOwner);
+        public abstract Task Rename(Window dialogOwner);
+        public abstract Task Delete(Window dialogOwner);
 
-        public abstract void SetCategories(Window dialogOwner);
+        public abstract Task SetCategories(Window dialogOwner);
     }
 }

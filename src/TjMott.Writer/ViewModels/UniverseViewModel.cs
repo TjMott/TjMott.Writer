@@ -109,19 +109,19 @@ namespace TjMott.Writer.ViewModels
             Database = database;
             model.PropertyChanged += Model_PropertyChanged;
             SelectUniverseCommand = ReactiveCommand.Create(SelectUniverse);
-            CreateCategoryCommand = ReactiveCommand.Create<Window>(CreateCategory);
-            CreateStoryCommand = ReactiveCommand.Create<Window>(CreateStory);
+            CreateCategoryCommand = ReactiveCommand.CreateFromTask<Window>(CreateCategory);
+            CreateStoryCommand = ReactiveCommand.CreateFromTask<Window>(CreateStory);
             MoveItemUpCommand = ReactiveCommand.Create(MoveItemUp, this.WhenAny(x => x.SelectedTreeViewItem.SortIndex, (item) => CanMoveItemUp()));
             MoveItemDownCommand = ReactiveCommand.Create(MoveItemDown, this.WhenAny(x => x.SelectedTreeViewItem.SortIndex, (item) => CanMoveItemDown()));
             OpenEditorCommand = ReactiveCommand.Create(OpenEditor, this.WhenAny(x => x.SelectedTreeViewItem, (item) => (item.Value as SceneViewModel) != null));
             ExportToWordCommand = ReactiveCommand.Create(ExportToWord, this.WhenAny(x => x.SelectedTreeViewItem, (item) => (item.Value as IExportToWordDocument) != null));
-            ShowWordCountCommand = ReactiveCommand.Create<Window>(ShowWordCount, this.WhenAny(x => x.SelectedTreeViewItem, (item) => (item.Value as IGetWordCount) != null));
-            RenameCommand = ReactiveCommand.Create<Window>(Rename);
+            ShowWordCountCommand = ReactiveCommand.CreateFromTask<Window>(ShowWordCount, this.WhenAny(x => x.SelectedTreeViewItem, (item) => (item.Value as IGetWordCount) != null));
+            RenameCommand = ReactiveCommand.CreateFromTask<Window>(Rename);
 
-            initializeAsync();
+            _ = initializeAsync();
         }
 
-        private async void initializeAsync()
+        private async Task initializeAsync()
         {
             Categories = new BindingList<CategoryViewModel>();
             Stories = new BindingList<StoryViewModel>();
@@ -130,8 +130,7 @@ namespace TjMott.Writer.ViewModels
             NotesTree = new NotesTree(this);
             await NotesTree.LoadAsync().ConfigureAwait(false);
 
-            SearchViewModel = new SearchViewModel();
-            SearchViewModel.SelectedUniverse = this;
+            SearchViewModel = new SearchViewModel(this);
         }
 
         public void UpdateSubItemSortIndices()
@@ -149,7 +148,7 @@ namespace TjMott.Writer.ViewModels
             Database.SelectedUniverse = this;
         }
 
-        public async void CreateCategory(Window owner)
+        public async Task CreateCategory(Window owner)
         {
             NameItemWindow dialog = new NameItemWindow("New Category");
             string result = await dialog.ShowDialog<string>(owner);
@@ -169,7 +168,7 @@ namespace TjMott.Writer.ViewModels
             }
        }
 
-        public async void CreateStory(Window owner)
+        public async Task CreateStory(Window owner)
         {
             Story story = new Story(Model.Connection);
             story.UniverseId = Model.id;
@@ -231,7 +230,7 @@ namespace TjMott.Writer.ViewModels
             }
         }
 
-        public async void DeleteSubItem(IUniverseSubItem subItem)
+        public async Task DeleteSubItem(IUniverseSubItem subItem)
         {
             if (subItem is StoryViewModel)
             {
@@ -393,7 +392,7 @@ namespace TjMott.Writer.ViewModels
             }
         }
 
-        public async void Rename(Window owner)
+        public async Task Rename(Window owner)
         {
             NameItemWindow dialog = new NameItemWindow(Model.Name);
             string result = await dialog.ShowDialog<string>(owner);
@@ -408,7 +407,6 @@ namespace TjMott.Writer.ViewModels
         {
             SceneViewModel vm = SelectedTreeViewItem as SceneViewModel;
             SceneEditorWindow.ShowEditorWindow(vm);
-            //FlowDocumentEditorWindow.ShowEditorWindow(vm.Model.FlowDocumentId, vm.Model.Connection, SpellcheckDictionary, string.Format("Scene: {0}", vm.Model.Name));
         }
 
         public void ExportToWord()
@@ -469,11 +467,11 @@ namespace TjMott.Writer.ViewModels
             }*/
         }
 
-        public void ShowWordCount(Window owner)
+        public async Task ShowWordCount(Window owner)
         {
             IGetWordCount item = SelectedTreeViewItem as IGetWordCount;
             var dialog = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Word Count", string.Format("Word Count: {0}", item.GetWordCount()), MessageBox.Avalonia.Enums.ButtonEnum.Ok, MessageBox.Avalonia.Enums.Icon.Info);
-            dialog.ShowDialog(owner);
+            await dialog.ShowDialog(owner);
         }
     }
 }

@@ -4,7 +4,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:controls="clr-namespace:TjMott.Writer.Controls"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-		Closing="NoteWindow_Closing"
         x:Class="TjMott.Writer.Views.NoteWindow"
         Title="NoteWindow">
 	<Grid RowDefinitions="Auto,*,28">

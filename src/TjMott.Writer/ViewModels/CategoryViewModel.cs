@@ -49,11 +49,11 @@ namespace TjMott.Writer.ViewModels
             Model = model;
             Stories = new SortBySortIndexBindingList<StoryViewModel>();
             Model.PropertyChanged += Model_PropertyChanged;
-            RenameCommand = ReactiveCommand.Create<Window>(Rename);
-            DeleteCommand = ReactiveCommand.Create<Window>(Delete);
+            RenameCommand = ReactiveCommand.CreateFromTask<Window>(Rename);
+            DeleteCommand = ReactiveCommand.CreateFromTask<Window>(Delete);
         }
 
-        public async void Rename(Window owner)
+        public async Task Rename(Window owner)
         {
             NameItemWindow dialog = new NameItemWindow(Model.Name);
             string result = await dialog.ShowDialog<string>(owner);
@@ -64,7 +64,7 @@ namespace TjMott.Writer.ViewModels
             }
         }
 
-        public async void Delete(Window owner)
+        public async Task Delete(Window owner)
         {
             ConfirmDeleteWindow dialog = new ConfirmDeleteWindow(string.Format("Category: {0}", Model.Name));
             bool result = await dialog.ShowDialog<bool>(owner);

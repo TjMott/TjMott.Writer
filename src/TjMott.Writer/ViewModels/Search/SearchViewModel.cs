@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using ReactiveUI;
@@ -13,17 +13,18 @@ namespace TjMott.Writer.ViewModels.Search
     public class SearchViewModel : ViewModelBase
     {
         #region SQLite stuff
-        private static DbCommandHelper _cmdSearchDocuments;
+        private static DbCommandHelper _cmdSearchDocumentText;
         private static DbCommandHelper _cmdSearchSceneNames;
         private static DbCommandHelper _cmdSearchChapterNames;
         private static DbCommandHelper _cmdSearchStoryNames;
+        private static DbCommandHelper _cmdSearchNoteNames;
 
         private static void initSql(SqliteConnection con)
         {
-            if (_cmdSearchDocuments == null)
+            if (_cmdSearchDocumentText == null)
             {
-                _cmdSearchDocuments = new DbCommandHelper(con);
-                _cmdSearchDocuments.Command.CommandText = @"SELECT 
+                _cmdSearchDocumentText = new DbCommandHelper(con);
+                _cmdSearchDocumentText.Command.CommandText = @"SELECT 
                                                                     Document_fts.rowid, 
                                                                     snippet(Document_fts, -1, '<FTSSearchResult>', '</FTSSearchResult>', '', 25),
                                                                     rank
@@ -31,7 +32,7 @@ namespace TjMott.Writer.ViewModels.Search
                                                                     Document_fts
                                                                 WHERE 
                                                                     Document_fts MATCH @searchTerm;";
-                _cmdSearchDocuments.AddParameter("@searchTerm");
+                _cmdSearchDocumentText.AddParameter("@searchTerm");
 
                 _cmdSearchSceneNames = new DbCommandHelper(con);
                 _cmdSearchSceneNames.Command.CommandText = @"SELECT
@@ -66,20 +67,22 @@ namespace TjMott.Writer.ViewModels.Search
                                                                 Story_fts MATCH @searchTerm;";
                 _cmdSearchStoryNames.AddParameter("@searchTerm");
 
+                _cmdSearchNoteNames = new DbCommandHelper(con);
+                _cmdSearchNoteNames.Command.CommandText = @"SELECT
+                                                                NoteDocument_fts.rowid, 
+                                                                snippet(NoteDocument_fts, -1, '<FTSSearchResult>', '</FTSSearchResult>', '', 25),
+                                                                rank
+                                                             FROM 
+                                                                NoteDocument_fts
+                                                             WHERE 
+                                                                NoteDocument_fts MATCH @searchTerm;";
+                _cmdSearchNoteNames.AddParameter("@searchTerm");
+
             }
         }
         #endregion
 
-        private UniverseViewModel _selectedUniverse;
-        public UniverseViewModel SelectedUniverse
-        {
-            get { return _selectedUniverse; }
-            set
-            {
-                initSql(value.Model.Connection);
-                this.RaiseAndSetIfChanged(ref _selectedUniverse, value);
-            }
-        }
+        private UniverseViewModel _universe;
 
         private string _searchTerm = "";
         public string SearchTerm
@@ -88,71 +91,273 @@ namespace TjMott.Writer.ViewModels.Search
             set
             {
                 this.RaiseAndSetIfChanged(ref _searchTerm, value);
-                DoSearch();
+                _ = DoSearch();
+            }
+        }
+
+        private string sqlSearchTerm
+        {
+            get
+            {
+                // Reformat for Sqlite FTS syntax.
+                string temp = _searchTerm;
+
+                string[] words = temp.Split(new char[] { ' ', '\'', '"', '.', '?' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                string retval = "";
+                for (int i = 0; i < words.Length - 1; i++)
+                {
+                    retval += words[i] + "*+";
+                }
+                retval += words[words.Length - 1] + "*";
+                return retval;
             }
         }
 
         private string _status = "";
-        public string Status
-        {
-            get { return _status; }
-            private set
-            {
-                this.RaiseAndSetIfChanged(ref _status, value);
-            }
-        }
+        public string Status { get => _status; private set => this.RaiseAndSetIfChanged(ref _status, value); }
+
+        private SearchResult _selectedResult;
+        public SearchResult SelectedResult { get => _selectedResult; set => this.RaiseAndSetIfChanged(ref _selectedResult, value); }
 
         public ObservableCollection<SearchResult> SearchResults { get; private set; }
 
-        public SearchViewModel()
+        public SearchViewModel(UniverseViewModel universe)
         {
+            _universe = universe;
             SearchResults = new ObservableCollection<SearchResult>();
             Status = "No Results.";
+            initSql(_universe.Model.Connection);
         }
 
-        public void DoSearch()
+        private List<CancellationTokenSource> _searchCancellationTokens = new List<CancellationTokenSource>();
+        public async Task DoSearch()
         {
-            Status = "Performing Search...";
-            SearchResults.Clear();
+            // This function can be re-entered if the user types faster than the search occurs.
+            // Keep track of all runs and cancel them all.
+            if (_searchCancellationTokens.Count > 0)
+            {
+                foreach (var token in _searchCancellationTokens)
+                    token.Cancel();
+                while (_searchCancellationTokens.Count > 0)
+                    await Task.Delay(1);
+            }
+            CancellationTokenSource cancelToken = new CancellationTokenSource();
+            _searchCancellationTokens.Add(cancelToken);
+            try
+            {
+                Status = "Performing Search...";
+                SearchResults.Clear();
+                List<SearchResult> results = new List<SearchResult>();
+
+                if (!string.IsNullOrWhiteSpace(SearchTerm))
+                {
+                    string searchTerm = sqlSearchTerm;
+
+                    // Kick off search tasks.
+                    List<Task<List<SearchResult>>> searchTasks = new List<Task<List<SearchResult>>>();
+                    searchTasks.Add(Task.Run(() => doDocumentSearchAsync(searchTerm, cancelToken.Token)));
+                    searchTasks.Add(Task.Run(() => doSceneTitleSearchAsync(searchTerm, cancelToken.Token)));
+                    searchTasks.Add(Task.Run(() => doChapterTitleSearchAsync(searchTerm, cancelToken.Token)));
+                    searchTasks.Add(Task.Run(() => doStoryTitleSearchAsync(searchTerm, cancelToken.Token)));
+                    searchTasks.Add(Task.Run(() => doNoteTitleSearchAsync(searchTerm, cancelToken.Token)));
+                    await Task.WhenAll(searchTasks);
+
+                    // Combine search results and sort by search ranking.
+                    await Task.Run(() =>
+                    {
+                        foreach (var task in searchTasks)
+                        {
+                            results.AddRange(task.Result);
+                        }
+
+                        results = results.OrderBy(i => i.Rank).ToList();
+                    });
+
+                    foreach (var r in results)
+                    {
+                        SearchResults.Add(r);
+                    }
+
+                }
+                if (results.Count == 0)
+                    Status = "No results found.";
+                else if (results.Count == 1)
+                    Status = "Found 1 search result:";
+                else
+                    Status = string.Format("Found {0} search results:", results.Count);
+            }
+            catch (OperationCanceledException)
+            {
+                
+            }
+            catch (Exception ex)
+            {
+                Status = ex.Message;
+            }
+            finally
+            {
+                cancelToken.Dispose();
+                _searchCancellationTokens.Remove(cancelToken);
+            }
+        }
+
+        private async Task<List<SearchResult>> doDocumentSearchAsync(string searchTerm, CancellationToken cancelToken)
+        {
             List<SearchResult> results = new List<SearchResult>();
 
-            if (!string.IsNullOrWhiteSpace(SearchTerm))
+            _cmdSearchDocumentText.Parameters["@searchTerm"].Value = searchTerm;
+            using (SqliteDataReader reader = await _cmdSearchDocumentText.Command.ExecuteReaderAsync(cancelToken))
             {
+                while (await reader.ReadAsync(cancelToken))
+                {
+                    DocumentTextSearchResult result = new DocumentTextSearchResult(reader);
 
-                doDocumentSearch(results);
-                doSceneTitleSearch(results);
-                doChapterTitleSearch(results);
-                doStoryTitleSearch(results);
+                    // Search for owner.
+                    SceneViewModel scene = _universe.Stories.SelectMany(i => i.Chapters.SelectMany(i => i.Scenes)).SingleOrDefault(i => i.Model.DocumentId == result.rowid);
+                    if (scene != null)
+                        result.Owner = scene;
 
-                results = results.OrderBy(i => i.Rank).ToList();
-                foreach (var r in results)
-                    SearchResults.Add(r);
+                    if (result.Owner == null)
+                    {
+                        cancelToken.ThrowIfCancellationRequested();
+                        NoteDocumentViewModel note = _universe.NotesTree.Notes.SingleOrDefault(i => i.Model.DocumentId == result.rowid);
+                        if (note != null)
+                            result.Owner = note;
+                    }
+
+                    if (result.Owner == null)
+                    {
+                        cancelToken.ThrowIfCancellationRequested();
+                        StoryViewModel story = _universe.Stories.SingleOrDefault(i => i.Model.CopyrightPageId == result.rowid);
+                        if (story != null)
+                            result.Owner = story;
+                    }
+
+                    if (result.Owner != null)
+                    {
+                        results.Add(result);
+                    }
+                }
             }
-            if (results.Count == 0)
-                Status = "No results found.";
-            else if (results.Count == 1)
-                Status = "Found 1 search result:";
-            else
-                Status = string.Format("Found {0} search results:", results.Count);
+
+            return results;
         }
 
-        private void doDocumentSearch(List<SearchResult> results)
+        private async Task<List<SearchResult>> doSceneTitleSearchAsync(string searchTerm, CancellationToken cancelToken)
         {
+            List<SearchResult> results = new List<SearchResult>();
+
+            _cmdSearchSceneNames.Parameters["@searchTerm"].Value = searchTerm;
+
+            using (SqliteDataReader reader = await _cmdSearchSceneNames.Command.ExecuteReaderAsync(cancelToken))
+            {
+                while (await reader.ReadAsync(cancelToken))
+                {
+                    SceneTitleSearchResult result = new SceneTitleSearchResult(reader);
+
+                    // Search scenes for owner.
+                    SceneViewModel scene = _universe.Stories.SelectMany(i => i.Chapters.SelectMany(i => i.Scenes)).SingleOrDefault(i => i.Model.id == result.rowid);
+                    if (scene != null)
+                    {
+                        result.Owner = scene;
+                    }
+
+                    if (result.Owner != null)
+                    {
+                        results.Add(result);
+                    }
+                }
+            }
+
+            return results;
         }
 
-        private void doSceneTitleSearch(List<SearchResult> results)
-        {
 
+        private async Task<List<SearchResult>> doChapterTitleSearchAsync(string searchTerm, CancellationToken cancelToken)
+        {
+            List<SearchResult> results = new List<SearchResult>();
+
+            _cmdSearchChapterNames.Parameters["@searchTerm"].Value = searchTerm;
+
+            using (SqliteDataReader reader = await _cmdSearchChapterNames.Command.ExecuteReaderAsync(cancelToken))
+            {
+                while (await reader.ReadAsync(cancelToken))
+                {
+                    ChapterTitleSearchResult result = new ChapterTitleSearchResult(reader);
+
+                    // Search scenes for owner.
+                    ChapterViewModel chapter = _universe.Stories.SelectMany(i => i.Chapters.Where(i => i.Model.id == result.rowid)).SingleOrDefault();
+                    if (chapter != null)
+                    {
+                        result.Owner = chapter;
+                    }
+
+                    if (result.Owner != null)
+                    {
+                        results.Add(result);
+                    }
+                }
+            }
+
+            return results;
         }
 
-        private void doChapterTitleSearch(List<SearchResult> results)
+        private async Task<List<SearchResult>> doStoryTitleSearchAsync(string searchTerm, CancellationToken cancelToken)
         {
+            List<SearchResult> results = new List<SearchResult>();
 
+            _cmdSearchStoryNames.Parameters["@searchTerm"].Value = searchTerm;
+
+            using (SqliteDataReader reader = await _cmdSearchStoryNames.Command.ExecuteReaderAsync(cancelToken))
+            {
+                while (await reader.ReadAsync(cancelToken))
+                {
+                    StoryTitleSearchResult result = new StoryTitleSearchResult(reader);
+
+                    // Search for owner.
+                    StoryViewModel story = _universe.Stories.SingleOrDefault(i => i.Model.id == result.rowid);
+                    if (story != null)
+                    {
+                        result.Owner = story;
+                    }
+
+                    if (result.Owner != null)
+                    {
+                        results.Add(result);
+                    }
+                }
+            }
+
+            return results;
         }
 
-        private void doStoryTitleSearch(List<SearchResult> results)
+        private async Task<List<SearchResult>> doNoteTitleSearchAsync(string searchTerm, CancellationToken cancelToken)
         {
+            List<SearchResult> results = new List<SearchResult>();
 
+            _cmdSearchNoteNames.Parameters["@searchTerm"].Value = searchTerm;
+
+            using (SqliteDataReader reader = await _cmdSearchNoteNames.Command.ExecuteReaderAsync(cancelToken))
+            {
+                while (await reader.ReadAsync(cancelToken))
+                {
+                    NoteTitleSearchResult result = new NoteTitleSearchResult(reader);
+
+                    // Search for owner.
+                    NoteDocumentViewModel note = _universe.NotesTree.Notes.SingleOrDefault(i => i.Model.id == result.rowid);
+                    if (note != null)
+                    {
+                        result.Owner = note;
+                    }
+
+                    if (result.Owner != null)
+                    {
+                        results.Add(result);
+                    }
+                }
+            }
+
+            return results;
         }
     }
 }

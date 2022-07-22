@@ -4,14 +4,42 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="TjMott.Writer.Views.SearchView">
-	<Grid RowDefinitions="Auto,Auto,*,Auto" ColumnDefinitions="Auto,*">
+	<Grid RowDefinitions="Auto,Auto,*,Auto" ColumnDefinitions="Auto,*" Margin="3">
 		<TextBlock Text="Search Term:" VerticalAlignment="Center" />
-		<TextBox Grid.Column="1" Margin="5" Text="{Binding SearchTerm}" />
+		<TextBox Grid.Column="1" Margin="5,0,0,0" Text="{Binding SearchTerm}" />
 
-		<TextBlock Text="{Binding Status}" Grid.Row="1" Grid.ColumnSpan="2" />
+		<TextBlock Text="{Binding Status}" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,3" />
 
-		<DataGrid x:Name="searchResultsGrid" Grid.Row="2" Grid.ColumnSpan="2" AutoGenerateColumns="False" IsReadOnly="True">
-			
+		<DataGrid x:Name="searchResultsGrid" Grid.Row="2" Grid.ColumnSpan="2" SelectionMode="Single" SelectedItem="{Binding SelectedResult}"
+				  Items="{Binding SearchResults}" AutoGenerateColumns="False" IsReadOnly="True">
+			<DataGrid.ContextMenu>
+				<ContextMenu>
+					<MenuItem Header="Rename" Command="{Binding SelectedResult.RenameCommand}" CommandParameter="{Binding $parent[Window]}" />
+					<MenuItem Header="Open Editor" Command="{Binding SelectedResult.EditCommand}" CommandParameter="{Binding $parent[Window]}" />
+				</ContextMenu>
+			</DataGrid.ContextMenu>
+			<DataGrid.Columns>
+				<DataGridTemplateColumn Header="Item Type">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding ResultType}" Margin="3" />
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+				<DataGridTemplateColumn Header="Found Text">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<StackPanel Orientation="Horizontal" Margin="3">
+								<TextBlock Text="{Binding SnippetPre}" />
+								<TextBlock Text="{Binding SnippetResult}" FontWeight="Bold" />
+								<TextBlock Text="{Binding SnippetPost}" />
+							</StackPanel>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+				<DataGridTextColumn Header="Name" Binding="{Binding Name}" />
+				<DataGridTextColumn Header="Context" Binding="{Binding Context}" />
+			</DataGrid.Columns>
 		</DataGrid>
 	</Grid>
 </UserControl>
