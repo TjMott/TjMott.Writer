@@ -159,5 +159,13 @@ namespace TjMott.Writer.ViewModels
             IsEncrypted = fd.IsEncrypted;
             return fd.IsEncrypted;
         }
+
+        public void ShowJson()
+        {
+            Document fd = new Document(Model.Connection);
+            fd.id = Model.DocumentId;
+            DocumentJsonWindow d = new DocumentJsonWindow(fd);
+            d.Show();
+        }
     }
 }

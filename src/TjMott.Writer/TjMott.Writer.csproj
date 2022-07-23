@@ -17,15 +17,10 @@
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
     <AvaloniaResource Remove="Assets\cef-linux64\lib\swiftshader\**" />
-    <AvaloniaResource Remove="Assets\cef-win64\lib\swiftshader\**" />
     <AvaloniaXaml Remove="Assets\cef-linux64\lib\swiftshader\**" />
-    <AvaloniaXaml Remove="Assets\cef-win64\lib\swiftshader\**" />
     <Compile Remove="Assets\cef-linux64\lib\swiftshader\**" />
-    <Compile Remove="Assets\cef-win64\lib\swiftshader\**" />
     <EmbeddedResource Remove="Assets\cef-linux64\lib\swiftshader\**" />
-    <EmbeddedResource Remove="Assets\cef-win64\lib\swiftshader\**" />
     <None Remove="Assets\cef-linux64\lib\swiftshader\**" />
-    <None Remove="Assets\cef-win64\lib\swiftshader\**" />
     <AvaloniaResource Remove="Assets\cef-linux64\lib\chrome-sandbox" />
     <AvaloniaResource Remove="Assets\cef-linux64\lib\icudtl.dat" />
     <AvaloniaResource Remove="Assets\cef-linux64\lib\libcef.so" />
@@ -95,78 +90,6 @@
     <AvaloniaResource Remove="Assets\cef-linux64\resources\locales\zh-CN.pak" />
     <AvaloniaResource Remove="Assets\cef-linux64\resources\locales\zh-TW.pak" />
     <AvaloniaResource Remove="Assets\cef-linux64\resources\resources.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\lib\cef_sandbox.lib" />
-    <AvaloniaResource Remove="Assets\cef-win64\lib\chrome_elf.dll" />
-    <AvaloniaResource Remove="Assets\cef-win64\lib\d3dcompiler_47.dll" />
-    <AvaloniaResource Remove="Assets\cef-win64\lib\icudtl.dat" />
-    <AvaloniaResource Remove="Assets\cef-win64\lib\libcef.dll" />
-    <AvaloniaResource Remove="Assets\cef-win64\lib\libcef.lib" />
-    <AvaloniaResource Remove="Assets\cef-win64\lib\libEGL.dll" />
-    <AvaloniaResource Remove="Assets\cef-win64\lib\libGLESv2.dll" />
-    <AvaloniaResource Remove="Assets\cef-win64\lib\snapshot_blob.bin" />
-    <AvaloniaResource Remove="Assets\cef-win64\lib\v8_context_snapshot.bin" />
-    <AvaloniaResource Remove="Assets\cef-win64\lib\vk_swiftshader.dll" />
-    <AvaloniaResource Remove="Assets\cef-win64\lib\vk_swiftshader_icd.json" />
-    <AvaloniaResource Remove="Assets\cef-win64\lib\vulkan-1.dll" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\chrome_100_percent.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\chrome_200_percent.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\icudtl.dat" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\af.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\am.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\ar.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\bg.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\bn.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\ca.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\cs.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\da.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\de.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\el.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\en-GB.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\en-US.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\es-419.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\es.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\et.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\fa.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\fi.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\fil.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\fr.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\gu.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\he.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\hi.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\hr.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\hu.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\id.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\it.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\ja.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\kn.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\ko.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\lt.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\lv.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\ml.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\mr.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\ms.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\nb.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\nl.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\pl.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\pt-BR.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\pt-PT.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\ro.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\ru.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\sk.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\sl.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\sr.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\sv.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\sw.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\ta.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\te.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\th.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\tr.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\uk.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\ur.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\vi.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\zh-CN.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\locales\zh-TW.pak" />
-    <AvaloniaResource Remove="Assets\cef-win64\resources\resources.pak" />
     <AvaloniaResource Remove="Assets\editor.html" />
     <AvaloniaResource Remove="Assets\quilljs\quill.bubble.css" />
     <AvaloniaResource Remove="Assets\quilljs\quill.core.css" />
@@ -177,7 +100,6 @@
     <AvaloniaResource Remove="Assets\quilljs\quill.snow.css" />
     <None Remove=".gitignore" />
     <None Remove="Assets\cef-linux64\lib\icudtl.dat" />
-    <None Remove="Assets\cef-win64\lib\icudtl.dat" />
     <None Remove="Assets\editor.html" />
     <None Remove="Assets\icons8-abacus-40.png" />
     <None Remove="Assets\icons8-align-center.png" />
@@ -226,6 +148,7 @@
     <None Remove="Assets\quilljs\quill.min.js" />
     <None Remove="Assets\quilljs\quill.min.js.map" />
     <None Remove="Assets\quilljs\quill.snow.css" />
+    <None Remove="WordTemplates\template.dotx" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\cef-linux64\lib\chrome-sandbox">
@@ -435,222 +358,6 @@
     <Content Include="Assets\cef-linux64\resources\resources.pak">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\cef-win64\lib\cef_sandbox.lib">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\lib\chrome_elf.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\lib\d3dcompiler_47.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\lib\icudtl.dat">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\lib\libcef.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\lib\libcef.lib">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\lib\libEGL.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\lib\libGLESv2.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\lib\snapshot_blob.bin">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\lib\v8_context_snapshot.bin">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\lib\vk_swiftshader.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\lib\vk_swiftshader_icd.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\lib\vulkan-1.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\chrome_100_percent.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\chrome_200_percent.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\icudtl.dat">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\af.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\am.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\ar.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\bg.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\bn.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\ca.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\cs.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\da.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\de.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\el.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\en-GB.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\en-US.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\es-419.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\es.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\et.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\fa.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\fi.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\fil.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\fr.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\gu.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\he.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\hi.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\hr.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\hu.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\id.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\it.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\ja.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\kn.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\ko.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\lt.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\lv.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\ml.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\mr.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\ms.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\nb.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\nl.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\pl.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\pt-BR.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\pt-PT.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\ro.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\ru.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\sk.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\sl.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\sr.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\sv.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\sw.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\ta.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\te.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\th.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\tr.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\uk.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\ur.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\vi.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\zh-CN.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\locales\zh-TW.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cef-win64\resources\resources.pak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Assets\editor.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -675,6 +382,9 @@
     <Content Include="Assets\quilljs\quill.snow.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="WordTemplates\template.dotx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <!--This helps with theme dll-s trimming.
@@ -691,10 +401,12 @@
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.17" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.17" />
     <PackageReference Include="CefNet.Avalonia" Version="102.0.22146.158" />
+    <PackageReference Include="DocX.Core" Version="0.4.1" />
     <PackageReference Include="MessageBox.Avalonia" Version="2.0.2" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.7" />
     <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="6.0.7" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="SharpZipLib" Version="1.3.3" />
     <PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta17" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.0" />
     <PackageReference Include="XamlNameReferenceGenerator" Version="1.3.4" />

@@ -1,4 +1,3 @@
-using Avalonia.Controls;
 using ReactiveUI;
 
 namespace TjMott.Writer.ViewModels
@@ -8,6 +7,18 @@ namespace TjMott.Writer.ViewModels
         protected void OnPropertyChanged(string propertyName)
         {
             this.RaisePropertyChanged(propertyName);
+        }
+
+        public bool IsDebugMode
+        {
+            get
+            {
+#if DEBUG
+                return true;
+#else
+                return false;
+#endif
+            }
         }
     }
 }

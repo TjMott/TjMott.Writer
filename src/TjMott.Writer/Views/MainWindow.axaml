@@ -21,33 +21,37 @@
 
 		<Menu>
 			<MenuItem Header="File">
-				<MenuItem Header="New" Command="{Binding NewFileCommand}" CommandParameter="{Binding $parent[Window]}"  />
-				<MenuItem Header="Open" Command="{Binding OpenFileCommand}" CommandParameter="{Binding $parent[Window]}" />
-				<MenuItem Header="Quit" Command="{Binding QuitCommand}" />
+				<MenuItem Header="New Database" Command="{Binding NewFileCommand}" CommandParameter="{Binding $parent[Window]}"  />
+				<MenuItem Header="Open Database" Command="{Binding OpenFileCommand}" CommandParameter="{Binding $parent[Window]}" />
+				<Separator />
+				<MenuItem Header="View Word Templates" Command="{Binding ShowWordTemplates}" />
+				<Separator />
+				<MenuItem Header="Quit" Command="{Binding QuitCommand}" CommandParameter="{Binding $parent[Window]}" />
 			</MenuItem>
 			<MenuItem Header="Universe">
 				<MenuItem Header="Create Universe" Command="{Binding Database.CreateUniverseCommand}" CommandParameter="{Binding $parent[Window]}" />
-				<MenuItem x:Name="selectUniverseMenu" Header="Select Universe" Items="{Binding Database.Universes}">
+				<MenuItem x:Name="selectUniverseMenu" Header="Select Universe" Items="{Binding UniverseMenuItems}">
 					<MenuItem.Styles>
 						<Style Selector="#selectUniverseMenu MenuItem">
 							<Setter Property="Icon">
 								<Template>
 									<CheckBox BorderThickness="0" Width="20" Height="20" IsHitTestVisible="False" 
-											  IsChecked="{Binding IsSelected, Mode=OneWay}" />
+											  IsChecked="{Binding IsChecked}" />
 								</Template>
 							</Setter>
-							<Setter Property="Header" Value="{Binding Model.Name}" />
-							<Setter Property="Command" Value="{Binding SelectUniverseCommand}" />
+							<Setter Property="Header" Value="{Binding Universe.Name}" />
+							<Setter Property="Command" Value="{Binding Command}" />
+							<Setter Property="CommandParameter" Value="{Binding Universe}" />
 						</Style>
 					</MenuItem.Styles>
 				</MenuItem>
-				<MenuItem Header="Rename Universe" Command="{Binding Database.SelectedUniverse.RenameCommand}" CommandParameter="{Binding $parent[Window]}" />
+				<MenuItem Header="Rename Universe" Command="{Binding Database.SelectedUniverseViewModel.RenameCommand}" CommandParameter="{Binding $parent[Window]}" />
 				<Separator />
-				<MenuItem Header="Create New Category" Command="{Binding Database.SelectedUniverse.CreateCategoryCommand}" CommandParameter="{Binding $parent[Window]}" />
-				<MenuItem Header="Create New Story" Command="{Binding Database.SelectedUniverse.CreateStoryCommand}" CommandParameter="{Binding $parent[Window]}" />
+				<MenuItem Header="Create New Category" Command="{Binding Database.SelectedUniverseViewModel.CreateCategoryCommand}" CommandParameter="{Binding $parent[Window]}" />
+				<MenuItem Header="Create New Story" Command="{Binding Database.SelectedUniverseViewModel.CreateStoryCommand}" CommandParameter="{Binding $parent[Window]}" />
 				<Separator />
-				<MenuItem Header="Create New Notes Category" Command="{Binding Database.SelectedUniverse.NotesTree.CreateNewNoteCategory}" CommandParameter="{Binding $parent[Window]}" />
-				<MenuItem Header="Create New Note Document" Command="{Binding Database.SelectedUniverse.NotesTree.CreateNewNoteDocument}" CommandParameter="{Binding $parent[Window]}" />
+				<MenuItem Header="Create New Notes Category" Command="{Binding Database.SelectedUniverseViewModel.NotesTree.CreateNewNoteCategory}" CommandParameter="{Binding $parent[Window]}" />
+				<MenuItem Header="Create New Note Document" Command="{Binding Database.SelectedUniverseViewModel.NotesTree.CreateNewNoteDocument}" CommandParameter="{Binding $parent[Window]}" />
 				<Separator />
 				<MenuItem Header="Spellcheck Dictionary" />
 			</MenuItem>
@@ -63,8 +67,9 @@
 				<MenuItem Header="Readme" />
 				<MenuItem Header="About" Command="{Binding AboutCommand}" CommandParameter="{Binding $parent[Window]}" />
 			</MenuItem>
-			<MenuItem Header="Debug" IsVisible="{Binding ShowDebugMenu}">
+			<MenuItem Header="Debug" IsVisible="{Binding IsDebugMode}">
 				<MenuItem Header="Show Quill Hashes" Command="{Binding ShowQuillHashes}" CommandParameter="{Binding $parent[Window]}" />
+				<MenuItem Header="Install CEF" Command="{Binding InstallCef}" CommandParameter="{Binding $parent[Window]}" />
 				<MenuItem Header="Database">
 					<MenuItem Header="Reload" Command="{Binding Database.LoadAsync}" />
 					<MenuItem Header="Vacuum" Command="{Binding Database.Vacuum}" />
@@ -78,16 +83,16 @@
 
 		<TabControl Grid.Row="1">
 			<TabItem Header="Stories">
-				<views:StoriesView DataContext="{Binding Database.SelectedUniverse}" />
+				<views:StoriesView DataContext="{Binding Database.SelectedUniverseViewModel}" />
 			</TabItem>
 			<TabItem Header="Notes">
-				<views:NotesView DataContext="{Binding Database.SelectedUniverse.NotesTree}" />
+				<views:NotesView DataContext="{Binding Database.SelectedUniverseViewModel.NotesTree}" />
 			</TabItem>
 			<TabItem Header="Tickets">
 				<TextBlock TextWrapping="Wrap" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Feature Not Yet Implemented" />
 			</TabItem>
 			<TabItem Header="Search">
-				<views:SearchView DataContext="{Binding Database.SelectedUniverse.SearchViewModel}" />
+				<views:SearchView DataContext="{Binding Database.SelectedUniverseViewModel.SearchViewModel}" />
 			</TabItem>
 		</TabControl>
 
@@ -95,7 +100,7 @@
 			<TextBlock Text="Database:" />
 			<TextBlock Margin="5,0,30,0" Text="{Binding Database.FileName}" />
 			<TextBlock Text="Universe:" />
-			<TextBlock Margin="5,0,30,0" Text="{Binding Database.SelectedUniverse.Model.Name}" />
+			<TextBlock Margin="5,0,30,0" Text="{Binding Database.SelectedUniverse.Name}" />
 		</StackPanel>
 
 	</Grid>

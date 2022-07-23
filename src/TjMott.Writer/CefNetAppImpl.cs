@@ -7,7 +7,54 @@ namespace TjMott.Writer
 {
     internal class CefNetAppImpl : CefNetApplication
     {
+        internal static string CefDownloadUrl
+        {
+            get
+            {
+                if (PlatformInfo.IsWindows)
+                {
+                    return "https://cef-builds.spotifycdn.com/cef_binary_102.0.9+g1c5e658+chromium-102.0.5005.63_windows64_minimal.tar.bz2";
+                }
+                else if (PlatformInfo.IsLinux)
+                {
+                    return "https://cef-builds.spotifycdn.com/cef_binary_102.0.9+g1c5e658+chromium-102.0.5005.63_linux64_minimal.tar.bz2";
+                }
+                else
+                {
+                    throw new ApplicationException("Unsupported operating system.");
+                }
+            }
+        }
+
+        internal static string CefAssetPath
+        {
+            get
+            {
+                if (PlatformInfo.IsWindows)
+                {
+                    return Path.Join(Directory.GetCurrentDirectory(), "Assets", "cef-win64");
+                }
+                else if (PlatformInfo.IsLinux)
+                {
+                    return Path.Join(Directory.GetCurrentDirectory(), "Assets", "cef-linux64");
+                }
+                else
+                {
+                    throw new ApplicationException("Unsupported operating system.");
+                }
+            }
+        }
+
+        internal static string CefCookiePath
+        {
+            get
+            {
+                return Path.Combine(Directory.GetCurrentDirectory(), "cefinstalled");
+            }
+        }
+
         internal static bool InitSuccess { get; private set; } = false;
+        internal static bool IsCefInstalled { get; private set; }
         internal static string InitErrorMessage { get; private set; }
         internal static CefNetAppImpl CefInstance { get; private set; }
         internal static bool Initialize()
@@ -15,16 +62,8 @@ namespace TjMott.Writer
             try
             {
                 // NOTE: As of version 102.0.22146.158, CefNet requires libx11-dev to be installed.
-                string cefPath = Directory.GetCurrentDirectory();
-                if (PlatformInfo.IsWindows)
-                {
-                    cefPath = Path.Join(cefPath, "Assets", "cef-win64");
-                }
-                else if (PlatformInfo.IsLinux)
-                {
-                    cefPath = Path.Join(cefPath, "Assets", "cef-linux64");
-                }
-                else
+                
+                if (!PlatformInfo.IsWindows && !PlatformInfo.IsLinux)
                 {
                     InitErrorMessage = "Unsupported operating system detected.";
                     InitSuccess = false;
@@ -42,6 +81,21 @@ namespace TjMott.Writer
                     InitSuccess = false;
                     return InitSuccess;
                 }
+
+                // Check for the file we place to indicate the user installed CEF.
+                if (!File.Exists(CefCookiePath))
+                {
+                    IsCefInstalled = false;
+                    InitErrorMessage = string.Format("CEF is not installed in your application directory.");
+                    InitSuccess = false;
+                    return InitSuccess;
+                }
+                else
+                {
+                    IsCefInstalled = true;
+                }
+
+                string cefPath = CefAssetPath;
                 string libPath = Path.Combine(cefPath, "lib");
                 string resourcesPath = Path.Join(cefPath, "resources");
                 string localesPath = Path.Join(cefPath, "resources", "locales");

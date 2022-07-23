@@ -13,6 +13,13 @@ namespace TjMott.Writer
         [STAThread]
         public static void Main(string[] args)
         {
+            foreach (var arg in args)
+            {
+                if (arg.Equals("-installcef", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    App.InstallCef = true;
+                }
+            }
             // Initialize CEF.
             CefNetAppImpl.Initialize();
             BuildAvaloniaApp()

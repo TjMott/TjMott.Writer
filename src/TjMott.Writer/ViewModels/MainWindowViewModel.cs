@@ -1,9 +1,13 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using CefNet;
 using ReactiveUI;
 using System;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
 using TjMott.Writer.Controls;
@@ -14,34 +18,35 @@ namespace TjMott.Writer.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        public bool ShowDebugMenu
-        {
-            get
-            {
-#if DEBUG
-                return true;
-#else
-                return false;
-#endif
-            }
-        }
         public OpenWindowsViewModel OpenWindowsViewModel { get; private set; }
-#region Commands
+        #region Commands
         public ReactiveCommand<Window, Unit> NewFileCommand { get; }
         public ReactiveCommand<Window, Unit> OpenFileCommand { get; }
-        public ReactiveCommand<Unit, Unit> QuitCommand { get; }
+        public ReactiveCommand<Window, Unit> QuitCommand { get; }
         public ReactiveCommand<Window, Unit> AboutCommand { get; }
-#endregion
+        #endregion
 
         private Database _database;
         public Database Database { get => _database; set => this.RaiseAndSetIfChanged(ref _database, value); }
 
+        public class UniverseMenuItem : ReactiveObject
+        {
+            private bool _isChecked;
+            public bool IsChecked { get => _isChecked; set => this.RaiseAndSetIfChanged(ref _isChecked, value); }
+            private Universe _universe;
+            public Universe Universe {  get => _universe; set => this.RaiseAndSetIfChanged(ref _universe, value); }
+            public ReactiveCommand<Universe, Unit> Command { get; set; }
+        }
+
+        public ObservableCollection<UniverseMenuItem> UniverseMenuItems { get; private set; }
+
         public MainWindowViewModel(Window owner)
         {
+            UniverseMenuItems = new ObservableCollection<UniverseMenuItem>();
             OpenWindowsViewModel = new OpenWindowsViewModel(owner);
             NewFileCommand = ReactiveCommand.Create<Window>(NewFile);
             OpenFileCommand = ReactiveCommand.Create<Window>(OpenFile);
-            QuitCommand = ReactiveCommand.Create(Quit);
+            QuitCommand = ReactiveCommand.Create<Window>(Quit);
             AboutCommand = ReactiveCommand.Create<Window>(ShowAbout);
             initialize(owner);
         }
@@ -160,6 +165,8 @@ namespace TjMott.Writer.ViewModels
             await Database.LoadAsync().ConfigureAwait(false);
             AppSettings.Default.lastFile = filename;
             AppSettings.Default.Save();
+            loadUniversesMenu();
+            Database.Universes.CollectionChanged += (o, e) => loadUniversesMenu();
         }
 
         public void ShowAbout(Window owner)
@@ -168,8 +175,17 @@ namespace TjMott.Writer.ViewModels
             wnd.ShowDialog(owner);
         }
 
-        public void Quit()
+        public async void Quit(Window dialogOwner)
         {
+            if (OpenWindowsViewModel.AllWindows.Count() > 1)
+            {
+                await MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Open Windows",
+                    "You have several open windows. Please save and close your work before closing the main window.",
+                    MessageBox.Avalonia.Enums.ButtonEnum.Ok,
+                    MessageBox.Avalonia.Enums.Icon.Warning,
+                    WindowStartupLocation.CenterOwner).ShowDialog(dialogOwner);
+                return;
+            }
             if (Database != null)
                 Database.Close();
             (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime).Shutdown();
@@ -179,6 +195,79 @@ namespace TjMott.Writer.ViewModels
         {
             QuillHashWindow wnd = new QuillHashWindow();
             await wnd.ShowDialog(owner);
+        }
+
+        public void ShowWordTemplates()
+        {
+            ProcessStartInfo psi = new ProcessStartInfo();
+            psi.UseShellExecute = true;
+            psi.FileName = Path.Combine(Directory.GetCurrentDirectory(), "WordTemplates");
+            Process.Start(psi);
+        }
+
+        public void SelectUniverse(Universe u)
+        {
+            foreach (var item in UniverseMenuItems)
+            {
+                item.IsChecked = item.Universe == u;
+            }
+            _ = Database.SelectUniverse(u);
+        }
+
+        private void loadUniversesMenu()
+        {
+            UniverseMenuItems.Clear();
+            if (Database != null)
+            {
+                foreach (var u in Database.Universes)
+                {
+                    UniverseMenuItem menuItem = new UniverseMenuItem();
+                    menuItem.Universe = u;
+                    menuItem.IsChecked = Database.SelectedUniverse == u;
+                    menuItem.Command = ReactiveCommand.Create<Universe>(SelectUniverse);
+                    UniverseMenuItems.Add(menuItem);
+                }
+            }
+        }
+
+        public async void InstallCef(Window dialogOwner)
+        {
+           var buttonResult = await MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Install CEF?",
+                                    "Restart application as administrator and install CEF?",
+                                    MessageBox.Avalonia.Enums.ButtonEnum.YesNo,
+                                    MessageBox.Avalonia.Enums.Icon.Question,
+                                    WindowStartupLocation.CenterOwner).ShowDialog(dialogOwner);
+
+            if (buttonResult == MessageBox.Avalonia.Enums.ButtonResult.Yes)
+            {
+                ProcessStartInfo psi = new ProcessStartInfo();
+                psi.UseShellExecute = true;
+                if (PlatformInfo.IsWindows)
+                {
+                    psi.FileName = Path.Combine(Directory.GetCurrentDirectory(), "TjMott.Writer.exe");
+                    psi.Verb = "runas";
+                    psi.ArgumentList.Add("-installcef");
+                }
+                else if (PlatformInfo.IsLinux)
+                {
+                    psi.FileName = "sudo";
+                    psi.ArgumentList.Add(Path.Combine(Directory.GetCurrentDirectory(), "TjMott.Writer"));
+                    psi.ArgumentList.Add("-installcef");
+                }
+                else
+                {
+                    await MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Unsupported Platform",
+                                    "Your operating system is not supported.",
+                                    MessageBox.Avalonia.Enums.ButtonEnum.Ok,
+                                    MessageBox.Avalonia.Enums.Icon.Forbidden,
+                                    WindowStartupLocation.CenterOwner).ShowDialog(dialogOwner);
+                    return;
+                }
+                if (Database != null)
+                    Database.Close();
+                Process.Start(psi);
+                (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime).Shutdown();
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Avalonia.Controls;
 using Microsoft.Data.Sqlite;
 using ReactiveUI;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
@@ -15,7 +16,7 @@ namespace TjMott.Writer.ViewModels
         #region Private variables
         private SqliteConnection _connection;
         private string _filename;
-        private UniverseViewModel _selectedUniverse;
+        private Universe _selectedUniverse;
         #endregion
 
         #region Properties
@@ -29,25 +30,13 @@ namespace TjMott.Writer.ViewModels
             get { return _filename; }
         }
 
-        public UniverseViewModel SelectedUniverse
+        public Universe SelectedUniverse
         {
             get { return _selectedUniverse; }
-            set
-            {
-                if (_selectedUniverse != value)
-                {
-                    _selectedUniverse = value;
-                    _selectedUniverse.IsSelected = true;
-                    Metadata.DefaultUniverseId = _selectedUniverse.Model.id;
-                    foreach (var u in Universes)
-                    {
-                        if (u != _selectedUniverse)
-                            u.IsSelected = false;
-                    }
-                    OnPropertyChanged("SelectedUniverse");
-                }
-            }
         }
+
+        private UniverseViewModel _selectedUniverseViewModel;
+        public UniverseViewModel SelectedUniverseViewModel { get => _selectedUniverseViewModel; private set => this.RaiseAndSetIfChanged(ref _selectedUniverseViewModel, value); }  
 
         public bool RequiresUpgrade
         {
@@ -62,12 +51,13 @@ namespace TjMott.Writer.ViewModels
 
         public static Database Instance { get; private set; }
 
-        public SortBySortIndexBindingList<UniverseViewModel> Universes { get; private set; }
+        public SortBySortIndexBindingList<Universe> Universes { get; private set; }
         public Metadata Metadata { get; private set; }
         #endregion
 
         #region Commands
         public ReactiveCommand<Window, Unit> CreateUniverseCommand { get; }
+        public ReactiveCommand<Universe, Unit> SelectUniverseCommand { get; }
         public ReactiveCommand<Unit, Unit> StartTransactionCommand { get; }
         public ReactiveCommand<Unit, Unit> CommitTransactionCommand { get; }
         public ReactiveCommand<Unit, Unit> RollbackTransactionCommand { get; }
@@ -82,7 +72,6 @@ namespace TjMott.Writer.ViewModels
             _connection = new SqliteConnection(@"Data Source=" + filename);
             _connection.Open();
             _connection.EnableExtensions(true);
-            //_connection.LoadExtension("SQLite.Interop.dll", "sqlite3_fts5_init");
 
             using (var cmd = new SqliteCommand("PRAGMA foreign_keys = ON;", _connection))
             {
@@ -105,48 +94,61 @@ namespace TjMott.Writer.ViewModels
             }
 
             Metadata = new Metadata(_connection);
-            Universes = new SortBySortIndexBindingList<UniverseViewModel>();
+            Universes = new SortBySortIndexBindingList<Universe>();
             Instance = this;
 
-            CreateUniverseCommand = ReactiveCommand.Create<Window>(CreateUniverse);
+            CreateUniverseCommand = ReactiveCommand.CreateFromTask<Window>(CreateUniverse);
+            SelectUniverseCommand = ReactiveCommand.CreateFromTask<Universe>(SelectUniverse);
+            StartTransactionCommand = ReactiveCommand.CreateFromTask(startTransaction, this.WhenAnyValue(i => i.IsInTransaction, (bool v) => !v));
+            CommitTransactionCommand = ReactiveCommand.CreateFromTask(commitTransaction, this.WhenAnyValue(i => i.IsInTransaction, (bool v) => v));
+            RollbackTransactionCommand = ReactiveCommand.CreateFromTask(rollbackTransaction, this.WhenAnyValue(i => i.IsInTransaction, (bool v) => v));
+        }
 
-            StartTransactionCommand = ReactiveCommand.Create(startTransaction, this.WhenAnyValue(i => i.IsInTransaction, (bool v) => !v));
-            CommitTransactionCommand = ReactiveCommand.Create(commitTransaction, this.WhenAnyValue(i => i.IsInTransaction, (bool v) => v));
-            RollbackTransactionCommand = ReactiveCommand.Create(rollbackTransaction, this.WhenAnyValue(i => i.IsInTransaction, (bool v) => v));
+        public async Task SelectUniverse(Universe universe)
+        {
+            _selectedUniverse = universe;
+            Metadata.DefaultUniverseId = _selectedUniverse.id;
+            OnPropertyChanged("SelectedUniverse");
+            await LoadSelectedUniverseAsync();
         }
 
         public async Task LoadAsync()
         {
             Universes.Clear();
 
-            // Load database entities and create viewmodels.
-            var universes = (await Universe.LoadAll(_connection)).Select(i => new UniverseViewModel(i, this)).ToList();
-            var categories = (await Category.LoadAll(_connection)).Select(i => new CategoryViewModel(i)).ToList();
-            var stories = (await Story.LoadAll(_connection)).Select(i => new StoryViewModel(i)).ToList();
-            var chapters = (await Chapter.LoadAll(_connection)).Select(i => new ChapterViewModel(i)).ToList();
-            var scenes = (await Scene.GetAllScenes(_connection)).Select(i => new SceneViewModel(i)).ToList();
+            // Load universes.
+            var universes = await Universe.LoadAll(_connection);
+            foreach (var u in universes)
+                Universes.Add(u);
+
+            var defaultUniverse = universes.SingleOrDefault(i => i.id == Metadata.DefaultUniverseId);
+            if (defaultUniverse != null)
+                await SelectUniverse(defaultUniverse);
+        }
+
+        public async Task LoadSelectedUniverseAsync()
+        {
+            SelectedUniverseViewModel = new UniverseViewModel(SelectedUniverse, this);
+
+            // Load database entities on background threads.
+            List<Task> loadingTasks = new List<Task>();
+            Task<List<CategoryViewModel>> loadCategoriesTask = Task.Run(async () => (await Category.LoadAll(_connection)).Where(i => i.UniverseId == SelectedUniverse.id).Select(i => new CategoryViewModel(i)).ToList());
+            Task<List<StoryViewModel>> loadStoriesTask = Task.Run(async () => (await Story.LoadAll(_connection)).Where(i => i.UniverseId == SelectedUniverse.id).Select(i => new StoryViewModel(i)).ToList());
+            Task<List<Chapter>> loadChaptersTask = Task.Run(async () => (await Chapter.LoadAll(_connection)).ToList());
+            Task<List<Scene>> loadScenesTask = Task.Run(async () => (await Scene.GetAllScenes(_connection)).ToList());
+
+            loadingTasks.Add(loadCategoriesTask);
+            loadingTasks.Add(loadStoriesTask);
+            loadingTasks.Add(loadChaptersTask);
+            loadingTasks.Add(loadScenesTask);
+            await Task.WhenAll(loadingTasks);
+
+            var categories = loadCategoriesTask.Result;
+            var stories = loadStoriesTask.Result;
+            var chapters = loadChaptersTask.Result;
+            var scenes = loadScenesTask.Result;
 
             // Link up objects.
-            foreach (var chapter in chapters)
-            {
-                var chapterScenes = scenes.Where(i => i.Model.ChapterId == chapter.Model.id);
-                foreach (var scene in chapterScenes)
-                {
-                    scene.ChapterVm = chapter;
-                    chapter.Scenes.Add(scene);
-                }
-            }
-
-            foreach (var story in stories)
-            {
-                var storyChapters = chapters.Where(i => i.Model.StoryId == story.Model.id);
-                foreach (var chapter in storyChapters)
-                {
-                    chapter.StoryVm = story;
-                    story.Chapters.Add(chapter);
-                }
-            }
-
             foreach (var cat in categories)
             {
                 var catStories = stories.Where(i => i.Model.CategoryId == cat.Model.id);
@@ -154,33 +156,40 @@ namespace TjMott.Writer.ViewModels
                 {
                     cat.Stories.Add(ss);
                 }
+
+                SelectedUniverseViewModel.Categories.Add(cat);
+                SelectedUniverseViewModel.SubItems.Add(cat);
+                cat.UniverseVm = SelectedUniverseViewModel;
             }
 
-            foreach (var u in universes)
+            foreach (var s in stories)
             {
-                var cats = categories.Where(i => i.Model.UniverseId == u.Model.id);
-                foreach (var cat in cats)
-                {
-                    u.Categories.Add(cat);
-                    u.SubItems.Add(cat);
-                    cat.UniverseVm = u;
-                }
+                SelectedUniverseViewModel.Stories.Add(s);
+                s.UniverseVm = SelectedUniverseViewModel;
+                SelectedUniverseViewModel.UpdateStoryInTree(s);
 
-                var stories1 = stories.Where(i => i.Model.UniverseId == u.Model.id);
-                foreach (var s in stories1)
+                foreach (var c in chapters)
                 {
-                    u.Stories.Add(s);
-                    s.UniverseVm = u;
-                    u.UpdateStoryInTree(s);
-                }
+                    if (c.StoryId == s.Model.id)
+                    {
+                        ChapterViewModel cvm = new ChapterViewModel(c);
+                        cvm.StoryVm = s;
+                        s.Chapters.Add(cvm);
 
-                Universes.Add(u);
+                        foreach (var scene in scenes)
+                        {
+                            if (scene.ChapterId == c.id)
+                            {
+                                SceneViewModel svm = new SceneViewModel(scene);
+                                svm.ChapterVm = cvm;
+                                cvm.Scenes.Add(svm);
+                            }
+                        }
+
+                    }
+                }
             }
-
-            long defaultUniverseId = Metadata.DefaultUniverseId;
-            UniverseViewModel defaultUniverse = Universes.SingleOrDefault(i => i.Model.id == defaultUniverseId);
-            if (defaultUniverse != null)
-                SelectedUniverse = defaultUniverse;
+            
         }
 
         public void Close()
@@ -195,7 +204,7 @@ namespace TjMott.Writer.ViewModels
             _connection = null;
         }
 
-        public async void CreateUniverse(Window owner)
+        public async Task CreateUniverse(Window owner)
         {
             NameItemWindow dialog = new NameItemWindow("New Universe");
             string result = await dialog.ShowDialog<string>(owner);
@@ -209,18 +218,18 @@ namespace TjMott.Writer.ViewModels
                 }
                 else
                 {
-                    uni.SortIndex = Universes.Max(i => i.Model.SortIndex) + 1;
+                    uni.SortIndex = Universes.Max(i => i.SortIndex) + 1;
                 }
                 await uni.CreateAsync().ConfigureAwait(false);
-                UniverseViewModel vm = new UniverseViewModel(uni, this);
-                Universes.Add(vm);
+
+                Universes.Add(uni);
 
                 if (Universes.Count == 1)
-                    SelectedUniverse = vm;
+                    SelectUniverse(uni);
             }
         }
 
-        private async void startTransaction()
+        private async Task startTransaction()
         {
             if (_isInTransaction) return;
 
@@ -232,7 +241,7 @@ namespace TjMott.Writer.ViewModels
             IsInTransaction = true;
         }
 
-        private async void commitTransaction()
+        private async Task commitTransaction()
         {
             if (!_isInTransaction) return;
 
@@ -244,7 +253,7 @@ namespace TjMott.Writer.ViewModels
             IsInTransaction = false;
         }
 
-        private async void rollbackTransaction()
+        private async Task rollbackTransaction()
         {
             if (!_isInTransaction) return;
 

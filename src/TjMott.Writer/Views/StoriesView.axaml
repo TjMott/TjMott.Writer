@@ -34,6 +34,7 @@
 					<ContextMenu x:Key="sceneContextMenu">
 						<MenuItem Header="Move to Chapter" Command="{Binding MoveToChapterCommand}" CommandParameter="{Binding $parent[Window]}" />
 						<MenuItem Header="Rename Scene" Command="{Binding RenameCommand}" CommandParameter="{Binding $parent[Window]}" />
+						<MenuItem Header="Show JSON" Command="{Binding ShowJson}" IsVisible="{Binding IsDebugMode}" />
 						<MenuItem Header="Color">
 							<MenuItem Background="Black" />
 							<MenuItem Background="Gray" />

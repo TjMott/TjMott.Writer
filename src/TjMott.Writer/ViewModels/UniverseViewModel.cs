@@ -23,17 +23,6 @@ namespace TjMott.Writer.ViewModels
         public BindingList<StoryViewModel> Stories { get; private set; }
         public SortBySortIndexBindingList<IUniverseSubItem> SubItems { get; private set; }
 
-        private bool _isSelected = false;
-        public bool IsSelected
-        {
-            get { return _isSelected; }
-            set
-            {
-                _isSelected = value;
-                OnPropertyChanged("IsSelected");
-            }
-        }
-
         private ISortable _selectedTreeViewItem;
         public ISortable SelectedTreeViewItem
         {
@@ -87,7 +76,6 @@ namespace TjMott.Writer.ViewModels
         #endregion
 
         #region ICommands
-        public ReactiveCommand<Unit, Unit> SelectUniverseCommand { get; }
         public ReactiveCommand<Window, Unit> CreateCategoryCommand { get; }
         public ReactiveCommand<Window, Unit> CreateStoryCommand { get; }
         public ReactiveCommand<Unit, Unit> MoveItemUpCommand { get; }
@@ -108,7 +96,6 @@ namespace TjMott.Writer.ViewModels
             Model = model;
             Database = database;
             model.PropertyChanged += Model_PropertyChanged;
-            SelectUniverseCommand = ReactiveCommand.Create(SelectUniverse);
             CreateCategoryCommand = ReactiveCommand.CreateFromTask<Window>(CreateCategory);
             CreateStoryCommand = ReactiveCommand.CreateFromTask<Window>(CreateStory);
             MoveItemUpCommand = ReactiveCommand.Create(MoveItemUp, this.WhenAny(x => x.SelectedTreeViewItem.SortIndex, (item) => CanMoveItemUp()));
@@ -140,12 +127,6 @@ namespace TjMott.Writer.ViewModels
                 SubItems[i].SortIndex = i;
                 SubItems[i].SaveAsync();
             }
-        }
-
-
-        public void SelectUniverse()
-        {
-            Database.SelectedUniverse = this;
         }
 
         public async Task CreateCategory(Window owner)
