@@ -1,5 +1,8 @@
-﻿using CefNet;
+﻿using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
+using CefNet;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -219,6 +222,54 @@ namespace TjMott.Writer
                 commandLine.AppendSwitch("no-zygote");
                 commandLine.AppendSwitch("no-sandbox");
             }
+        }
+
+        internal static void RestartAndInstallCef()
+        {
+            // Do we have write access to the program directory? If so,
+            // we do not need to elevate/sudo the install process.
+            bool elevate = false;
+            try
+            {
+                string fileCheck = Path.Combine(Directory.GetCurrentDirectory(), "accessCheck.temp");
+                using (var vs = File.Create(fileCheck)) { } ; // Throws UnauthorizedAccessException if directory is not writable.
+                File.Delete(fileCheck);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // Exception thrown while creating file. Need to elevate.
+                elevate = true;
+            }
+           
+            ProcessStartInfo psi = new ProcessStartInfo();
+            psi.UseShellExecute = true;
+            if (PlatformInfo.IsWindows)
+            {
+                psi.FileName = Path.Combine(Directory.GetCurrentDirectory(), "TjMott.Writer.exe");
+                if (elevate)
+                    psi.Verb = "runas";
+                psi.ArgumentList.Add("-installcef");
+            }
+            else if (PlatformInfo.IsLinux)
+            {
+                if (elevate)
+                {
+                    psi.FileName = "sudo";
+                    psi.ArgumentList.Add(Path.Combine(Directory.GetCurrentDirectory(), "TjMott.Writer"));
+                }
+                else
+                {
+                    psi.FileName = Path.Combine(Directory.GetCurrentDirectory(), "TjMott.Writer");
+                }
+                psi.ArgumentList.Add("-installcef");
+            }
+            else
+            {
+                throw new ApplicationException("Unsupported operating system.");
+            }
+            
+            Process.Start(psi);
+            (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime).Shutdown();
         }
     }
 }

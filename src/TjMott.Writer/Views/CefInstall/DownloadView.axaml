@@ -4,7 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="TjMott.Writer.Views.CefInstall.DownloadView">
-	<Grid RowDefinitions="*,auto">
-		<TextBox AcceptsReturn="True" AcceptsTab="True" Text="{Binding Log}" IsReadOnly="True" />
+	<Grid RowDefinitions="*,Auto">
+		<TextBlock TextWrapping="Wrap" Text="{Binding StatusMessage}" />
+
+		<StackPanel Grid.Row="1" Classes="dialogButtonPanel">
+			<Button Content="Ok" Command="{Binding Ok}" IsEnabled="{Binding OkButtonEnabled}" />
+			<Button Content="Cancel" Command="{Binding Cancel}" IsEnabled="{Binding CancelButtonEnabled}" />
+		</StackPanel>
+
 	</Grid>
 </UserControl>

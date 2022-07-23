@@ -87,6 +87,10 @@ namespace TjMott.Writer.Controls
                 this.FindControl<Grid>("webViewContainer").Children.Add(_editor);
                 this.FindControl<Slider>("zoomSlider").PropertyChanged += zoomSlider_PropertyChanged;
             }
+            else if (!CefNetAppImpl.IsCefInstalled)
+            {
+                this.FindControl<Grid>("webViewContainer").Children.Add(new CefNotInstalledContainer());
+            }
             else
             {
                 this.FindControl<Grid>("webViewContainer").Children.Add(new EditorCefErrorDisplay());
@@ -161,6 +165,10 @@ namespace TjMott.Writer.Controls
 
         public async void SetJsonDocument(dynamic json)
         {
+            if (!CefNetAppImpl.InitSuccess)
+            {
+                return;
+            }
             dynamic scriptableObject = await _editor.GetMainFrame().GetScriptableObjectAsync(CancellationToken.None).ConfigureAwait(false);
             dynamic window = scriptableObject.window;
             dynamic quill = window.editor;
@@ -169,6 +177,10 @@ namespace TjMott.Writer.Controls
 
         public async Task SetJsonText(string json)
         {
+            if (!CefNetAppImpl.InitSuccess)
+            {
+                return;
+            }
             dynamic scriptableObject = await _editor.GetMainFrame().GetScriptableObjectAsync(CancellationToken.None).ConfigureAwait(false);
             dynamic window = scriptableObject.window;
             dynamic quill = window.editor;
@@ -178,6 +190,10 @@ namespace TjMott.Writer.Controls
 
         public async Task<int> GetWordCount()
         {
+            if (!CefNetAppImpl.InitSuccess)
+            {
+                return 0;
+            }
             string text = await GetText();
             string[] words = text.Split(new string[] { " ", "\r", "\n", "\t" }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             return words.Length;
@@ -185,6 +201,10 @@ namespace TjMott.Writer.Controls
 
         private void loadDocument()
         {
+            if (!CefNetAppImpl.InitSuccess)
+            {
+                return;
+            }
             if (Document.IsEncrypted && !Document.IsUnlocked)
             {
                 setLockedState();
@@ -197,6 +217,10 @@ namespace TjMott.Writer.Controls
 
         private async Task initEditor()
         {
+            if (!CefNetAppImpl.InitSuccess)
+            {
+                return;
+            }
             _isInitialized = true;
             dynamic scriptableObject = await _editor.GetMainFrame().GetScriptableObjectAsync(CancellationToken.None).ConfigureAwait(false);
             dynamic window = scriptableObject.window;
@@ -216,6 +240,10 @@ namespace TjMott.Writer.Controls
 
         private async Task setIsReadOnly(bool isReadOnly)
         {
+            if (!CefNetAppImpl.InitSuccess)
+            {
+                return;
+            }
             dynamic scriptableObject = await _editor.GetMainFrame().GetScriptableObjectAsync(CancellationToken.None).ConfigureAwait(false);
             dynamic window = scriptableObject.window;
             dynamic quill = window.editor;
@@ -228,6 +256,10 @@ namespace TjMott.Writer.Controls
 
         public async Task Save()
         {
+            if (!CefNetAppImpl.InitSuccess)
+            {
+                return;
+            }
             Document.Json = await GetJsonText();
             if (Document.IsEncrypted)
             {
@@ -244,12 +276,20 @@ namespace TjMott.Writer.Controls
 
         public async void Revert()
         {
+            if (!CefNetAppImpl.InitSuccess)
+            {
+                return;
+            }
             await Document.LoadAsync().ConfigureAwait(false);
             await SetJsonText(Document.PublicJson).ConfigureAwait(false);
         }
 
         public async void Lock()
         {
+            if (!CefNetAppImpl.InitSuccess)
+            {
+                return;
+            }
             if (await HasUnsavedEdits())
             {
                 var msgBox = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Save Before Locking?",
@@ -273,6 +313,10 @@ namespace TjMott.Writer.Controls
 
         public async void Print(string title)
         {
+            if (!CefNetAppImpl.InitSuccess)
+            {
+                return;
+            }
             if (_editor != null && _document.IsUnlocked)
             {
                 dynamic scriptableObject = await _editor.GetMainFrame().GetScriptableObjectAsync(CancellationToken.None).ConfigureAwait(false);
@@ -286,6 +330,10 @@ namespace TjMott.Writer.Controls
 
         public async void Encrypt()
         {
+            if (!CefNetAppImpl.InitSuccess)
+            {
+                return;
+            }
             if (await HasUnsavedEdits())
             {
                 var msgBox = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Document is Unsaved",
@@ -320,6 +368,10 @@ namespace TjMott.Writer.Controls
         }
         public async void Decrypt()
         {
+            if (!CefNetAppImpl.InitSuccess)
+            {
+                return;
+            }
             DecryptWindow wnd = new DecryptWindow();
             string password = await wnd.ShowDialog<string>(getOwner());
             if (!string.IsNullOrEmpty(password))
@@ -346,6 +398,10 @@ namespace TjMott.Writer.Controls
 
         public async Task<bool> HasUnsavedEdits()
         {
+            if (!CefNetAppImpl.InitSuccess)
+            {
+                return false;
+            }
             if (Document.IsUnlocked)
             {
                 string editorCopy = await GetJsonText().ConfigureAwait(true);
@@ -356,11 +412,19 @@ namespace TjMott.Writer.Controls
 
         private void unlockButton_Click(object sender, RoutedEventArgs e)
         {
+            if (!CefNetAppImpl.InitSuccess)
+            {
+                return;
+            }
             unlock();
         }
 
         private void passwordBox_KeyDown(object sender, Avalonia.Input.KeyEventArgs e)
         {
+            if (!CefNetAppImpl.InitSuccess)
+            {
+                return;
+            }
             if (e.Key == Avalonia.Input.Key.Enter)
             {
                 unlock();
@@ -369,6 +433,10 @@ namespace TjMott.Writer.Controls
 
         private async void unlock()
         {
+            if (!CefNetAppImpl.InitSuccess)
+            {
+                return;
+            }
             if (Document.IsEncrypted && !Document.IsUnlocked)
             {
                 string password = this.FindControl<TextBox>("passwordTextBox").Text;
@@ -393,6 +461,10 @@ namespace TjMott.Writer.Controls
 
         private async void setUnlockedState()
         {
+            if (!CefNetAppImpl.InitSuccess)
+            {
+                return;
+            }
             this.FindControl<TextBox>("passwordTextBox").Text = "";
             this.FindControl<Grid>("aesPasswordContainer").IsVisible = false;
             this.FindControl<Grid>("webViewContainer").IsVisible = true;
@@ -405,6 +477,10 @@ namespace TjMott.Writer.Controls
 
         private async void setLockedState()
         {
+            if (!CefNetAppImpl.InitSuccess)
+            {
+                return;
+            }
             this.FindControl<Grid>("aesPasswordContainer").IsVisible = true;
             this.FindControl<Grid>("webViewContainer").IsVisible = false;
             this.FindControl<TextBox>("passwordTextBox").Focus();
@@ -414,6 +490,10 @@ namespace TjMott.Writer.Controls
 
         private async Task setTextZoom(double zoom)
         {
+            if (!CefNetAppImpl.InitSuccess)
+            {
+                return;
+            }
             dynamic scriptableObject = await _editor.GetMainFrame().GetScriptableObjectAsync(CancellationToken.None).ConfigureAwait(false);
             dynamic window = scriptableObject.window;
             window.setTextZoom(zoom.ToString("P"));

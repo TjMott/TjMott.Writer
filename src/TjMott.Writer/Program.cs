@@ -1,5 +1,4 @@
 using Avalonia;
-using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.ReactiveUI;
 using System;
 
@@ -21,7 +20,10 @@ namespace TjMott.Writer
                 }
             }
             // Initialize CEF.
-            CefNetAppImpl.Initialize();
+            if (!App.InstallCef)
+            {
+                CefNetAppImpl.Initialize();
+            }
             BuildAvaloniaApp()
             .StartWithClassicDesktopLifetime(args);
         }

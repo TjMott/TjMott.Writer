@@ -61,16 +61,40 @@ namespace TjMott.Writer.ViewModels
             // Check that CEF initialized.
             if (!CefNetAppImpl.InitSuccess)
             {
-                var msgbox = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("CEF Initialization Error",
-                    CefNetAppImpl.InitErrorMessage + Environment.NewLine + "You can try to continue using the application, but you will not be able to open Documents.",
-                    MessageBox.Avalonia.Enums.ButtonEnum.OkAbort,
-                    MessageBox.Avalonia.Enums.Icon.Error,
-                    WindowStartupLocation.CenterOwner);
-                var result = await msgbox.ShowDialog(owner);
-                if (result == MessageBox.Avalonia.Enums.ButtonResult.Abort)
+                if (!CefNetAppImpl.IsCefInstalled)
                 {
-                    (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime).Shutdown(1);
-                    return;
+                    var msgbox = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("CEF Not Installed",
+                        "CEF, a necessary component for the editor, is not installed." + Environment.NewLine +
+                        "Would you like to install it now?" + Environment.NewLine +
+                        "You can continue using the application without it," + Environment.NewLine + "but you will not be able to open or view any documents.",
+                        MessageBox.Avalonia.Enums.ButtonEnum.YesNoAbort,
+                        MessageBox.Avalonia.Enums.Icon.Question,
+                        WindowStartupLocation.CenterOwner);
+                    var result = await msgbox.ShowDialog(owner);
+                    if (result == MessageBox.Avalonia.Enums.ButtonResult.Abort)
+                    {
+                        (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime).Shutdown(1);
+                        return;
+                    }
+                    else if (result == MessageBox.Avalonia.Enums.ButtonResult.Yes)
+                    {
+                        CefNetAppImpl.RestartAndInstallCef();
+                        return;
+                    }
+                }
+                else
+                {
+                    var msgbox = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("CEF Initialization Error",
+                        CefNetAppImpl.InitErrorMessage + Environment.NewLine + "You can try to continue using the application," + Environment.NewLine +  "but you will not be able to open or view any documents.",
+                        MessageBox.Avalonia.Enums.ButtonEnum.OkAbort,
+                        MessageBox.Avalonia.Enums.Icon.Error,
+                        WindowStartupLocation.CenterOwner);
+                    var result = await msgbox.ShowDialog(owner);
+                    if (result == MessageBox.Avalonia.Enums.ButtonResult.Abort)
+                    {
+                        (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime).Shutdown(1);
+                        return;
+                    }
                 }
             }
 
@@ -233,40 +257,16 @@ namespace TjMott.Writer.ViewModels
         public async void InstallCef(Window dialogOwner)
         {
            var buttonResult = await MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Install CEF?",
-                                    "Restart application as administrator and install CEF?",
+                                    "Install CEF? This will restart the application.",
                                     MessageBox.Avalonia.Enums.ButtonEnum.YesNo,
                                     MessageBox.Avalonia.Enums.Icon.Question,
                                     WindowStartupLocation.CenterOwner).ShowDialog(dialogOwner);
 
             if (buttonResult == MessageBox.Avalonia.Enums.ButtonResult.Yes)
             {
-                ProcessStartInfo psi = new ProcessStartInfo();
-                psi.UseShellExecute = true;
-                if (PlatformInfo.IsWindows)
-                {
-                    psi.FileName = Path.Combine(Directory.GetCurrentDirectory(), "TjMott.Writer.exe");
-                    psi.Verb = "runas";
-                    psi.ArgumentList.Add("-installcef");
-                }
-                else if (PlatformInfo.IsLinux)
-                {
-                    psi.FileName = "sudo";
-                    psi.ArgumentList.Add(Path.Combine(Directory.GetCurrentDirectory(), "TjMott.Writer"));
-                    psi.ArgumentList.Add("-installcef");
-                }
-                else
-                {
-                    await MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Unsupported Platform",
-                                    "Your operating system is not supported.",
-                                    MessageBox.Avalonia.Enums.ButtonEnum.Ok,
-                                    MessageBox.Avalonia.Enums.Icon.Forbidden,
-                                    WindowStartupLocation.CenterOwner).ShowDialog(dialogOwner);
-                    return;
-                }
                 if (Database != null)
                     Database.Close();
-                Process.Start(psi);
-                (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime).Shutdown();
+                CefNetAppImpl.RestartAndInstallCef();
             }
         }
     }

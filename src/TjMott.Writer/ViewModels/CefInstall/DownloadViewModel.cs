@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using CefNet;
 using ICSharpCode.SharpZipLib.BZip2;
@@ -18,95 +17,201 @@ namespace TjMott.Writer.ViewModels.CefInstall
 {
     public class DownloadViewModel : ViewModelBase
     {
-        private string _log = "";
-        public string Log { get => _log; private set => this.RaiseAndSetIfChanged(ref _log, value); }
+        private string _statusMessage = "";
+        public string StatusMessage { get => _statusMessage; private set => this.RaiseAndSetIfChanged(ref _statusMessage, value); }
+
+        private bool _cancelButtonEnabled = false;
+        public bool CancelButtonEnabled { get => _cancelButtonEnabled; private set => this.RaiseAndSetIfChanged(ref _cancelButtonEnabled, value); }
+
+        private bool _okButtonEnabled = false;
+        public bool OkButtonEnabled { get => _okButtonEnabled; private set => this.RaiseAndSetIfChanged(ref _okButtonEnabled, value); }
+
+        private CancellationTokenSource _cancelToken;
+        private bool _installCompleted = false;
 
         public DownloadViewModel()
         {
+            _cancelToken = new CancellationTokenSource();
             BeginDownload();
         }
 
         public async void BeginDownload()
         {
-            writeLog(string.Format("Starting download from '{0}'...", CefNetAppImpl.CefDownloadUrl));
-            //string tempFileBz = Path.Combine(Directory.GetCurrentDirectory(), "cef.tar.bz2");
-            string tempFileBz = @"c:\users\TJ Mott\Desktop\temp.tar.bz";
-            //string tempDir = Path.Combine(Directory.GetCurrentDirectory(), "tjmott.writer.cefinstall");
-            string tempDir = @"c:\users\TJ Mott\Desktop\cefinstalltemp";
-            using (HttpClient webClient = new HttpClient())
+            CancelButtonEnabled = true;
+            try
             {
-                var response = await webClient.GetAsync(CefNetAppImpl.CefDownloadUrl);
-                if (!response.IsSuccessStatusCode)
+                StatusMessage = string.Format("Starting download from '{0}'...", CefNetAppImpl.CefDownloadUrl);
+                string tempFileBz = Path.Combine(Directory.GetCurrentDirectory(), "cef.tar.bz2");
+                string tempDir = Path.Combine(Directory.GetCurrentDirectory(), "tjmott.writer.cefinstall");
+
+                if (File.Exists(tempFileBz))
+                    File.Delete(tempFileBz);
+                if (Directory.Exists(tempDir))
+                    Directory.Delete(tempDir, true);
+
+
+                using (HttpClient webClient = new HttpClient())
                 {
-                    writeLog("Download failed.");
-                    return;
+                    var response = await webClient.GetAsync(CefNetAppImpl.CefDownloadUrl, HttpCompletionOption.ResponseHeadersRead, _cancelToken.Token);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        StatusMessage = "Download failed.";
+                        return;
+                    }
+
+                    using (FileStream fs = File.Create(tempFileBz))
+                    {
+                        long fileLength = response.Content.Headers.ContentLength.Value;
+                        long bytesDownloaded = 0;
+                        byte[] buffer = new byte[8192];
+                        StatusMessage = string.Format("Downloading{2}'{0}'{2}into 'cef.tar.bz2' ({1:P0})...", CefNetAppImpl.CefDownloadUrl, 0.0, Environment.NewLine);
+                        using (var contentStream = await response.Content.ReadAsStreamAsync(_cancelToken.Token))
+                        {
+                            while (bytesDownloaded < fileLength)
+                            {
+                                int bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length, _cancelToken.Token);
+                                await fs.WriteAsync(buffer, 0, bytesRead, _cancelToken.Token);
+                                bytesDownloaded += bytesRead;
+                                double progress = (double)bytesDownloaded / fileLength;
+                                StatusMessage = string.Format("Downloading{2}'{0}'{2}into 'cef.tar.bz2' ({1:P0})...", CefNetAppImpl.CefDownloadUrl, progress, Environment.NewLine);
+                            }
+                        }
+
+                        StatusMessage = string.Format("Downloading{2}'{0}'{2}into 'cef.tar.bz2' ({1:P0})...", CefNetAppImpl.CefDownloadUrl, 1.0, Environment.NewLine);
+                    }
                 }
-                
-                using (var fs = File.Create(tempFileBz))
+
+                CancelButtonEnabled = false; // TAR extract is not cancellable.
+                StatusMessage = string.Format("Extracting cef.tar.bz2, {0:P0}...", 0.0);
+                using (var fs = File.OpenRead(tempFileBz))
                 {
-                    writeLog("Download started.");
-                    await response.Content.CopyToAsync(fs);
-                    writeLog("Download completed.");
+                    using (var bzip = new BZip2InputStream(fs))
+                    {
+                        var tar = TarArchive.CreateInputTarArchive(bzip, Encoding.UTF8);
+                        Task extractTask = Task.Run(() => tar.ExtractContents(tempDir));
+                        while (!extractTask.IsCompleted)
+                        {
+                            StatusMessage = string.Format("Extracting cef.tar.bz2, {0:P0}...", (double)bzip.Position / bzip.Length);
+                            await Task.Delay(20);
+                        }
+                        StatusMessage = string.Format("Extracting cef.tar.bz2, {0:P0}...", 1.0);
+                        tar.Close();
+                    }
                 }
-            }
+                CancelButtonEnabled = true;
 
-            writeLog("Extracting file...");
-            using (var fs = File.OpenRead(tempFileBz))
-            {
-                using (var bzip = new BZip2InputStream(fs))
+                StatusMessage = string.Format("Installing CEF, {0:P0}...", 0.0);
+                string cefPath = CefNetAppImpl.CefAssetPath;
+                string libPath = Path.Combine(cefPath, "lib");
+                string resourcesPath = Path.Join(cefPath, "resources");
+                string localesPath = Path.Join(cefPath, "resources", "locales");
+
+                // Delete local CEF in case this is a re-install.
+                if (Directory.Exists(cefPath))
+                    Directory.Delete(cefPath, true);
+                Directory.CreateDirectory(cefPath);
+                Directory.CreateDirectory(libPath);
+                Directory.CreateDirectory(resourcesPath);
+                Directory.CreateDirectory(localesPath);
+
+                string cefSource = Directory.GetDirectories(tempDir).First();
+                string libSource = Path.Combine(cefSource, "Release");
+                string resourceSource = Path.Combine(cefSource, "Resources");
+                string localesSource = Path.Combine(cefSource, "Resources", "locales");
+
+                int fileCount = 0;
+                int filesCopied = 0;
+                fileCount += Directory.GetFiles(libSource).Length;
+                fileCount += Directory.GetFiles(resourceSource).Length;
+                fileCount += Directory.GetFiles(localesSource).Length;
+
+                Task installTask = Task.Run(() =>
                 {
-                    var tar = TarArchive.CreateInputTarArchive(bzip, Encoding.UTF8);
-                    tar.ExtractContents(tempDir);
+                    foreach (var f in Directory.GetFiles(libSource))
+                    {
+                        _cancelToken.Token.ThrowIfCancellationRequested();
+                        string filename = Path.GetFileName(f);
+                        File.Copy(f, Path.Combine(libPath, filename));
+                        filesCopied++;
+                    }
+                    foreach (var f in Directory.GetFiles(resourceSource))
+                    {
+                        _cancelToken.Token.ThrowIfCancellationRequested();
+                        string filename = Path.GetFileName(f);
+                        File.Copy(f, Path.Combine(resourcesPath, filename));
+                        filesCopied++;
+                    }
+                    foreach (var f in Directory.GetFiles(localesSource))
+                    {
+                        _cancelToken.Token.ThrowIfCancellationRequested();
+                        string filename = Path.GetFileName(f);
+                        File.Copy(f, Path.Combine(resourcesPath, "locales", filename));
+                        filesCopied++;
+
+                    }
+                    File.Copy(Path.Combine(cefSource, "Resources", "icudtl.dat"), Path.Combine(libPath, "icudtl.dat"));
+                });
+
+                while (!installTask.IsCompleted)
+                {
+                    StatusMessage = string.Format("Installing CEF, {0:P0}...", (double)filesCopied / fileCount);
+                    await Task.Delay(20);
                 }
+
+                StatusMessage = "Cleaning up...";
+                await Task.Run(() =>
+                {
+                    Directory.Delete(tempDir, true);
+                    File.Delete(tempFileBz);
+                    using (StreamWriter sw = File.CreateText(CefNetAppImpl.CefCookiePath))
+                    {
+                        sw.WriteLine("true");
+                    }
+                });
+
+                StatusMessage = "CEF installed successfully! Press 'Ok' to launch TJ Mott's Writer.";
+                _installCompleted = true;
             }
-
-            writeLog("Installing CEF...");
-            string cefPath = CefNetAppImpl.CefAssetPath;
-            string libPath = Path.Combine(cefPath, "lib");
-            string resourcesPath = Path.Join(cefPath, "resources");
-            string localesPath = Path.Join(cefPath, "resources", "locales");
-
-            // Delete local CEF in case this is a re-install.
-            if (Directory.Exists(cefPath))
-                Directory.Delete(cefPath, true);
-            Directory.CreateDirectory(cefPath);
-            Directory.CreateDirectory(libPath);
-            Directory.CreateDirectory(resourcesPath);
-            Directory.CreateDirectory(localesPath);
-
-            string cefSource = Directory.GetDirectories(tempDir).First();
-            foreach (var f in Directory.GetFiles(Path.Combine(cefSource, "Release")))
+            catch (OperationCanceledException)
             {
-                string filename = Path.GetFileName(f);
-                File.Copy(f, Path.Combine(libPath, filename));
+                StatusMessage = "CEF installation canceled by user. Press 'Ok' to exit.";
+                // Delete cookie if present, since CEF installation is incomplete/corrupted.
+                if (File.Exists(CefNetAppImpl.CefCookiePath))
+                    File.Delete(CefNetAppImpl.CefCookiePath);
             }
-            foreach (var f in Directory.GetFiles(Path.Combine(cefSource, "Resources")))
+            finally
             {
-                string filename = Path.GetFileName(f);
-                File.Copy(f, Path.Combine(resourcesPath, filename));
+                OkButtonEnabled = true;
+                CancelButtonEnabled = false;
             }
-            foreach (var f in Directory.GetFiles(Path.Combine(cefSource, "Resources", "locales")))
-            {
-                string filename = Path.GetFileName(f);
-                File.Copy(f, Path.Combine(resourcesPath, "locales", filename));
-            }
-            File.Copy(Path.Combine(cefSource, "Resources", "icudtl.dat"), Path.Combine(libPath, "icudtl.dat"));
-
-            writeLog("Cleaning up...");
-            Directory.Delete(cefSource, true);
-            File.Delete(tempFileBz);
-
-            using (StreamWriter sw = File.CreateText(CefNetAppImpl.CefCookiePath))
-            {
-                sw.WriteLine("true");
-            }
-
-            writeLog("CEF installed successfully!");
         }
 
-        private void writeLog(string message)
+        public void Ok()
         {
-            Log += message + Environment.NewLine;
+            if (_installCompleted)
+            {
+                ProcessStartInfo psi = new ProcessStartInfo();
+                psi.UseShellExecute = true;
+                if (PlatformInfo.IsWindows)
+                    psi.FileName = Path.Combine(Directory.GetCurrentDirectory(), "TjMott.Writer.exe");
+                else if (PlatformInfo.IsLinux)
+                    psi.FileName = Path.Combine(Directory.GetCurrentDirectory(), "TjMott.Writer");
+                else
+                    throw new ApplicationException("Unsupported operating system.");
+
+                Process.Start(psi);
+                (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime).Shutdown();
+            }
+            else
+            {
+                (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime).Shutdown();
+            }
+        }
+
+        public void Cancel()
+        {
+            CancelButtonEnabled = false;
+            _cancelToken.Cancel();
         }
     }
 }
