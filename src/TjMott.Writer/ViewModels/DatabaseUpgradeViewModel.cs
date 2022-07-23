@@ -60,6 +60,14 @@ namespace TjMott.Writer.ViewModels
             string backupFile = Path.Combine(path, file + "_bak");
             File.Copy(filename, backupFile, true);
 
+            // If this database is Version 2, the final WPF-compatible version, create a separate backup.
+            if (_db.Metadata.DbVersion == 2)
+            {
+                string file2 = Path.GetFileNameWithoutExtension(_db.FileName);
+                string wpfBackupFile = Path.Combine(path, file2 + "_WPF.wdb");
+                File.Copy(filename, wpfBackupFile, true);
+            }
+
             // Disable foreign keys.
             using (var cmd = new SqliteCommand("PRAGMA foreign_keys = OFF;", _db.Connection))
             {

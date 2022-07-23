@@ -2,9 +2,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
+        mc:Ignorable="d"
         x:Class="TjMott.Writer.Views.AboutWindow"
-		UseLayoutRounding="True" CanResize="False" WindowStartupLocation="CenterOwner"
+		UseLayoutRounding="True" WindowStartupLocation="CenterOwner"
         Title="About TJ Mott's Writer" Height="600" Width="650">
 	<Window.Styles>
 		<Style Selector="Button.link">
@@ -63,6 +63,9 @@
 			<StackPanel Classes="about">
 				<TextBlock Margin="0,0,5,0">This application uses free icons from</TextBlock>
 				<Button Classes="link" Click="iconsButton_Click">https://icons8.com</Button>
+			</StackPanel>
+			<StackPanel Classes="about">
+				<TextBlock x:Name="dotNetInfoTextBlock" Margin="0,0,5,0">Runtime: .NET 6.0 on Linux</TextBlock>
 			</StackPanel>
 		</StackPanel>
 		
