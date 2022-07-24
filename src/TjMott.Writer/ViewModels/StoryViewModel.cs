@@ -7,6 +7,8 @@ using System.Reactive;
 using TjMott.Writer.Views;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Xceed.Words.NET;
+using System.Threading;
 
 namespace TjMott.Writer.ViewModels
 {
@@ -156,6 +158,11 @@ namespace TjMott.Writer.ViewModels
         public void ShowPacing()
         {
             PacingWindow.ShowPacingWindow(Chapters, string.Format("Pacing: {0}", Model.Name), "story_" + Model.id);
+        }
+
+        public async Task ExportToWordAsync(DocX doc, CancellationToken cancelToken)
+        {
+            throw new NotImplementedException();
         }
 
         /*public void ExportToWord(Docx.DocX doc)

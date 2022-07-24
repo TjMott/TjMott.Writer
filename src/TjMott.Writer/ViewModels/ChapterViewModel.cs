@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive;
+using System.Threading;
 using System.Threading.Tasks;
 using TjMott.Writer.Models;
 using TjMott.Writer.Models.SQLiteClasses;
 using TjMott.Writer.Views;
+using Xceed.Words.NET;
 
 namespace TjMott.Writer.ViewModels
 {
@@ -125,6 +127,11 @@ namespace TjMott.Writer.ViewModels
             var chapters = new List<ChapterViewModel>();
             chapters.Add(this);
             PacingWindow.ShowPacingWindow(chapters, string.Format("Pacing: {0}", Model.Name), "chapter_" + Model.id);
+        }
+
+        public async Task ExportToWordAsync(DocX doc, CancellationToken cancelToken)
+        {
+            throw new System.NotImplementedException();
         }
 
         /*public void ExportToWord(Docx.DocX doc)

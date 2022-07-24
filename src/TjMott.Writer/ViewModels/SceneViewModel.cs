@@ -9,6 +9,8 @@ using System.Reactive;
 using TjMott.Writer.Views;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Xceed.Words.NET;
+using System.Threading;
 
 namespace TjMott.Writer.ViewModels
 {
@@ -166,6 +168,11 @@ namespace TjMott.Writer.ViewModels
             fd.id = Model.DocumentId;
             DocumentJsonWindow d = new DocumentJsonWindow(fd);
             d.Show();
+        }
+
+        public async Task ExportToWordAsync(DocX doc, CancellationToken cancelToken)
+        {
+            throw new NotImplementedException();
         }
     }
 }

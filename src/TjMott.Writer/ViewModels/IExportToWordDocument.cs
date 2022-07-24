@@ -1,10 +1,12 @@
 ﻿using System;
-
+using System.Threading;
+using System.Threading.Tasks;
+using Xceed.Words.NET;
 
 namespace TjMott.Writer.ViewModels
 {
     public interface IExportToWordDocument
     {
-        //void ExportToWord(Docx.DocX doc);
+        Task ExportToWordAsync(DocX doc, CancellationToken cancelToken);
     }
 }
