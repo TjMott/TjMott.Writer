@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Xceed.Words.NET;
 using System.Threading;
+using Newtonsoft.Json.Linq;
 
 namespace TjMott.Writer.ViewModels
 {
@@ -172,7 +173,18 @@ namespace TjMott.Writer.ViewModels
 
         public async Task ExportToWordAsync(DocX doc, CancellationToken cancelToken)
         {
-            throw new NotImplementedException();
+            Document dbDoc = new Document(Model.Connection);
+            dbDoc.id = Model.DocumentId;
+            await dbDoc.LoadAsync();
+            if (dbDoc.IsUnlocked)
+            {
+                JObject json = dbDoc.GetJObject();
+                
+                foreach (JObject op in json["ops"])
+                {
+
+                }
+            }
         }
     }
 }

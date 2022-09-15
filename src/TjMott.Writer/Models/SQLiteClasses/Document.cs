@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.Sqlite;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -224,6 +225,11 @@ namespace TjMott.Writer.Models.SQLiteClasses
         {
             json = "{ \"ops\": [ { \"insert\": \"This is a new document.\" } ] }";
             plainText = "This is a new document";
+        }
+
+        public JObject GetJObject()
+        {
+            return JObject.Parse(PublicJson);
         }
     }
 }

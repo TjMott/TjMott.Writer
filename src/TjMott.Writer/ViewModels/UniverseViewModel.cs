@@ -81,7 +81,7 @@ namespace TjMott.Writer.ViewModels
         public ReactiveCommand<Unit, Unit> MoveItemUpCommand { get; }
         public ReactiveCommand<Unit, Unit> MoveItemDownCommand { get; }
         public ReactiveCommand<Unit, Unit> OpenEditorCommand { get; }
-        public ReactiveCommand<Unit, Unit> ExportToWordCommand { get; }
+        public ReactiveCommand<Window, Unit> ExportToWordCommand { get; }
         public ReactiveCommand<Window, Unit> ShowWordCountCommand { get; }
         public ReactiveCommand<Window, Unit> RenameCommand { get; }
         #endregion
@@ -101,7 +101,7 @@ namespace TjMott.Writer.ViewModels
             MoveItemUpCommand = ReactiveCommand.Create(MoveItemUp, this.WhenAny(x => x.SelectedTreeViewItem.SortIndex, (item) => CanMoveItemUp()));
             MoveItemDownCommand = ReactiveCommand.Create(MoveItemDown, this.WhenAny(x => x.SelectedTreeViewItem.SortIndex, (item) => CanMoveItemDown()));
             OpenEditorCommand = ReactiveCommand.Create(OpenEditor, this.WhenAny(x => x.SelectedTreeViewItem, (item) => (item.Value as SceneViewModel) != null));
-            ExportToWordCommand = ReactiveCommand.Create(ExportToWord, this.WhenAny(x => x.SelectedTreeViewItem, (item) => (item.Value as IExportToWordDocument) != null));
+            ExportToWordCommand = ReactiveCommand.CreateFromTask<Window>(ExportToWord, this.WhenAny(x => x.SelectedTreeViewItem, (item) => (item.Value as IExportToWordDocument) != null));
             ShowWordCountCommand = ReactiveCommand.CreateFromTask<Window>(ShowWordCount, this.WhenAny(x => x.SelectedTreeViewItem, (item) => (item.Value as IGetWordCount) != null));
             RenameCommand = ReactiveCommand.CreateFromTask<Window>(Rename);
 
@@ -390,62 +390,12 @@ namespace TjMott.Writer.ViewModels
             SceneEditorWindow.ShowEditorWindow(vm);
         }
 
-        public void ExportToWord()
+        public async Task ExportToWord(Window dialogOwner)
         {
-            /*IExportToWordDocument item = SelectedTreeViewItem as IExportToWordDocument;
-
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "Word Document (*.docx)|*.docx";
-            bool? result = saveFileDialog.ShowDialog();
-            if (!result.Value)
-                return;
-
-            var templates = FileBrowserViewModel.Files.Where(i => i.Model.FileType == FileBlob.FILE_TYPE_TEMPLATE).ToList();
-            if (templates.Count > 0)
-            {
-                FileBlobViewModel defaultTemplate = templates.SingleOrDefault(i => i.Model.id == Model.DefaultTemplateId);
-
-                SelectDocTemplateDialog dialog = new SelectDocTemplateDialog(DialogOwner, templates, defaultTemplate);
-                result = dialog.ShowDialog();
-                if (result.HasValue && result.Value)
-                {
-                    defaultTemplate = dialog.SelectedTemplate;
-                    string templatePath = null;
-
-                    // Save selected template as default.
-                    if (defaultTemplate != null)
-                    {
-                        Model.DefaultTemplateId = defaultTemplate.Model.id;
-                        Model.Save();
-
-                        // Save template to a temp file.
-                        templatePath = Path.GetTempFileName();
-                        defaultTemplate.Model.ExportToFile(templatePath);
-                    }
-
-                    FlowDocumentExporter.ExportItem(item, saveFileDialog.FileName, templatePath);
-
-                    if (templatePath != null)
-                    {
-                        File.Delete(templatePath);
-                    }
-
-                    MessageBoxResult msgResult = MessageBox.Show("Export complete. Open file now?", "Export Completed", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                    if (msgResult == MessageBoxResult.Yes)
-                    {
-                        Process.Start(new ProcessStartInfo(saveFileDialog.FileName) { UseShellExecute = true });
-                    }
-                }
-            }
-            else
-            {
-                FlowDocumentExporter.ExportItem(item, saveFileDialog.FileName, null);
-                MessageBoxResult msgResult = MessageBox.Show("Export complete. Open file now?", "Export Completed", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (msgResult == MessageBoxResult.Yes)
-                {
-                    Process.Start(new ProcessStartInfo(saveFileDialog.FileName) { UseShellExecute = true });
-                }
-            }*/
+            IExportToWordDocument item = SelectedTreeViewItem as IExportToWordDocument;
+            ExportToWordWindow wnd = new ExportToWordWindow();
+            wnd.DataContext = new ExportToWordViewModel(item);
+            await wnd.ShowDialog(dialogOwner);
         }
 
         public async Task ShowWordCount(Window owner)
