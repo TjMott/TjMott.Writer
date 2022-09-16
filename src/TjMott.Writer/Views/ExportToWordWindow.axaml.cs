@@ -10,7 +10,9 @@ namespace TjMott.Writer.Views
         public ExportToWordWindow()
         {
             InitializeComponent();
+#if DEBUG
             this.AttachDevTools();
+#endif
         }
 
         private void InitializeComponent()
