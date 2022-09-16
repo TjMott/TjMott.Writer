@@ -1,5 +1,7 @@
 ﻿using Avalonia.Controls;
+using Newtonsoft.Json.Linq;
 using ReactiveUI;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -9,7 +11,10 @@ using System.Threading.Tasks;
 using TjMott.Writer.Models;
 using TjMott.Writer.Models.SQLiteClasses;
 using TjMott.Writer.Views;
+using Xceed.Document.NET;
 using Xceed.Words.NET;
+using static TjMott.Writer.ViewModels.IExportToWordDocument;
+using Document = TjMott.Writer.Models.SQLiteClasses.Document;
 
 namespace TjMott.Writer.ViewModels
 {
@@ -129,20 +134,18 @@ namespace TjMott.Writer.ViewModels
             PacingWindow.ShowPacingWindow(chapters, string.Format("Pacing: {0}", Model.Name), "chapter_" + Model.id);
         }
 
-        public async Task ExportToWordAsync(DocX doc, CancellationToken cancelToken)
+        public async Task ExportToWordAsync(DocX doc, ExportOptions exportOptions, CancellationToken cancelToken)
         {
-            throw new System.NotImplementedException();
-        }
-
-        /*public void ExportToWord(Docx.DocX doc)
-        {
-            // Skip encrypted scenes.
-            var scenes = Scenes.Where(i => !i.IsEncrypted).OrderBy(i => i.SortIndex).ToList();
+            List<SceneViewModel> scenes = new List<SceneViewModel>();
+            if (exportOptions.ExportEncryptedDocs)
+                scenes = Scenes.OrderBy(i => i.SortIndex).ToList();
+            else
+                scenes = Scenes.Where(i => !i.IsEncrypted).OrderBy(i => i.SortIndex).ToList();
 
             if (scenes.Count > 0)
             {
                 // Export chapter name.
-                Xceed.Document.NET.Paragraph chapterHeader = doc.InsertParagraph();
+                Paragraph chapterHeader = doc.InsertParagraph();
                 chapterHeader.StyleId = "Heading1";
                 chapterHeader.Append(Model.Name);
 
@@ -153,16 +156,27 @@ namespace TjMott.Writer.ViewModels
                 for (int i = 0; i < scenes.Count; i++)
                 {
                     SceneViewModel scene = scenes[i];
-                    scene.ExportToWord(doc);
+                    await scene.ExportToWordAsync(doc, exportOptions, cancelToken);
                     if (i < Scenes.Count - 1)
                     {
-                        Xceed.Document.NET.Paragraph p = doc.InsertParagraph();
+                        Paragraph p = doc.InsertParagraph();
                         p.StyleId = "SceneBreak";
                         p.Append("\n*\t\t*\t\t*\n");
                     }
                 }
                 doc.Paragraphs.Last().InsertPageBreakAfterSelf();
             }
-        }*/
+        }
+
+        public async Task<int> GetOpsCount(Window dialogOwner, ExportOptions exportOptions, CancellationToken cancelToken)
+        {
+            int count = 0;
+            foreach (var scene in Scenes)
+            {
+                cancelToken.ThrowIfCancellationRequested();
+                count += await scene.GetOpsCount(dialogOwner, exportOptions, cancelToken);
+            }
+            return count;
+        }
     }
 }

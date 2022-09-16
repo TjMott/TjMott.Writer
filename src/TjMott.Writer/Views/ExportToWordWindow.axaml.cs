@@ -10,21 +10,12 @@ namespace TjMott.Writer.Views
         public ExportToWordWindow()
         {
             InitializeComponent();
-#if DEBUG
             this.AttachDevTools();
-#endif
-            Activated += ExportToWordWindow_Activated;
         }
 
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
-        }
-
-        private async void ExportToWordWindow_Activated(object sender, System.EventArgs e)
-        {
-            Activated -= ExportToWordWindow_Activated;
-            await ((ExportToWordViewModel)DataContext).ExportAsync(this);
         }
     }
 }

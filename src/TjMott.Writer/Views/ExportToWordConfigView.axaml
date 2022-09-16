@@ -1,0 +1,55 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="300"
+             x:Class="TjMott.Writer.Views.ExportToWordConfigView">
+	<Grid RowDefinitions="Auto,Auto,*,Auto" ColumnDefinitions="Auto,*,Auto" Margin="5">
+		<Grid.Styles>
+			<Style Selector="TextBlock">
+				<Setter Property="VerticalAlignment" Value="Center" />
+			</Style>
+			<Style Selector="TextBox">
+				<Setter Property="Margin" Value="5,2" />
+			</Style>
+			<Style Selector="CheckBox">
+				<Setter Property="Margin" Value="5,2" />
+			</Style>
+			<Style Selector="ComboBox">
+				<Setter Property="Margin" Value="5,2" />
+				<Setter Property="Width" Value="300" />
+			</Style>
+		</Grid.Styles>
+		<TextBlock Text="Template File" />
+		<TextBox Grid.Column="1" Text="{Binding WordTemplateFile}" />
+		<Button Grid.Column="2" Content="Browse" Command="{Binding BrowseTemplateFile}" CommandParameter="{Binding $parent[Window]}" />
+
+		<TextBlock Grid.Row="1" Text="Output File" />
+		<TextBox Grid.Row="1" Grid.Column="1" Text="{Binding OutputFile}" />
+		<Button Grid.Row="1" Grid.Column="2" Content="Browse" Command="{Binding BrowseOutputFile}" CommandParameter="{Binding $parent[Window]}" />
+
+		<HeaderedContentControl Grid.Row="2" Grid.ColumnSpan="3" Classes="groupBox" Header="Options" Background="LightGray">
+			<Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="Auto,*">
+				<TextBlock Text="Default Font Family" />
+				<TextBlock Grid.Row="1" Text="Default Font Size" />
+				<TextBlock Grid.Row="2" Text="Default Paragraph Alignment" />
+				<TextBlock Grid.Row="3" Text="Export Encrypted Items" />
+
+				<ComboBox Grid.Column="1" Items="{Binding FontFamilies}" SelectedItem="{Binding SelectedFont}">
+					<ComboBox.ItemTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding}" FontFamily="{Binding}" />
+						</DataTemplate>
+					</ComboBox.ItemTemplate>
+				</ComboBox>
+				<TextBox Grid.Row="1" Grid.Column="1" Text="{Binding DefaultFontSize}" Width="300" HorizontalAlignment="Left" />
+				<ComboBox Grid.Row="2" Grid.Column="1" Items="{Binding ParagraphAlignment}" SelectedItem="{Binding SelectedParagraphAlignment}" />
+				<CheckBox Grid.Row="4" Grid.Column="1" IsChecked="{Binding ExportEncryptedItems}" />
+			</Grid>
+		</HeaderedContentControl>
+		<StackPanel Grid.Row="3" Grid.ColumnSpan="3" Classes="dialogButtonPanel">
+			<Button Content="Export" Command="{Binding ExportCommand}" CommandParameter="{Binding $parent[Window]}" />
+			<Button Content="Cancel" Command="{Binding Close}" CommandParameter="{Binding $parent[Window]}" />
+		</StackPanel>
+	</Grid>
+</UserControl>

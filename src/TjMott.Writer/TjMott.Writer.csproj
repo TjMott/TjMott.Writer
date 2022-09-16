@@ -119,7 +119,7 @@
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.18" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.18" />
     <PackageReference Include="CefNet.Avalonia" Version="102.0.22146.158" />
-    <PackageReference Include="DocX.Core" Version="0.4.1" />
+    <PackageReference Include="DocX" Version="2.3.0" />
     <PackageReference Include="MessageBox.Avalonia" Version="2.1.0" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.9" />
     <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="6.0.9" />

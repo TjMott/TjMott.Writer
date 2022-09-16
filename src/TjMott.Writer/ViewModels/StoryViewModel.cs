@@ -9,6 +9,11 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Xceed.Words.NET;
 using System.Threading;
+using Newtonsoft.Json.Linq;
+using static TjMott.Writer.ViewModels.IExportToWordDocument;
+using Xceed.Document.NET;
+using Document = TjMott.Writer.Models.SQLiteClasses.Document;
+using System.Collections.Generic;
 
 namespace TjMott.Writer.ViewModels
 {
@@ -116,7 +121,7 @@ namespace TjMott.Writer.ViewModels
             if (result)
             {
                 await Model.DeleteAsync().ConfigureAwait(false);
-                UniverseVm.DeleteSubItem(this);
+                await UniverseVm.DeleteSubItem(this);
             }
         }
 
@@ -160,15 +165,10 @@ namespace TjMott.Writer.ViewModels
             PacingWindow.ShowPacingWindow(Chapters, string.Format("Pacing: {0}", Model.Name), "story_" + Model.id);
         }
 
-        public async Task ExportToWordAsync(DocX doc, CancellationToken cancelToken)
+        public async Task ExportToWordAsync(DocX doc, ExportOptions exportOptions, CancellationToken cancelToken)
         {
-            throw new NotImplementedException();
-        }
-
-        /*public void ExportToWord(Docx.DocX doc)
-        {
-            // Format title page of the document.
-            Xceed.Document.NET.Paragraph p = doc.InsertParagraph();
+            // Format title page.
+            Paragraph p = doc.InsertParagraph();
             p.Append("\n\n" + Model.Name);
             p.StyleId = "Title";
 
@@ -187,43 +187,68 @@ namespace TjMott.Writer.ViewModels
             p.InsertPageBreakAfterSelf();
 
             // Insert copyright page.
-            if (Model.FlowDocumentId.HasValue)
+            if (Model.CopyrightPageId.HasValue)
             {
-                FlowDocument copyrightFd = new FlowDocument(Model.Connection);
-                copyrightFd.id = Model.FlowDocumentId.Value;
-                copyrightFd.Load();
+                Document copyrightPage = new Document(Model.Connection);
+                copyrightPage.id = Model.CopyrightPageId.Value;
+                await copyrightPage.LoadAsync();
 
-                FlowDocumentViewModel copyrightVm = new FlowDocumentViewModel(copyrightFd, DialogOwner);
+                JObject copyrightOps = copyrightPage.GetJObject();
 
-                foreach (WinDoc.Block block in copyrightVm.Document.Blocks)
+                foreach (JObject op in copyrightOps["ops"])
                 {
-                    if (block is WinDoc.Paragraph)
-                    {
-                        FlowDocumentExporter.AddParagraph((WinDoc.Paragraph)block, doc);
-                    }
-                }
+                    cancelToken.ThrowIfCancellationRequested();
+                    Formatting f = new Formatting();
+                    DocumentExporter.ApplyFormatting(f, null, exportOptions.DefaultOpAttributes);
 
-                p.InsertPageBreakAfterSelf();
+                    p = doc.InsertParagraph();
+
+                    // Override styles with this op's styles.
+                    if (op.ContainsKey("attributes"))
+                    {
+                        DocumentExporter.ApplyFormatting(f, p, op["attributes"] as JObject);
+                    }
+                    string text = op["insert"].Value<string>().Replace("\r", "");
+                    string[] parts = text.Split("\n");
+                    for (int i = 0; i < parts.Length; i++)
+                    {
+                        p.Append(parts[i], f);
+                        if (i < parts.Length - 1)
+                            p = doc.InsertParagraph();
+                    }
+
+                }
             }
 
-            // Insert eBook table of contents.
+            // Insert ebook table of contents.
 
             // This doesn't make sense to me. Xceed's documentation says "A key-value dictionary where the key is a TableOfContentSwitches 
             // and the value is the parameter of the switch."
             // I have no idea what the string values are supposed to be. Empty strings seem to work.
-            Dictionary<Xceed.Document.NET.TableOfContentsSwitches, string> tocParams = new Dictionary<Xceed.Document.NET.TableOfContentsSwitches, string>();
-            tocParams[Xceed.Document.NET.TableOfContentsSwitches.H] = ""; // TOC entries are clickable hyperlinks.
-            tocParams[Xceed.Document.NET.TableOfContentsSwitches.N] = ""; // Omits page numbers.
-            tocParams[Xceed.Document.NET.TableOfContentsSwitches.Z] = ""; // Hides tab leader and page numbers...?
-            tocParams[Xceed.Document.NET.TableOfContentsSwitches.U] = ""; // Uses the applied paragraph outline level...?
-            Xceed.Document.NET.TableOfContents toc = doc.InsertTableOfContents("Table of Contents", tocParams);
+            Dictionary<TableOfContentsSwitches, string> tocParams = new Dictionary<TableOfContentsSwitches, string>();
+            tocParams[TableOfContentsSwitches.H] = ""; // TOC entries are clickable hyperlinks.
+            tocParams[TableOfContentsSwitches.N] = ""; // Omits page numbers.
+            tocParams[TableOfContentsSwitches.Z] = ""; // Hides tab leader and page numbers...?
+            tocParams[TableOfContentsSwitches.U] = ""; // Uses the applied paragraph outline level...?
+            TableOfContents toc = doc.InsertTableOfContents("Table of Contents", tocParams);
+           
+            doc.InsertParagraph();
             doc.Paragraphs.Last().InsertPageBreakAfterSelf();
 
-            for (int i = 0; i < Chapters.Count; i++)
+            // Now export chapters.
+            foreach (var chapter in Chapters.OrderBy(i => i.SortIndex).ToList())
             {
-                ChapterViewModel chapter = Chapters[i];
-                chapter.ExportToWord(doc);
+                cancelToken.ThrowIfCancellationRequested();
+                await chapter.ExportToWordAsync(doc, exportOptions, cancelToken);
             }
-        }*/
+        }
+
+        public async Task<int> GetOpsCount(Window dialogOwner, ExportOptions exportOptions, CancellationToken cancelToken)
+        {
+            int count = 0;
+            foreach (var chapter in Chapters)
+                count += await chapter.GetOpsCount(dialogOwner, exportOptions, cancelToken);
+            return count;
+        }
     }
 }

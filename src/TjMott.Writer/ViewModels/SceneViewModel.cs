@@ -12,6 +12,10 @@ using Avalonia.Controls;
 using Xceed.Words.NET;
 using System.Threading;
 using Newtonsoft.Json.Linq;
+using Xceed.Document.NET;
+using Document = TjMott.Writer.Models.SQLiteClasses.Document;
+using static TjMott.Writer.ViewModels.IExportToWordDocument;
+using System.Linq;
 
 namespace TjMott.Writer.ViewModels
 {
@@ -171,20 +175,81 @@ namespace TjMott.Writer.ViewModels
             d.Show();
         }
 
-        public async Task ExportToWordAsync(DocX doc, CancellationToken cancelToken)
+        public async Task ExportToWordAsync(DocX doc, ExportOptions exportOptions, CancellationToken cancelToken)
         {
             Document dbDoc = new Document(Model.Connection);
             dbDoc.id = Model.DocumentId;
             await dbDoc.LoadAsync();
-            if (dbDoc.IsUnlocked)
+            if (dbDoc.IsEncrypted)
             {
-                JObject json = dbDoc.GetJObject();
-                
-                foreach (JObject op in json["ops"])
+                if (!exportOptions.ExportEncryptedDocs)
                 {
-
+                    return;
+                }
+                else
+                {
+                    // TODO
+                    return;
                 }
             }
+            JObject json = dbDoc.GetJObject();
+
+            Paragraph para = doc.InsertParagraph();
+                
+            foreach (JObject op in json["ops"])
+            {
+                cancelToken.ThrowIfCancellationRequested();
+                Formatting f = new Formatting();
+
+                // Apply default styles.
+                DocumentExporter.ApplyFormatting(f, para, exportOptions.DefaultOpAttributes);
+
+                // Override styles with this op's styles.
+                if (op.ContainsKey("attributes"))
+                {
+                    DocumentExporter.ApplyFormatting(f, para, op["attributes"] as JObject);
+                }
+                string text = op["insert"].Value<string>().Replace("\r", "");
+                string[] parts = text.Split("\n");
+                for (int i = 0; i < parts.Length; i++)
+                {
+                    para.Append(parts[i], f);
+                    if (i < parts.Length - 1)
+                        para = doc.InsertParagraph();
+                }
+
+                exportOptions.OpsProcessed++;
+            }
+
+            if (dbDoc.IsEncrypted)
+                dbDoc.Lock();
+        }
+
+        public async Task<int> GetOpsCount(Window dialogOwner, ExportOptions exportOptions, CancellationToken cancelToken)
+        {
+            cancelToken.ThrowIfCancellationRequested();
+            Document dbDoc = new Document(Model.Connection);
+            dbDoc.id = Model.DocumentId;
+            await dbDoc.LoadAsync();
+            if (dbDoc.IsEncrypted)
+            {
+                if (!exportOptions.ExportEncryptedDocs)
+                {
+                    return 0;
+                }
+                else
+                {
+                    // TODO
+                    return 0;
+                }
+            }
+
+            JObject json = dbDoc.GetJObject();
+
+            if (dbDoc.IsEncrypted)
+                dbDoc.Lock();
+
+            return json["ops"].Count();
         }
     }
 }
