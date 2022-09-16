@@ -2,11 +2,9 @@
 
 This is my custom-developed word processor plus extras for writing/authoring as well as storing notes for writing jobs.
 
-# NOTE: This application is a work in progress!
+# NOTE: This branch is deprecated
 
-NOTE: This software is incomplete! Use at your own risk. The file format is subject to change without warning, and many features are not yet implemented or useful. However this is under active development and I'll update this readme once I hit a releasable state.
-
-In addition, I am working on a rewrite to .NET 6 and Avalonia which will make the application cross-platform, allowing it to run on Linux. So look at the Avalonia branch for more recent updates. The master branch is unlikely to see any updates until the Avalonia branch is ready for release and merged back to master.
+NOTE: Development has moved to a branch (https://github.com/TjMott/TjMott.Writer/tree/avalonia) which makes the application cross-platform, allowing it to run on Linux. This branch is unlikely to ever receive updates.
 
 # PLATFORM
 
