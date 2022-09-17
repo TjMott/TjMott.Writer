@@ -29,7 +29,7 @@
 		<Button Grid.Row="1" Grid.Column="2" Content="Browse" Command="{Binding BrowseOutputFile}" CommandParameter="{Binding $parent[Window]}" />
 
 		<HeaderedContentControl Grid.Row="2" Grid.ColumnSpan="3" Classes="groupBox" Header="Options" Background="LightGray">
-			<Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="Auto,*">
+			<Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="Auto,*" Margin="3">
 				<TextBlock Text="Default Font Family" />
 				<TextBlock Grid.Row="1" Text="Default Font Size" />
 				<TextBlock Grid.Row="2" Text="Default Paragraph Alignment" />

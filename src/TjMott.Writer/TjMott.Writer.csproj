@@ -73,7 +73,13 @@
     <None Remove="Assets\quilljs\quill.min.js" />
     <None Remove="Assets\quilljs\quill.min.js.map" />
     <None Remove="Assets\quilljs\quill.snow.css" />
+    <None Remove="README.md" />
     <None Remove="WordTemplates\template.dotx" />
+  </ItemGroup>
+  <ItemGroup>
+    <AvaloniaResource Include="README.md">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </AvaloniaResource>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\editor.html">
@@ -120,6 +126,7 @@
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.18" />
     <PackageReference Include="CefNet.Avalonia" Version="102.0.22146.158" />
     <PackageReference Include="DocX" Version="2.3.0" />
+    <PackageReference Include="Markdown.Avalonia" Version="0.10.11" />
     <PackageReference Include="MessageBox.Avalonia" Version="2.1.0" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.9" />
     <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="6.0.9" />
@@ -142,4 +149,8 @@
       <LastGenOutput>AppSettings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Condition=" '$(OS)' == 'Windows_NT' " Command="copy ..\..\README.md ." />
+    <Exec Condition=" '$(OS)' == 'UNIX' " Command="cp ..\..\README.md ." />
+  </Target>
 </Project>

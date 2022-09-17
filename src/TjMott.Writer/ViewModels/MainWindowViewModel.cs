@@ -193,10 +193,9 @@ namespace TjMott.Writer.ViewModels
             Database.Universes.CollectionChanged += (o, e) => loadUniversesMenu();
         }
 
-        public void ShowAbout(Window owner)
+        public async void ShowAbout(Window owner)
         {
-            AboutWindow wnd = new AboutWindow();
-            wnd.ShowDialog(owner);
+            await new AboutWindow().ShowDialog(owner);
         }
 
         public async void Quit(Window dialogOwner)
@@ -217,8 +216,12 @@ namespace TjMott.Writer.ViewModels
 
         public async void ShowQuillHashes(Window owner)
         {
-            QuillHashWindow wnd = new QuillHashWindow();
-            await wnd.ShowDialog(owner);
+            await new QuillHashWindow().ShowDialog(owner);
+        }
+
+        public async void ShowReadmeWindow(Window owner)
+        {
+            await new ReadmeWindow().ShowDialog(owner);
         }
 
         public void ShowWordTemplates()

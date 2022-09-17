@@ -146,3 +146,5 @@
 /src/TjMott.Writer/Assets/cef-win64/lib/vk_swiftshader_icd.json
 /src/TjMott.Writer/Assets/cef-win64/lib/vulkan-1.dll
 /src/linux64
+/src/TjMott.Writer/App.config
+/src/TjMott.Writer/README.md

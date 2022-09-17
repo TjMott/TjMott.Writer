@@ -1,0 +1,19 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:md="clr-namespace:Markdown.Avalonia;assembly=Markdown.Avalonia"
+        mc:Ignorable="d" Width="800" Height="1000"
+		WindowStartupLocation="CenterOwner"
+        x:Class="TjMott.Writer.Views.ReadmeWindow"
+        Title="Readme">
+	<Grid RowDefinitions="Auto,*,Auto" Margin="5">
+		<TextBlock Text="Readme" FontSize="26" Foreground="#333333" />
+		<Border Grid.Row="1" BorderBrush="LightGray" BorderThickness="1">
+			<md:MarkdownScrollViewer Source="avares://TjMott.Writer/README.md" />
+		</Border>
+		<StackPanel Grid.Row="2" Classes="dialogButtonPanel">
+			<Button Content="Close" Click="CloseButton_Click" />
+		</StackPanel>
+	</Grid>
+</Window>

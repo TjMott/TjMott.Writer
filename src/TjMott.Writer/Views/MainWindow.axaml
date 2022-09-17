@@ -64,7 +64,7 @@
 				</MenuItem.Styles>
 			</MenuItem>
 			<MenuItem Header="Help">
-				<MenuItem Header="Readme" />
+				<MenuItem Header="Readme" Command="{Binding ShowReadmeWindow}" CommandParameter="{Binding $parent[Window]}" />
 				<MenuItem Header="About" Command="{Binding AboutCommand}" CommandParameter="{Binding $parent[Window]}" />
 			</MenuItem>
 			<MenuItem Header="Debug" IsVisible="{Binding IsDebugMode}">
@@ -87,9 +87,6 @@
 			</TabItem>
 			<TabItem Header="Notes">
 				<views:NotesView DataContext="{Binding Database.SelectedUniverseViewModel.NotesTree}" />
-			</TabItem>
-			<TabItem Header="Tickets">
-				<TextBlock TextWrapping="Wrap" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Feature Not Yet Implemented" />
 			</TabItem>
 			<TabItem Header="Search">
 				<views:SearchView DataContext="{Binding Database.SelectedUniverseViewModel.SearchViewModel}" />
