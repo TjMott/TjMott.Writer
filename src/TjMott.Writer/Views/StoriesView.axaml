@@ -110,7 +110,7 @@
 			<Button ToolTip.Tip="Word Count" Command="{Binding ShowWordCountCommand}" CommandParameter="{Binding $parent[Window]}" Classes="button">
 				<Image Source="/Assets/Images/icons8-statistics-40.png" />
 			</Button>
-			<Button ToolTip.Tip="Export to Word" Command="{Binding ExportToWordCommand}" CommandParameter="{Binding $parent[Window]}" Classes="button">
+			<Button ToolTip.Tip="Export to DocX" Command="{Binding ExportToWordCommand}" Classes="button">
 				<Image Source="/Assets/Images/icons8-word-40.png" />
 			</Button>
 		</StackPanel>

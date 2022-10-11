@@ -4,6 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" Width="800" Height="450"
         x:Class="TjMott.Writer.Views.PacingWindow"
+		WindowStartupLocation="CenterScreen"
         Title="PacingWindow">
 	<Grid>
 		<Grid x:Name="chapterGrid"></Grid>

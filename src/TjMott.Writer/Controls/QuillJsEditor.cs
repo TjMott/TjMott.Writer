@@ -54,7 +54,7 @@ namespace TjMott.Writer.Controls
             // The Quill HTML/CSS/JS files would be an easy target for malware. So check the SHA256 hash
             // on all of these and issue a warning if something doesn't match.
             AssetHashes.Clear();
-            AssetHashes.Add(new AssetHash(Path.Join("Assets", "editor.html"), "08D5170C5745FCF7D33D3A27A173735D3372522CBCB38B83B5CA5FBCD023F17B"));
+            AssetHashes.Add(new AssetHash(Path.Join("Assets", "editor.html"), "ADAC2B9D023887F85EE645EB744E452B1290AB5BB1CBC344CBBB7619D77C82E3"));
             AssetHashes.Add(new AssetHash(Path.Join("Assets", "quilljs", "quill.bubble.css"), "E8E966FBBE4848DABF3C2B7E2C899A78659FEF4FF742420DA8FE38CD5C219238"));
             AssetHashes.Add(new AssetHash(Path.Join("Assets", "quilljs", "quill.core.css"), "EDDF53780BF28A315F65A6846FEEB4CA82E62E06A74B9462152F4D87AD8D3BC4"));
             AssetHashes.Add(new AssetHash(Path.Join("Assets", "quilljs", "quill.core.js"), "6D4B501DF20B89117FB88294E8BD85813B254FF6A10184949A28DEF97F294C0B"));

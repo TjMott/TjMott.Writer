@@ -150,13 +150,23 @@ namespace TjMott.Writer.Views
             }
         }
 
+        private void exportButton_Click(object sender, RoutedEventArgs e)
+        {
+            ExportToWordWindow.ShowExportWindow(Scene);
+        }
+
+        private void closeButton_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
         public SceneViewModel Scene { get; private set; }
 
         private void updateMenuItems()
         {
             this.FindControl<MenuItem>("saveButton").IsEnabled = _sceneManuscript.IsUnlocked;
             this.FindControl<MenuItem>("revertButton").IsEnabled = _sceneManuscript.IsUnlocked;
-            this.FindControl<MenuItem>("exportButton").IsEnabled = _sceneManuscript.IsUnlocked;
+            this.FindControl<MenuItem>("exportButton").IsEnabled = !_sceneManuscript.IsEncrypted;
             this.FindControl<MenuItem>("lockButton").IsEnabled = _sceneManuscript.IsEncrypted && _sceneManuscript.IsUnlocked;
             this.FindControl<MenuItem>("encryptButton").IsEnabled = !_sceneManuscript.IsEncrypted;
             this.FindControl<MenuItem>("decryptButton").IsEnabled = _sceneManuscript.IsEncrypted;

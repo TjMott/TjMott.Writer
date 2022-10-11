@@ -81,7 +81,7 @@ namespace TjMott.Writer.ViewModels
         public ReactiveCommand<Unit, Unit> MoveItemUpCommand { get; }
         public ReactiveCommand<Unit, Unit> MoveItemDownCommand { get; }
         public ReactiveCommand<Unit, Unit> OpenEditorCommand { get; }
-        public ReactiveCommand<Window, Unit> ExportToWordCommand { get; }
+        public ReactiveCommand<Unit, Unit> ExportToWordCommand { get; }
         public ReactiveCommand<Window, Unit> ShowWordCountCommand { get; }
         public ReactiveCommand<Window, Unit> RenameCommand { get; }
         #endregion
@@ -101,7 +101,7 @@ namespace TjMott.Writer.ViewModels
             MoveItemUpCommand = ReactiveCommand.Create(MoveItemUp, this.WhenAny(x => x.SelectedTreeViewItem.SortIndex, (item) => CanMoveItemUp()));
             MoveItemDownCommand = ReactiveCommand.Create(MoveItemDown, this.WhenAny(x => x.SelectedTreeViewItem.SortIndex, (item) => CanMoveItemDown()));
             OpenEditorCommand = ReactiveCommand.Create(OpenEditor, this.WhenAny(x => x.SelectedTreeViewItem, (item) => (item.Value as SceneViewModel) != null));
-            ExportToWordCommand = ReactiveCommand.CreateFromTask<Window>(ExportToWord, this.WhenAny(x => x.SelectedTreeViewItem, (item) => (item.Value as IExportToWordDocument) != null));
+            ExportToWordCommand = ReactiveCommand.Create(ExportToWord, this.WhenAny(x => x.SelectedTreeViewItem, (item) => (item.Value as IExportToWordDocument) != null));
             ShowWordCountCommand = ReactiveCommand.CreateFromTask<Window>(ShowWordCount, this.WhenAny(x => x.SelectedTreeViewItem, (item) => (item.Value as IGetWordCount) != null));
             RenameCommand = ReactiveCommand.CreateFromTask<Window>(Rename);
 
@@ -390,12 +390,10 @@ namespace TjMott.Writer.ViewModels
             SceneEditorWindow.ShowEditorWindow(vm);
         }
 
-        public async Task ExportToWord(Window dialogOwner)
+        public void ExportToWord()
         {
             IExportToWordDocument item = SelectedTreeViewItem as IExportToWordDocument;
-            ExportToWordWindow wnd = new ExportToWordWindow();
-            wnd.DataContext = new ExportToWordViewModel(item);
-            await wnd.ShowDialog(dialogOwner);
+            ExportToWordWindow.ShowExportWindow(item);           
         }
 
         public async Task ShowWordCount(Window owner)

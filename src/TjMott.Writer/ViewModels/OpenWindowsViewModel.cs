@@ -51,6 +51,9 @@ namespace TjMott.Writer.ViewModels
         private ObservableCollection<Window> _pacingWindows;
         public ObservableCollection<Window> PacingWindows { get => _pacingWindows; private set => this.RaiseAndSetIfChanged(ref _pacingWindows, value); }
 
+        private ObservableCollection<Window> _exportToWordWindows;
+        public ObservableCollection<Window> ExportToWordWindows { get => _exportToWordWindows; private set => this.RaiseAndSetIfChanged(ref _exportToWordWindows, value); }
+
         public OpenWindowsViewModel(Window mainWindow)
         {
             Instance = this;
@@ -58,12 +61,14 @@ namespace TjMott.Writer.ViewModels
             EditorWindows = new ObservableCollection<Window>();
             CopyrightWindows = new ObservableCollection<Window>();
             NotesWindows = new ObservableCollection<Window>();
+            ExportToWordWindows = new ObservableCollection<Window>();
             PacingWindows = new ObservableCollection<Window>();
 
             EditorWindows.CollectionChanged += (o, e) => this.RaisePropertyChanged(nameof(AllWindows));
             NotesWindows.CollectionChanged += (o, e) => this.RaisePropertyChanged(nameof(AllWindows));
             PacingWindows.CollectionChanged += (o, e) => this.RaisePropertyChanged(nameof(AllWindows));
             CopyrightWindows.CollectionChanged += (o, e) => this.RaisePropertyChanged(nameof(AllWindows));
+            ExportToWordWindows.CollectionChanged += (o, e) => this.RaisePropertyChanged(nameof(AllWindows));
         }
 
         public IEnumerable<OpenWindowsViewModelItem> AllWindows
@@ -91,6 +96,11 @@ namespace TjMott.Writer.ViewModels
                 foreach (var w in PacingWindows)
                 {
                     windows.Add(new OpenWindowsViewModelItem(w, w.Title));
+                }
+
+                foreach (var w in ExportToWordWindows)
+                {
+                    windows.Add(new OpenWindowsViewModelItem(w, "Export - " + w.Title));
                 }
 
                 return windows;

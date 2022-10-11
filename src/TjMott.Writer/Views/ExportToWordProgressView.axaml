@@ -4,12 +4,5 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="TjMott.Writer.Views.ExportToWordProgressView">
-	<Grid RowDefinitions="Auto,Auto,*,Auto">
-		<TextBlock Text="Exporting, please wait..." />
-		<TextBlock Grid.Row="1" Text="Status: Exporting scene 3" />
-		<ProgressBar Grid.Row="2" ShowProgressText="True" />
-		<StackPanel Grid.Row="3" Classes="dialogButtonPanel">
-			<Button Content="Cancel" />
-		</StackPanel>
-	</Grid>
+		<TextBlock Text="Exporting, please wait..." HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" />
 </UserControl>

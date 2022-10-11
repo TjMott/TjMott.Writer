@@ -22,11 +22,11 @@ Download and install the 64-bit .NET Desktop runtime from Microsoft here: https:
 
 ### Debian-based Linuxes (Debian, Ubuntu, Mint)
 
-`sudo apt-get update && sudo apt-get install -y dotnet6`
+`sudo apt-get install dotnet-sdk-6.0`
 
 ### Red Hat-based Linuxes (Red Hat, Fedora, CentOS, Rocky)
 
-`sudo yum install dotnet-sdk-6.0`
+`sudo dnf install dotnet-sdk-6.0`
 
 # BUILDING FROM SOURCE
 

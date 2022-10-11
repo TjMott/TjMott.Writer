@@ -76,10 +76,13 @@ namespace TjMott.Writer.ViewModels
         {
             get { return _defaultFontSize; }
             set 
-            { 
-                this.RaiseAndSetIfChanged(ref _defaultFontSize, value);
-                AppSettings.Default.defaultFontSize = value;
-                AppSettings.Default.Save();
+            {
+                if (value > 4 && value < 512)
+                {
+                    this.RaiseAndSetIfChanged(ref _defaultFontSize, value);
+                    AppSettings.Default.defaultFontSize = value;
+                    AppSettings.Default.Save();
+                }
             }
         }
 
@@ -165,6 +168,7 @@ namespace TjMott.Writer.ViewModels
             exportOptions.ExportEncryptedDocs = ExportEncryptedItems;
 
             // Listener to update progress bar and status messages.
+            // Export is so fast that this is kind of useless tbh...
             exportOptions.PropertyChanged += (o, e) =>
             {
                 if (e.PropertyName == nameof(exportOptions.OpsProcessed))
@@ -225,6 +229,7 @@ namespace TjMott.Writer.ViewModels
                     MessageBox.Avalonia.Enums.ButtonEnum.Ok,
                     MessageBox.Avalonia.Enums.Icon.Error,
                     WindowStartupLocation.CenterOwner).ShowDialog(dialogOwner);
+                dialogOwner.Close();
             }
 
         }

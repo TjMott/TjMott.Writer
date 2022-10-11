@@ -33,7 +33,7 @@
 				<TextBlock Text="Default Font Family" />
 				<TextBlock Grid.Row="1" Text="Default Font Size" />
 				<TextBlock Grid.Row="2" Text="Default Paragraph Alignment" />
-				<TextBlock Grid.Row="3" Text="Export Encrypted Items" />
+				<TextBlock Grid.Row="3" Text="Export Encrypted Items" IsVisible="False" />
 
 				<ComboBox Grid.Column="1" Items="{Binding FontFamilies}" SelectedItem="{Binding SelectedFont}">
 					<ComboBox.ItemTemplate>
@@ -44,12 +44,12 @@
 				</ComboBox>
 				<TextBox Grid.Row="1" Grid.Column="1" Text="{Binding DefaultFontSize}" Width="300" HorizontalAlignment="Left" />
 				<ComboBox Grid.Row="2" Grid.Column="1" Items="{Binding ParagraphAlignment}" SelectedItem="{Binding SelectedParagraphAlignment}" />
-				<CheckBox Grid.Row="4" Grid.Column="1" IsChecked="{Binding ExportEncryptedItems}" />
+				<CheckBox Grid.Row="4" Grid.Column="1" IsVisible="False" IsChecked="{Binding ExportEncryptedItems}" />
 			</Grid>
 		</HeaderedContentControl>
 		<StackPanel Grid.Row="3" Grid.ColumnSpan="3" Classes="dialogButtonPanel">
 			<Button Content="Export" Command="{Binding ExportCommand}" CommandParameter="{Binding $parent[Window]}" />
-			<Button Content="Cancel" Command="{Binding Close}" CommandParameter="{Binding $parent[Window]}" />
+			<Button Content="Cancel" IsVisible="False" Command="{Binding Close}" CommandParameter="{Binding $parent[Window]}" />
 		</StackPanel>
 	</Grid>
 </UserControl>
