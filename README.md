@@ -4,7 +4,7 @@ This is my custom-developed word processor plus extras for writing/authoring as 
 
 ## PLATFORM
 
-This application runs on .NET 6.0 with an Avalonia GUI. It requires Visual Studio 2022 (Community Edition is fine) to compile. It is cross-platform and fully tested on Windows 10 and Linux Mint 20 (Cinnamon desktop). Unofficially, it should work on any Linux that supports .NET 6, and will probably work on Mac with a bit of tweaking. Only 64-bit operating systems are supported.
+This application runs on .NET 6.0 with an [Avalonia UI](https://github.com/AvaloniaUI/Avalonia) GUI. It requires Visual Studio 2022 (Community Edition is fine) to compile. It is cross-platform and fully tested on Windows 10 and Linux Mint 20 (Cinnamon desktop). Unofficially, it should work on any Linux that supports .NET 6, and will probably work on Mac with a bit of tweaking. Only 64-bit operating systems are supported.
 
 ### LINUX NOTES
 
