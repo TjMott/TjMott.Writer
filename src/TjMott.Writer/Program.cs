@@ -1,6 +1,8 @@
 using Avalonia;
 using Avalonia.ReactiveUI;
 using System;
+using System.IO;
+using System.Reflection;
 
 namespace TjMott.Writer
 {
@@ -12,6 +14,9 @@ namespace TjMott.Writer
         [STAThread]
         public static void Main(string[] args)
         {
+            // Make sure working directory is set to the EXE's location. This tends to not be the case
+            // on Linux when entering CEF install mode using pkexec.
+            Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
             foreach (var arg in args)
             {
                 if (arg.Equals("-installcef", StringComparison.InvariantCultureIgnoreCase))
@@ -24,6 +29,7 @@ namespace TjMott.Writer
             {
                 CefNetAppImpl.Initialize();
             }
+
             BuildAvaloniaApp()
             .StartWithClassicDesktopLifetime(args);
         }

@@ -5,6 +5,8 @@ using CefNet;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TjMott.Writer
@@ -54,6 +56,14 @@ namespace TjMott.Writer
             get
             {
                 return Path.Combine(Directory.GetCurrentDirectory(), "cefinstalled");
+            }
+        }
+
+        internal static string CefInstallingCookiePath
+        {
+            get
+            {
+                return Path.Combine(Directory.GetCurrentDirectory(), "installingcef");
             }
         }
 
@@ -225,7 +235,7 @@ namespace TjMott.Writer
             }
         }
 
-        internal static void RestartAndInstallCef()
+        internal static async void RestartAndInstallCef()
         {
             // Do we have write access to the program directory? If so,
             // we do not need to elevate/sudo the install process.
@@ -243,10 +253,12 @@ namespace TjMott.Writer
             }
 
             ProcessStartInfo psi = new ProcessStartInfo();
+            psi.WorkingDirectory = Directory.GetCurrentDirectory();
             psi.UseShellExecute = true;
             if (PlatformInfo.IsWindows)
             {
                 psi.FileName = Path.Combine(Directory.GetCurrentDirectory(), "TjMott.Writer.exe");
+                
                 if (elevate)
                     psi.Verb = "runas";
                 psi.ArgumentList.Add("-installcef");
@@ -255,7 +267,7 @@ namespace TjMott.Writer
             {
                 if (elevate)
                 {
-                    psi.FileName = "sudo";
+                    psi.FileName = "pkexec";
                     psi.ArgumentList.Add(Path.Combine(Directory.GetCurrentDirectory(), "TjMott.Writer"));
                 }
                 else
@@ -268,8 +280,23 @@ namespace TjMott.Writer
             {
                 throw new ApplicationException("Unsupported operating system.");
             }
-
-            Process.Start(psi);
+           
+            Process process = Process.Start(psi);
+            if (elevate)
+            {
+                // Must wait for UAC or pkexec prompt to be addressed, otherwise shutting down this application
+                // also kills the elevate prompt. So wait for the process to exit, or for the file cookie placed
+                // by the installer.
+                while (true)
+                {
+                    if (process.HasExited || File.Exists(CefInstallingCookiePath))
+                    {
+                        (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime).Shutdown();
+                    }
+                    await Task.Delay(250);
+                }
+                
+            }
             (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime).Shutdown();
         }
     }

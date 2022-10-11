@@ -169,7 +169,10 @@ namespace TjMott.Writer.ViewModels.CefInstall
                     }
                 });
 
-                StatusMessage = "CEF installed successfully! Press 'Ok' to launch TJ Mott's Writer.";
+                StatusMessage = "CEF installed successfully! Re-launch TJ Mott's Writer to finish install.";
+                // Delete cookie if necessary.
+                if (File.Exists(CefNetAppImpl.CefInstallingCookiePath))
+                    File.Delete(CefNetAppImpl.CefInstallingCookiePath);
                 _installCompleted = true;
             }
             catch (OperationCanceledException)
@@ -178,6 +181,8 @@ namespace TjMott.Writer.ViewModels.CefInstall
                 // Delete cookie if present, since CEF installation is incomplete/corrupted.
                 if (File.Exists(CefNetAppImpl.CefCookiePath))
                     File.Delete(CefNetAppImpl.CefCookiePath);
+                if (File.Exists(CefNetAppImpl.CefInstallingCookiePath))
+                    File.Delete(CefNetAppImpl.CefInstallingCookiePath);
             }
             finally
             {
@@ -188,24 +193,7 @@ namespace TjMott.Writer.ViewModels.CefInstall
 
         public void Ok()
         {
-            if (_installCompleted)
-            {
-                ProcessStartInfo psi = new ProcessStartInfo();
-                psi.UseShellExecute = true;
-                if (PlatformInfo.IsWindows)
-                    psi.FileName = Path.Combine(Directory.GetCurrentDirectory(), "TjMott.Writer.exe");
-                else if (PlatformInfo.IsLinux)
-                    psi.FileName = Path.Combine(Directory.GetCurrentDirectory(), "TjMott.Writer");
-                else
-                    throw new ApplicationException("Unsupported operating system.");
-
-                Process.Start(psi);
-                (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime).Shutdown();
-            }
-            else
-            {
-                (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime).Shutdown();
-            }
+            (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime).Shutdown();
         }
 
         public void Cancel()

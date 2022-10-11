@@ -30,6 +30,8 @@ echo "#!/bin/sh" >> ${PACKAGE}/DEBIAN/prerm
 echo "rm -rf /opt/TjMott.Writer/Assets" >> ${PACKAGE}/DEBIAN/prerm
 echo "rm -rf /opt/TjMott.Writer/GPUCache" >> ${PACKAGE}/DEBIAN/prerm
 echo "if [ -f /opt/TjMott.Writer/cefinstalled ]; then rm /opt/TjMott.Writer/cefinstalled; fi" >> ${PACKAGE}/DEBIAN/prerm
+echo "if [ -f /opt/TjMott.Writer/installingcef ]; then rm /opt/TjMott.Writer/installingcef; fi" >> ${PACKAGE}/DEBIAN/prerm
+echo "if [ -f /opt/TjMott.Writer/cef.tar.bz2 ]; then rm /opt/TjMott.Writer/cef.tar.bz2; fi" >> ${PACKAGE}/DEBIAN/prerm
 
 # Copy program files
 mkdir -p ${PACKAGE}/opt/TjMott.Writer
@@ -39,6 +41,10 @@ chmod 0775 ${PACKAGE}/opt/TjMott.Writer/elevate-install-cef.sh
 # Copy program launcher
 mkdir -p ${PACKAGE}/usr/share/applications
 cp tjm-writer.desktop ${PACKAGE}/usr/share/applications/
+
+# Copy policykit policy to allow elevation when installing CEF
+mkdir -p ${PACKAGE}/usr/share/polkit-1/actions/
+cp com.tjmott.tjm-writer.policy ${PACKAGE}/usr/share/polkit-1/actions/
 
 # Create deb
 dpkg-deb --build --root-owner-group ${PACKAGE}

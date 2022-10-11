@@ -99,7 +99,9 @@ namespace TjMott.Writer.ViewModels
             }
 
             // Check QuillJS hashes.
-            bool quillVerified = await QuillJsEditor.VerifyHashes();
+            // Was nice in theory, but somehow the hashing algorithm is sensitive to newline differences between Windows and Linux even though it operates in byte mode.
+            // Disable for now.
+            /*bool quillVerified = await QuillJsEditor.VerifyHashes();
             if (!quillVerified)
             {
                 var msgbox = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Editor Initialization Error",
@@ -116,7 +118,7 @@ namespace TjMott.Writer.ViewModels
                     (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime).Shutdown(1);
                     return;
                 }
-            }
+            }*/
 
             if (!string.IsNullOrWhiteSpace(AppSettings.Default.lastFile) && File.Exists(AppSettings.Default.lastFile))
             {
