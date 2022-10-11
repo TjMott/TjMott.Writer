@@ -254,8 +254,7 @@ namespace TjMott.Writer
             {
                 if (elevate)
                 {
-                    psi.FileName = "pkexec";
-                    psi.ArgumentList.Add(Path.Combine(Directory.GetCurrentDirectory(), "TjMott.Writer"));
+                    psi.FileName = "elevate-install-cef.sh"; // pkexec sounds like a better option but I couldn't get it to work.
                 }
                 else
                 {
