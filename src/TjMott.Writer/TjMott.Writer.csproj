@@ -154,6 +154,6 @@
   </ItemGroup>
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Exec Condition=" '$(OS)' == 'Windows_NT' " Command="copy ..\..\README.md ." />
-    <Exec Condition=" '$(OS)' == 'UNIX' " Command="cp ..\..\README.md ." />
+    <Exec Condition=" '$(OS)' == 'UNIX' " Command="cp ../../README.md ." />
   </Target>
 </Project>
