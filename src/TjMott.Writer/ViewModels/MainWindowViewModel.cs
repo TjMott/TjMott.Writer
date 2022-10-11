@@ -78,7 +78,7 @@ namespace TjMott.Writer.ViewModels
                     }
                     else if (result == MessageBox.Avalonia.Enums.ButtonResult.Yes)
                     {
-                        CefNetAppImpl.RestartAndInstallCef(owner);
+                        CefNetAppImpl.RestartAndInstallCef();
                         return;
                     }
                 }
@@ -269,7 +269,7 @@ namespace TjMott.Writer.ViewModels
             {
                 if (Database != null)
                     Database.Close();
-                CefNetAppImpl.RestartAndInstallCef(dialogOwner);
+                CefNetAppImpl.RestartAndInstallCef();
             }
         }
     }

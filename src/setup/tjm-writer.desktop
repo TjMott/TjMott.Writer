@@ -1,8 +1,9 @@
 [Desktop Entry]
 Type=Application
 Name=TJ Mott's Writer
-Comment=Word Processor for Writers
+Comment=Word Processor for Authors
 Terminal=false
+Path=/opt/TjMott.Writer
 Exec=/opt/TjMott.Writer/TjMott.Writer
 Categories=Office;
 Keywords=Writer;
