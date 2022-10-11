@@ -254,7 +254,7 @@ namespace TjMott.Writer
             {
                 if (elevate)
                 {
-                    psi.FileName = "sudo";
+                    psi.FileName = "pkexec";
                     psi.ArgumentList.Add(Path.Combine(Directory.GetCurrentDirectory(), "TjMott.Writer"));
                 }
                 else
