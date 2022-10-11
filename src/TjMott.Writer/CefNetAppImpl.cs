@@ -254,7 +254,8 @@ namespace TjMott.Writer
             {
                 if (elevate)
                 {
-                    psi.FileName = "elevate-install-cef.sh"; // pkexec sounds like a better option but I couldn't get it to work.
+                    psi.FileName = "bash";
+                    psi.FileName = Path.Combine(Directory.GetCurrentDirectory(), "elevate-install-cef.sh"); // pkexec sounds like a better option but I couldn't get it to work.
                 }
                 else
                 {
