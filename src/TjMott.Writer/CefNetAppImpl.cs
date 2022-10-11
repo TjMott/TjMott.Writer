@@ -1,4 +1,5 @@
 ﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using CefNet;
 using System;
@@ -224,7 +225,7 @@ namespace TjMott.Writer
             }
         }
 
-        internal static void RestartAndInstallCef()
+        internal static void RestartAndInstallCef(Window dialogOwner)
         {
             // Do we have write access to the program directory? If so,
             // we do not need to elevate/sudo the install process.
@@ -254,8 +255,14 @@ namespace TjMott.Writer
             {
                 if (elevate)
                 {
-                    psi.FileName = "bash";
-                    psi.FileName = Path.Combine(Directory.GetCurrentDirectory(), "elevate-install-cef.sh"); // pkexec sounds like a better option but I couldn't get it to work.
+                    // I can't find a decent way for this to work consistently when the application is launched without a terminal.
+                    // So just tell the user what to do. Not ideal. Should use pkexec but I couldn't get that working.
+                    MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Root Required",
+                                    string.Format("Unable to obtain root. Please execute {0} as sudo.", Path.Combine(Directory.GetCurrentDirectory(), "install-cef.sh")),
+                                    MessageBox.Avalonia.Enums.ButtonEnum.Ok,
+                                    MessageBox.Avalonia.Enums.Icon.Error,
+                                    WindowStartupLocation.CenterOwner).ShowDialog(dialogOwner);
+                    return;
                 }
                 else
                 {

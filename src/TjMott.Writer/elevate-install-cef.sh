@@ -1,3 +1,3 @@
 ﻿#!/bin/sh
 
-sudo ./TjMott.Writer -installcef
+./TjMott.Writer -installcef
