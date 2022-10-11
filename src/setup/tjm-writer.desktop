@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=TJ Mott's Writer
+Comment=Word Processor for Writers
+Terminal=false
+Exec=/opt/TjMott.Writer/TjMott.Writer
+Categories=Office;
+Keywords=Writer;
