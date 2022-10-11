@@ -36,7 +36,6 @@ echo "if [ -f /opt/TjMott.Writer/cef.tar.bz2 ]; then rm /opt/TjMott.Writer/cef.t
 # Copy program files
 mkdir -p ${PACKAGE}/opt/TjMott.Writer
 cp -r ../linux64/* ${PACKAGE}/opt/TjMott.Writer/
-chmod 0775 ${PACKAGE}/opt/TjMott.Writer/elevate-install-cef.sh
 
 # Copy program launcher
 mkdir -p ${PACKAGE}/usr/share/applications
