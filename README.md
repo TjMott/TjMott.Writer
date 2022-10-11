@@ -4,7 +4,7 @@ This is my custom-developed word processor plus extras for writing/authoring as 
 
 # NOTE: This branch is deprecated
 
-NOTE: Development has moved to a branch (https://github.com/TjMott/TjMott.Writer/tree/avalonia) which makes the application cross-platform, allowing it to run on Linux. This branch is unlikely to ever receive updates.
+NOTE: This branch is the old Windows-only WPF version of the application, and is unlikely to ever receive updates.
 
 # PLATFORM
 
