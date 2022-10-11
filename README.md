@@ -4,7 +4,7 @@ This is my custom-developed word processor plus extras for writing/authoring as 
 
 # NOTE: This branch is deprecated
 
-NOTE: This branch is the old Windows-only WPF version of the application, and is unlikely to ever receive updates.
+NOTE: This branch is the old Windows-only WPF version of the application (versions 0.4.0 and older), and is unlikely to ever receive updates.
 
 # PLATFORM
 
