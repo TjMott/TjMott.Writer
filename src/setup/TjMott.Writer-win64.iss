@@ -10,24 +10,31 @@ OutputDir=.
 OutputBaseFilename="TJ Mott's Writer v0.5.0 Setup"
 Compression=lzma
 SolidCompression=yes
-ArchitecturesInstallIn64BitMode=x64
 AppContact="TJ Mott (tj@tjmott.com)"
 AppPublisher="TJ Mott"
 AppPublisherURL="https://www.tjmott.com/"
 LicenseFile="..\..\LICENSE"
+ArchitecturesInstallIn64BitMode=x64
+ArchitecturesAllowed=x64
+
+[Registry]
+Root: HKCR; Subkey: ".wdb"; ValueType: string; ValueData: "TjMottsWriter.WriterDatabase"; Flags: uninsdeletekey;
+Root: HKCR; Subkey: "TjMottsWriter.WriterDatabase"; ValueType: string; ValueData: "TJ Mott's Writer Database"; Flags: uninsdeletekey;
+Root: HKCR; Subkey: "TjMottsWriter.WriterDatabase\Shell\Open\Command"; ValueType: string; ValueData: """ {app}\TjMott.Writer.exe"" ""%1"""; Flags: uninsdeletekey;
+Root: HKCR; Subkey: "TjMottsWriter.WriterDatabase\DefaultIcon"; ValueType: string; ValueData: "{app},0"; Flags: uninsdeletekey;
 
 [Files]
-Source: "..\win64\*.dll";                  DestDir: "{app}";
-Source: "..\win64\*.exe";                  DestDir: "{app}";
-Source: "..\win64\*.deps.json";            DestDir: "{app}";
-Source: "..\win64\*.runtimeconfig.json";   DestDir: "{app}";
-Source: "..\win64\Assets\editor.html";     DestDir: "{app}\Assets";
-Source: "..\win64\Assets\quilljs\*.css";   DestDir: "{app}\Assets\quilljs";
-Source: "..\win64\Assets\quilljs\*.js";    DestDir: "{app}\Assets\quilljs";
-Source: "..\win64\Assets\quilljs\*.map";   DestDir: "{app}\Assets\quilljs";
-Source: "..\win64\WordTemplates\*.dotx";   DestDir: "{app}\WordTemplates";
-Source: "..\win64\README.md";              DestDir: "{app}";
-Source: "..\win64\LICENSE";                DestDir: "{app}";                
+Source: "..\..\win64\*.dll";                  DestDir: "{app}";
+Source: "..\..\win64\*.exe";                  DestDir: "{app}";
+Source: "..\..\win64\*.deps.json";            DestDir: "{app}";
+Source: "..\..\win64\*.runtimeconfig.json";   DestDir: "{app}";
+Source: "..\..\win64\Assets\editor.html";     DestDir: "{app}\Assets";
+Source: "..\..\win64\Assets\quilljs\*.css";   DestDir: "{app}\Assets\quilljs";
+Source: "..\..\win64\Assets\quilljs\*.js";    DestDir: "{app}\Assets\quilljs";
+Source: "..\..\win64\Assets\quilljs\*.map";   DestDir: "{app}\Assets\quilljs";
+Source: "..\..\win64\WordTemplates\*.dotx";   DestDir: "{app}\WordTemplates";
+Source: "..\..\win64\README.md";              DestDir: "{app}";
+Source: "..\..\win64\LICENSE";                DestDir: "{app}";                
 
 [Icons]
 Name: "{group}\Launch TJ Mott's Writer";      Filename: "{app}\TjMott.Writer.exe";

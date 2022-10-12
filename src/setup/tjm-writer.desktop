@@ -7,3 +7,4 @@ Path=/opt/TjMott.Writer
 Exec=/opt/TjMott.Writer/TjMott.Writer
 Categories=Office;
 Keywords=Writer;
+MimeType=application/tjm-writer;

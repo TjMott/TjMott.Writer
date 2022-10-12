@@ -7,7 +7,7 @@
     <vendor_url>https://www.tjmott.com</vendor_url>
     <action id="com.tjmott.tjm-writer.install-cef">
     <description>Install CEF to TJ Mott's Writer install directory</description>
-    <message>Authentication is required to install CEF</message>
+    <message>Authentication is required to install CEF for TJ Mott's Writer.</message>
     <defaults>
         <allow_any>auth_admin</allow_any>
         <allow_inactive>auth_admin</allow_inactive>
