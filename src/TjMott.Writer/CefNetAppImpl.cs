@@ -1,12 +1,9 @@
 ﻿using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using CefNet;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace TjMott.Writer
@@ -285,15 +282,15 @@ namespace TjMott.Writer
             if (elevate)
             {
                 // Must wait for UAC or pkexec prompt to be addressed, otherwise shutting down this application
-                // also kills the elevate prompt. So wait for the process to exit, or for the file cookie placed
-                // by the installer.
+                // also kills the elevate prompt. So wait for the process to exit (elevation cancelled), or for the file cookie placed
+                // by the installer (elevation granted, installing).
                 while (true)
                 {
                     if (process.HasExited || File.Exists(CefInstallingCookiePath))
                     {
                         (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime).Shutdown();
                     }
-                    await Task.Delay(250);
+                    await Task.Delay(50);
                 }
                 
             }

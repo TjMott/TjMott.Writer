@@ -221,9 +221,9 @@ namespace TjMott.Writer.ViewModels
             await new QuillHashWindow().ShowDialog(owner);
         }
 
-        public async void ShowReadmeWindow(Window owner)
+        public void ShowReadmeWindow()
         {
-            await new ReadmeWindow().ShowDialog(owner);
+            ReadmeWindow.ShowReadmeWindow();
         }
 
         public void ShowWordTemplates()

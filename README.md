@@ -3,11 +3,11 @@
 
 This is my word processor with extra features helpful to writers and authors, especially geared towards novelists. It is an open source application with a BSD 3-clause license. It's completely free to download and use, but if you find it useful and you want to support me, you're welcome to head over to Amazon and purchase some of my books. :)
 
-- Source code: https://github.com/TjMott/TjMott.Writer
-- License: https://github.com/TjMott/TjMott.Writer/blob/master/LICENSE
-- My website: https://www.tjmott.com
-- Contact Me: https://www.tjmott.com/contact-tj-mott/
-- My Amazon.com author page (shameless plug): https://www.amazon.com/author/tjmott
+- Source code: [https://github.com/TjMott/TjMott.Writer](https://github.com/TjMott/TjMott.Writer)
+- License: [https://github.com/TjMott/TjMott.Writer/blob/master/LICENSE](https://github.com/TjMott/TjMott.Writer/blob/master/LICENSE)
+- My website: [https://www.tjmott.com](https://www.tjmott.com)
+- Contact Me: [https://www.tjmott.com/contact-tj-mott](https://www.tjmott.com/contact-tj-mott/)
+- My Amazon.com author page (shameless plug): [https://www.amazon.com/author/tjmott](https://www.amazon.com/author/tjmott)
 
 ## Supported Platforms
 
@@ -50,7 +50,7 @@ There are portable installations for both Windows and Linux available from my re
 
 If you are installing to a USB drive, you need at least 1 GB of free space (Windows) or 3 GB free space (Linux) on first run or it may fail to download/extract CEF. If you really want to keep the application on a small-capacity USB drive, first install it to your main system drive, run it once, then copy the application to the USB drive after it's done installing CEF. Once CEF is installed into the application, it requires about 500 MB storage on Windows and about 1.5 GB on Linux.
 
-## Upgrade Notes
+## Upgrading
 
 If you are updating an existing installation, I recommend fully removing older versions before installing the new version. On Windows, you can uninstall through the Control Panel, and on Linux it'll be either `sudo dpkg -r tjm-writer` or `sudo rpm -e tjm-writer`. If you don't do this, you may run into issues with CEF.
 
@@ -134,7 +134,7 @@ There is a word count display in the editor window which shows you the word coun
 
 ### WDB is SQLite
 
-The .wdb files are [SQLite](https://www.sqlite.org/index.html) databases. Everything is stored as records in a relational database in third normal form You can crack this file open with any SQLite client, such as [DB Browser for SQLite](https://sqlitebrowser.org/). There are helper classes/attributes to map SQLite tables to C# classes, which I should probably publish as its own library sometime.
+The .wdb files are [SQLite](https://www.sqlite.org/index.html) databases. Everything is stored as records in a relational database in third normal form. You can crack this file open with any SQLite client, such as [DB Browser for SQLite](https://sqlitebrowser.org/). There are helper classes/attributes to map SQLite tables to C# classes, which I should probably publish as its own library sometime.
 
 The main search feature makes heavy use of [SQLite's full-text search module](https://www.sqlite.org/fts5.html), and there are a number of fts5 tables and triggers to support it.
 

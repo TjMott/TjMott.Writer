@@ -8,7 +8,6 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="TjMott.Writer.Views.MainWindow"
 		WindowStartupLocation="CenterScreen"
-        Icon="/Assets/avalonia-logo.ico"
 		Closing="Window_Closing"
         Title="TJ Mott's Writer" Height="450" Width="800">
 	
@@ -64,7 +63,7 @@
 				</MenuItem.Styles>
 			</MenuItem>
 			<MenuItem Header="Help">
-				<MenuItem Header="Readme" Command="{Binding ShowReadmeWindow}" CommandParameter="{Binding $parent[Window]}" />
+				<MenuItem Header="Readme" Command="{Binding ShowReadmeWindow}" />
 				<MenuItem Header="About" Command="{Binding AboutCommand}" CommandParameter="{Binding $parent[Window]}" />
 			</MenuItem>
 			<MenuItem Header="Debug" IsVisible="{Binding IsDebugMode}">

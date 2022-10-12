@@ -12,6 +12,9 @@
 		<StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Default.xaml"/>
 
 		<FluentTheme Mode="Light"/>
+		<Style Selector="Window">
+			<Setter Property="Icon" Value="avares://TjMott.Writer/TjMott.Writer.ico" />
+		</Style>
 		<Style Selector="StackPanel.dialogButtonPanel">
 			<Setter Property="Orientation" Value="Horizontal" />
 			<Setter Property="HorizontalAlignment" Value="Right" />

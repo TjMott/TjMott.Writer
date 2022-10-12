@@ -54,6 +54,17 @@ namespace TjMott.Writer.ViewModels
         private ObservableCollection<Window> _exportToWordWindows;
         public ObservableCollection<Window> ExportToWordWindows { get => _exportToWordWindows; private set => this.RaiseAndSetIfChanged(ref _exportToWordWindows, value); }
 
+        private Window _readmeWindow;
+        public Window ReadmeWindow 
+        { 
+            get => _readmeWindow;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _readmeWindow, value);
+                this.RaisePropertyChanged(nameof(AllWindows));
+            }
+        }
+
         public OpenWindowsViewModel(Window mainWindow)
         {
             Instance = this;
@@ -102,6 +113,9 @@ namespace TjMott.Writer.ViewModels
                 {
                     windows.Add(new OpenWindowsViewModelItem(w, "Export - " + w.Title));
                 }
+
+                if (ReadmeWindow != null)
+                    windows.Add(new OpenWindowsViewModelItem(ReadmeWindow, "Readme"));
 
                 return windows;
             }
