@@ -5,6 +5,7 @@ Comment=Word Processor for Authors
 Terminal=false
 Path=/opt/TjMott.Writer
 Exec=/opt/TjMott.Writer/TjMott.Writer
+Icon=/opt/TjMott.Writer/TjMott.Writer.ico
 Categories=Office;
 Keywords=Writer;
 MimeType=application/tjm-writer;
