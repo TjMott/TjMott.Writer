@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="application/tjm-writer">
+    <comment>TJ Mott's Writer Database</comment>
+    <glob pattern="*.wdb"/>
+  </mime-type>
+</mime-info>
+
