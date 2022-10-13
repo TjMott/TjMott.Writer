@@ -59,6 +59,7 @@ BuildRoot: ${RPM_TMP}
 
 %files
 %attr(0755, root, root) /opt/TjMott.Writer/TjMott.Writer
+%attr(0755, root, root) /opt/TjMott.Writer/TjMott.Writer.ico
 %attr(0644, root, root) /opt/TjMott.Writer/*.dll
 %attr(0644, root, root) /opt/TjMott.Writer/*.so
 %attr(0644, root, root) /opt/TjMott.Writer/*.json
