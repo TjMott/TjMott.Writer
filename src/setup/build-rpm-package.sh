@@ -8,7 +8,7 @@ export REPO_ROOT=$(pwd)
 
 export VERSION_MAJOR="0"
 export VERSION_MINOR="5"
-export VERSION_REVISION="0"
+export VERSION_REVISION="1"
 
 export RPM_BUILD_ROOT=~/rpmbuild
 export RPM_TMP=${RPM_BUILD_ROOT}/BUILDROOT/tjm-writer-${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_REVISION}-1.x86_64

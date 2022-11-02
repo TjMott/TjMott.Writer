@@ -96,6 +96,7 @@ namespace TjMott.Writer.ViewModels
                 doc.WordCount = 0;
                 doc.PlainText = "";
                 doc.Json = "";
+                doc.DocumentType = "Manuscript";
                 await doc.CreateAsync().ConfigureAwait(false);
 
                 Scene scene = new Scene(Model.Connection);

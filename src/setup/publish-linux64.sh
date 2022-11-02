@@ -8,5 +8,5 @@ cp ../LICENSE ../linux64/LICENSE
 cp ../README.md ../linux64/README.md
 
 cd ../linux64
-tar -czvf ../tjm-writer-0.5.0-linux64-portable.tar.gz .
+tar -czvf ../tjm-writer-0.5.1-linux64-portable.tar.gz .
 cd ..
