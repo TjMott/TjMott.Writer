@@ -125,7 +125,95 @@
             fonts.push(font);
         }
 
-        function quillTextChanged(delta, oldDelta, source) {
+        function getRetainIndex(ops) {
+            retain = 0;
+            ops.forEach((op, idx) => {
+                if (op.retain) {
+                    retain = op.retain;
+                }
+            });
+            return retain;
+        }
+
+        function getDeleteIndex(ops) {
+            d = 0;
+            ops.forEach((op, idx) => {
+                if (op.delete) {
+                    d = op.delete;
+                }
+            });
+            return d;
+        }
+
+        function quillTextChanged(newDelta, oldDelta, source) {
+            
+            if (source == "user") {
+                // Handle special character replacement.
+                newDelta.ops.forEach((op, idx) => {
+                    if (op.insert) {
+                        if (op.insert.includes("-")) {
+                            retainIdx = getRetainIndex(newDelta.ops);
+
+                            // If char before is a -, replace -- with — (em dash)
+                            charBefore = window.editor.getText(retainIdx - 1, 1);
+
+                            if (charBefore == '-' && op.insert.startsWith("-")) {
+                                window.editor.deleteText(retainIdx - 1, 2, 'api');
+                                window.editor.clipboard.dangerouslyPasteHTML(retainIdx - 1, "&mdash;");
+                                // TODO: After paste, the cursor may be after where it should be if the cursor
+                                // was not on the end of the line. window.editor.setSelection doesn't seem to work predictably
+                                // after calling dangerouslyPasteHTML so I can't currently correct for this.
+                            }
+                        }
+                        else if (op.insert.includes(".")) {
+                            retainIdx = getRetainIndex(newDelta.ops);
+                            charBefore = window.editor.getText(retainIdx - 1, 1);
+                            charBefore2 = window.editor.getText(retainIdx - 2, 1);
+                            if (charBefore == '.' && charBefore2 == '.' && op.insert.startsWith(".")) {
+                                window.editor.deleteText(retainIdx - 2, 3, 'api');
+                                window.editor.clipboard.dangerouslyPasteHTML(retainIdx - 2, "&hellip;");
+                                // TODO: After paste, the cursor may be after where it should be if the cursor
+                                // was not on the end of the line. window.editor.setSelection doesn't seem to work predictably
+                                // after calling dangerouslyPasteHTML so I can't currently correct for this.
+                            }
+                        }
+                        else if (op.insert.includes('"')) {
+                            retainIdx = getRetainIndex(newDelta.ops);
+                            charBefore = window.editor.getText(retainIdx - 1, 1);
+
+                            if (op.insert.startsWith('"') && charBefore != " " && charBefore != "" && charBefore != "\r" && charBefore != "\n" && charBefore != "\t" && charBefore != "”") {
+                                window.editor.deleteText(retainIdx, 1, 'api');
+                                window.editor.clipboard.dangerouslyPasteHTML(retainIdx, "&rdquo;");
+
+                            }
+                            else if (op.insert.startsWith('"') && charBefore != "“") {
+                                window.editor.deleteText(retainIdx, 1, 'api');
+                                window.editor.clipboard.dangerouslyPasteHTML(retainIdx, "&ldquo;");
+                            }
+                            // TODO: After paste, the cursor may be after where it should be if the cursor
+                            // was not on the end of the line. window.editor.setSelection doesn't seem to work predictably
+                            // after calling dangerouslyPasteHTML so I can't currently correct for this.
+                        }
+                        else if (op.insert.includes("'")) {
+                            retainIdx = getRetainIndex(newDelta.ops);
+                            charBefore = window.editor.getText(retainIdx - 1, 1);
+
+                            if (op.insert.startsWith("'") && charBefore != " " && charBefore != "" && charBefore != "\r" && charBefore != "\n" && charBefore != "\t" && charBefore != "’") {
+                                window.editor.deleteText(retainIdx, 1, 'api');
+                                window.editor.clipboard.dangerouslyPasteHTML(retainIdx, "&rsquo;");
+                            }
+                            else if (op.insert.startsWith("'") && charBefore != "‘") {
+                                window.editor.deleteText(retainIdx, 1, 'api');
+                                window.editor.clipboard.dangerouslyPasteHTML(retainIdx, "&lsquo;");
+                            }
+                            // TODO: After paste, the cursor may be after where it should be if the cursor
+                            // was not on the end of the line. window.editor.setSelection doesn't seem to work predictably
+                            // after calling dangerouslyPasteHTML so I can't currently correct for this.
+                        }
+                    }
+                });
+            }
+
             // Hack -- communicate with C# layer using the document title.
             document.title = "blank";
             document.title = "TextChanged";

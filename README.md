@@ -9,6 +9,8 @@ This is my word processor with extra features helpful to writers and authors, es
 - Contact Me: [https://www.tjmott.com/contact-tj-mott](https://www.tjmott.com/contact-tj-mott/)
 - My Amazon.com author page (shameless plug): [https://www.amazon.com/author/tjmott](https://www.amazon.com/author/tjmott)
 
+The change log is at the end of this readme.
+
 ## Supported Platforms
 
 TJ Mott's Writer is cross-platform and fully tested/supported on Windows 10, Linux Mint 20, and Rocky Linux 8. Unofficially, it should work on any Linux that supports .NET 6, and it'll probably work on Mac with a bit of code tweaking. Only 64-bit operating systems are supported.
@@ -16,6 +18,7 @@ TJ Mott's Writer is cross-platform and fully tested/supported on Windows 10, Lin
 ## Beta Warning
 
 This software has come a long way since I started writing it many years ago. Technically it's still a beta, as is the GUI toolkit used, but that doesn't mean you should be scared to use it. I may do a 1.0 release once I am reasonably confident that the application is feature-complete and its dependencies are stable. (But don't hold your breath.)
+
 
 ## Installation
 
@@ -32,7 +35,7 @@ This software has come a long way since I started writing it many years ago. Tec
 
 1. Install the .NET 6 SDK and X11 dependency: `sudo apt-get install dotnet-sdk-6.0 libx11-dev`
 2. Download the latest `.deb` file from [my releases page](https://github.com/TjMott/TjMott.Writer/releases).
-3. Install the deb file: `sudo dpkg -i install tjm-writer_0.5.0-1_amd64.deb`
+3. Install the deb file: `sudo dpkg -i tjm-writer_0.5.1-1_amd64.deb`
 4. Now you can launch TJ Mott's Writer from your launcher, or by executing `/opt/TjMott.Writer/TjMott.Writer`
 5. On first run, it will need to download and install CEF. Let it do so, then re-launch the application and it'll be ready to use.
 
@@ -40,7 +43,7 @@ This software has come a long way since I started writing it many years ago. Tec
 
 1. Install the .NET 6 SDK and X11 dependency: `sudo dnf install dotnet-sdk-6.0 libX11-devel`
 2. Download the latest `.rpm` file from [my releases page](https://github.com/TjMott/TjMott.Writer/releases).
-3. Install the rpm: `sudo rpm -i tjm-writer-0.5.0-1.x86_64.rpm`
+3. Install the rpm: `sudo rpm -i tjm-writer-0.5.1-1.x86_64.rpm`
 4. Now you can launch TJ Mott's Writer from your launcher, or by executing `/opt/TjMott.Writer/TjMott.Writer`
 5. On first run, it will need to download and install CEF. Let it do so, then re-launch the application and it'll be ready to use.
 
@@ -195,4 +198,38 @@ Apple support is not on my radar, but I will gladly accept pull requests.
 I take data privacy seriously. Once fully installed, TJ Mott's Writer does not require an Internet connection. It should never use the Internet except for initially downloading CEF. QuillJS is loaded locally from the application directory using a `file:///` URI, and not from a CDN.
 
 The use of CEF to host/edit document data may be very concerning to some, since it's related to Chromium/Chrome. Initially, it performed a lot of telemetry and monitoring, including frequent and unnecessary communication with remote servers while editing local documents. I did my best to configure CEF to shut that down, and I don't see any network chatter from it in my logs anymore. But if you notice anything, please let me know. The details on how I shut CEF up can be found in `src/TjMott.Writer/CefNetAppImpl.cs`.
+
+***
+
+## Change Log
+
+### Version 0.5.1
+
+#### New Features
+
+* Added editor autoreplace for smart quotes, ellipses, and em dashes while typing.
+
+#### Bug Fixes
+
+* Fixed crash when creating a new scene (Document.DocumentType was left null, but underlying SQLite column is NOT NULL).
+* Fixed slightly-incorrect Debian installation instructions in this readme.
+
+#### Known Issues
+
+* Editor autoreplace for smart quotes, ellipses, and em dashes may jump cursor position ahead if your cursor is not at the end of a line when the autoreplace happens. Potentially a QuillJS bug -- quill.setSelection is unpredictable after calling quill.clipboard.dangerouslyPasteHTML.
+* Editor autoreplace may not work as expected if you paste in a chunk of text containing autoreplaceable characters.
+* Missing libraries/dependencies on Ubuntu 22.04 or Mint 21.
+* Linux: Double-clicking a .wdb file launches the application, but does not load the file you double-clicked.
+
+### Version 0.5.0
+
+#### New Features
+
+* Completed migration to .NET 6 and Avalonia UI, with official support for Windows 10, Rocky Linux 8, and Linux Mint 20.
+
+#### Removed Features
+
+* Ticket tracker
+* File repository
+* Spellcheck dictionary
 
