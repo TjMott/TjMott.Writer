@@ -165,7 +165,7 @@ namespace TjMott.Writer.ViewModels.CefInstall
                     File.Delete(tempFileBz);
                     using (StreamWriter sw = File.CreateText(CefNetAppImpl.CefCookiePath))
                     {
-                        sw.WriteLine("true");
+                        sw.Write(CefNetAppImpl.ExpectedCefVersion);
                     }
                 });
 

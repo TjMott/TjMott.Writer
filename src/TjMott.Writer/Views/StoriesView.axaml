@@ -29,7 +29,7 @@
 						<MenuItem Header="Add New Scene" Command="{Binding CreateSceneCommand}" CommandParameter="{Binding $parent[Window]}" />
 						<MenuItem Header="Show Pacing" Command="{Binding ShowPacingCommand}" />
 						<MenuItem Header="Rename Chapter" Command="{Binding RenameCommand}" CommandParameter="{Binding $parent[Window]}"  />
-						<MenuItem Header="Delete Chapter" Command="{Binding DeleteCommand}" />
+						<MenuItem Header="Delete Chapter" Command="{Binding DeleteCommand}" CommandParameter="{Binding $parent[Window]}" />
 					</ContextMenu>
 					<ContextMenu x:Key="sceneContextMenu">
 						<MenuItem Header="Move to Chapter" Command="{Binding MoveToChapterCommand}" CommandParameter="{Binding $parent[Window]}" />

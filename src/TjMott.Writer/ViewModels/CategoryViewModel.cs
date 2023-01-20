@@ -71,16 +71,7 @@ namespace TjMott.Writer.ViewModels
             if (result)
             {
                 await Model.DeleteAsync().ConfigureAwait(false);
-                UniverseVm.DeleteSubItem(this);
-            }
-        }
-
-        public async void UpdateStorySortIndices()
-        {
-            for (int i = 0; i < Stories.Count; i++)
-            {
-                Stories[i].Model.SortIndex = i;
-                await Stories[i].SaveAsync().ConfigureAwait(false);
+                await UniverseVm.DeleteSubItem(this);
             }
         }
     }

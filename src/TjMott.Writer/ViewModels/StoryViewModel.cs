@@ -148,16 +148,6 @@ namespace TjMott.Writer.ViewModels
         public void DeleteChapter(ChapterViewModel chapter)
         {
             Chapters.Remove(chapter);
-            UpdateChapterSortIndices();
-        }
-
-        public async void UpdateChapterSortIndices()
-        {
-            for (int i = 0; i < Chapters.Count; i++)
-            {
-                Chapters[i].Model.SortIndex = i;
-                await Chapters[i].SaveAsync().ConfigureAwait(false);
-            }
         }
 
         public void ShowPacing()

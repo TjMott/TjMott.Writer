@@ -203,6 +203,18 @@ The use of CEF to host/edit document data may be very concerning to some, since 
 
 ## Change Log
 
+### Version 0.5.2
+
+### New Features
+
+* Enabled printing for notes documents.
+
+#### Bug Fixes
+
+* Fixed unable to delete a chapter
+* Improved (but not necessarily fixed) weirdness when re-ordering chapters/stories/etc in the tree view.
+* CEF installation cookie now contains the CEF version, so application updates will handle CEF updates correctly.
+
 ### Version 0.5.1
 
 #### New Features

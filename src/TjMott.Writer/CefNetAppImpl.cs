@@ -10,17 +10,24 @@ namespace TjMott.Writer
 {
     internal class CefNetAppImpl : CefNetApplication
     {
+        internal static string ExpectedCefVersion
+        {
+            get
+            {
+                return "cef_binary_102.0.9+g1c5e658+chromium-102.0.5005.63";
+            }
+        }
         internal static string CefDownloadUrl
         {
             get
             {
                 if (PlatformInfo.IsWindows)
                 {
-                    return "https://cef-builds.spotifycdn.com/cef_binary_102.0.9+g1c5e658+chromium-102.0.5005.63_windows64_minimal.tar.bz2";
+                    return "https://cef-builds.spotifycdn.com/" + ExpectedCefVersion + "_windows64_minimal.tar.bz2";
                 }
                 else if (PlatformInfo.IsLinux)
                 {
-                    return "https://cef-builds.spotifycdn.com/cef_binary_102.0.9+g1c5e658+chromium-102.0.5005.63_linux64_minimal.tar.bz2";
+                    return "https://cef-builds.spotifycdn.com/" + ExpectedCefVersion + "_linux64_minimal.tar.bz2";
                 }
                 else
                 {
@@ -53,6 +60,21 @@ namespace TjMott.Writer
             get
             {
                 return Path.Combine(Directory.GetCurrentDirectory(), "cefinstalled");
+            }
+        }
+
+        internal static string InstalledCefVersion
+        {
+            get
+            { 
+                if (File.Exists(CefCookiePath))
+                {
+                    return File.ReadAllText(CefCookiePath);
+                }
+                else
+                {
+                    return "";
+                }
             }
         }
 
@@ -98,6 +120,13 @@ namespace TjMott.Writer
                 {
                     IsCefInstalled = false;
                     InitErrorMessage = string.Format("CEF is not installed in your application directory.");
+                    InitSuccess = false;
+                    return InitSuccess;
+                }
+                else if (InstalledCefVersion != ExpectedCefVersion)
+                {
+                    IsCefInstalled = false;
+                    InitErrorMessage = string.Format("Your CEF installation needs to be updated.");
                     InitSuccess = false;
                     return InitSuccess;
                 }

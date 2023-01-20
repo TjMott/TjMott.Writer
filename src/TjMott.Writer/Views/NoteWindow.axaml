@@ -12,7 +12,7 @@
 			<MenuItem Header="Note">
 				<MenuItem x:Name="saveButton" Header="Save" Command="{Binding ElementName=manuscriptEditor, Path=Save}" IsEnabled="False" />
 				<MenuItem x:Name="revertButton" Header="Revert" Command="{Binding ElementName=manuscriptEditor, Path=Revert}" IsEnabled="False" />
-				<MenuItem x:Name="printButton" Header="Print" Click="printButton_Click" IsEnabled="False" />
+				<MenuItem x:Name="printButton" Header="Print" Click="printButton_Click" />
 				<MenuItem Header="Close" />
 			</MenuItem>
 		</Menu>

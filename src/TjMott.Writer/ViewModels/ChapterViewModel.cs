@@ -118,15 +118,6 @@ namespace TjMott.Writer.ViewModels
             Scenes.Remove(scene);
         }
 
-        public async void UpdateSceneSortIndices()
-        {
-            for (int i = 0; i < Scenes.Count; i++)
-            {
-                Scenes[i].Model.SortIndex = i;
-                await Scenes[i].SaveAsync().ConfigureAwait(false);
-            }
-        }
-
         public void ShowPacing()
         {
             var chapters = new List<ChapterViewModel>();

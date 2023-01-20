@@ -120,15 +120,6 @@ namespace TjMott.Writer.ViewModels
             SearchViewModel = new SearchViewModel(this);
         }
 
-        public void UpdateSubItemSortIndices()
-        {
-            for (int i = 0; i < SubItems.Count; i++)
-            {
-                SubItems[i].SortIndex = i;
-                SubItems[i].SaveAsync();
-            }
-        }
-
         public async Task CreateCategory(Window owner)
         {
             NameItemWindow dialog = new NameItemWindow("New Category");
@@ -189,7 +180,6 @@ namespace TjMott.Writer.ViewModels
                 if (cat != null)
                 {
                     cat.Stories.Remove(story);
-                    cat.UpdateStorySortIndices();
                 }
                 if (!SubItems.Contains(story))
                     SubItems.Add(story);
@@ -200,7 +190,6 @@ namespace TjMott.Writer.ViewModels
                 if (cat != null && cat.Model.id != story.Model.CategoryId)
                 {
                     cat.Stories.Remove(story);
-                    cat.UpdateStorySortIndices();
                 }
                 else
                 {
@@ -221,9 +210,7 @@ namespace TjMott.Writer.ViewModels
                 {
                     CategoryViewModel cat = Categories.Single(i => i.Model.id == story.Model.CategoryId);
                     cat.Stories.Remove(story);
-                    cat.UpdateStorySortIndices();
                 }
-                UpdateSubItemSortIndices();
             }
             else if (subItem is CategoryViewModel)
             {
@@ -238,7 +225,6 @@ namespace TjMott.Writer.ViewModels
                 }
                 Categories.Remove(cat);
                 SubItems.Remove(cat);
-                UpdateSubItemSortIndices();
             }
         }
         public bool CanMoveItemUp()
