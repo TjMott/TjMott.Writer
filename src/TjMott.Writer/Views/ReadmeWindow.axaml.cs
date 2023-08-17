@@ -22,7 +22,7 @@ namespace TjMott.Writer.Views
             OpenWindowsViewModel.Instance.ReadmeWindow = this;
         }
 
-        private void ReadmeWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void ReadmeWindow_Closing(object sender, WindowClosingEventArgs e)
         {
             _instance = null;
             OpenWindowsViewModel.Instance.ReadmeWindow = null;

@@ -10,13 +10,7 @@ namespace TjMott.Writer.Views
         public NotesView()
         {
             InitializeComponent();
-        }
-
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-
-            this.FindControl<QuillJsContainer>("notePreviewContainer").ZoomLevel = AppSettings.Default.editorZoom;
+            notePreviewContainer.ZoomLevel = AppSettings.Default.editorZoom;
         }
     }
 }

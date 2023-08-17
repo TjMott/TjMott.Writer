@@ -63,20 +63,20 @@ namespace TjMott.Writer.ViewModels
             {
                 if (!CefNetAppImpl.IsCefInstalled)
                 {
-                    var msgbox = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("CEF Not Installed",
+                    var msgbox = MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard("CEF Not Installed",
                         "CEF, a necessary component for the editor, is not installed." + Environment.NewLine +
                         "Would you like to install it now?" + Environment.NewLine +
                         "You can continue using the application without it," + Environment.NewLine + "but you will not be able to open or view any documents.",
-                        MessageBox.Avalonia.Enums.ButtonEnum.YesNoAbort,
-                        MessageBox.Avalonia.Enums.Icon.Question,
+                        MsBox.Avalonia.Enums.ButtonEnum.YesNoAbort,
+                        MsBox.Avalonia.Enums.Icon.Question,
                         WindowStartupLocation.CenterOwner);
-                    var result = await msgbox.ShowDialog(owner);
-                    if (result == MessageBox.Avalonia.Enums.ButtonResult.Abort)
+                    var result = await msgbox.ShowWindowDialogAsync(owner);
+                    if (result == MsBox.Avalonia.Enums.ButtonResult.Abort)
                     {
                         (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime).Shutdown(1);
                         return;
                     }
-                    else if (result == MessageBox.Avalonia.Enums.ButtonResult.Yes)
+                    else if (result == MsBox.Avalonia.Enums.ButtonResult.Yes)
                     {
                         CefNetAppImpl.RestartAndInstallCef();
                         return;
@@ -84,13 +84,13 @@ namespace TjMott.Writer.ViewModels
                 }
                 else
                 {
-                    var msgbox = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("CEF Initialization Error",
+                    var msgbox = MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard("CEF Initialization Error",
                         CefNetAppImpl.InitErrorMessage + Environment.NewLine + "You can try to continue using the application," + Environment.NewLine +  "but you will not be able to open or view any documents.",
-                        MessageBox.Avalonia.Enums.ButtonEnum.OkAbort,
-                        MessageBox.Avalonia.Enums.Icon.Error,
+                        MsBox.Avalonia.Enums.ButtonEnum.OkAbort,
+                        MsBox.Avalonia.Enums.Icon.Error,
                         WindowStartupLocation.CenterOwner);
-                    var result = await msgbox.ShowDialog(owner);
-                    if (result == MessageBox.Avalonia.Enums.ButtonResult.Abort)
+                    var result = await msgbox.ShowWindowDialogAsync(owner);
+                    if (result == MsBox.Avalonia.Enums.ButtonResult.Abort)
                     {
                         (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime).Shutdown(1);
                         return;
@@ -161,12 +161,12 @@ namespace TjMott.Writer.ViewModels
 
             if (Database.Metadata.DbVersion > Metadata.ExpectedVersion)
             {
-                var msgbox = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Cannot Open File",
+                var msgbox = MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard("Cannot Open File",
                     string.Format("Cannot open file '{0}'. Reason: file is version {1} but this application requires version {2}. The file will now be closed to prevent corruption.", Path.GetFileName(filename), Database.Metadata.DbVersion, Metadata.ExpectedVersion),
-                    MessageBox.Avalonia.Enums.ButtonEnum.Ok,
-                    MessageBox.Avalonia.Enums.Icon.Error,
+                    MsBox.Avalonia.Enums.ButtonEnum.Ok,
+                    MsBox.Avalonia.Enums.Icon.Error,
                     WindowStartupLocation.CenterOwner);
-                await msgbox.ShowDialog(owner);
+                await msgbox.ShowWindowDialogAsync(owner);
                 Database.Close();
                 Database = null;
                 return;
@@ -204,11 +204,11 @@ namespace TjMott.Writer.ViewModels
         {
             if (OpenWindowsViewModel.AllWindows.Count() > 1)
             {
-                await MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Open Windows",
+                await MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard("Open Windows",
                     "You have several open windows. Please save and close your work before closing the main window.",
-                    MessageBox.Avalonia.Enums.ButtonEnum.Ok,
-                    MessageBox.Avalonia.Enums.Icon.Warning,
-                    WindowStartupLocation.CenterOwner).ShowDialog(dialogOwner);
+                    MsBox.Avalonia.Enums.ButtonEnum.Ok,
+                    MsBox.Avalonia.Enums.Icon.Warning,
+                    WindowStartupLocation.CenterOwner).ShowWindowDialogAsync(dialogOwner);
                 return;
             }
             if (Database != null)
@@ -261,13 +261,13 @@ namespace TjMott.Writer.ViewModels
 
         public async void InstallCef(Window dialogOwner)
         {
-           var buttonResult = await MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Install CEF?",
+           var buttonResult = await MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard("Install CEF?",
                                     "Install CEF? This will restart the application.",
-                                    MessageBox.Avalonia.Enums.ButtonEnum.YesNo,
-                                    MessageBox.Avalonia.Enums.Icon.Question,
-                                    WindowStartupLocation.CenterOwner).ShowDialog(dialogOwner);
+                                    MsBox.Avalonia.Enums.ButtonEnum.YesNo,
+                                    MsBox.Avalonia.Enums.Icon.Question,
+                                    WindowStartupLocation.CenterOwner).ShowWindowDialogAsync(dialogOwner);
 
-            if (buttonResult == MessageBox.Avalonia.Enums.ButtonResult.Yes)
+            if (buttonResult == MsBox.Avalonia.Enums.ButtonResult.Yes)
             {
                 if (Database != null)
                     Database.Close();

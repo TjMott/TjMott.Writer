@@ -14,34 +14,25 @@ namespace TjMott.Writer.Views
         {
             _userInput = "";
             InitializeComponent();
-            
-#if DEBUG
-            this.AttachDevTools();
-#endif
         }
 
         public NameItemWindow(string userInput)
         {
             _userInput = userInput;
             InitializeComponent();
-        }
-
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-            this.FindControl<TextBox>("nameTextBox").Text = _userInput;
+            nameTextBox.Text = _userInput;
         }
 
         private void okButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!string.IsNullOrWhiteSpace(this.FindControl<TextBox>("nameTextBox").Text))
+            if (!string.IsNullOrWhiteSpace(nameTextBox.Text))
             {
-                _userInput = this.FindControl<TextBox>("nameTextBox").Text;
+                _userInput = nameTextBox.Text;
                 Close(_userInput);
             }
             else
             {
-                this.FindControl<TextBox>("nameTextBox").Focus();
+                nameTextBox.Focus();
             }
         }
 

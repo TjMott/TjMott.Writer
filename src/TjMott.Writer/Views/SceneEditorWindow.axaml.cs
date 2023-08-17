@@ -59,16 +59,6 @@ namespace TjMott.Writer.Views
         {
             Scene = scene;
             InitializeComponent();
-            
-#if DEBUG
-            this.AttachDevTools();
-#endif
-        }
-
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-
             if (!Avalonia.Controls.Design.IsDesignMode)
             {
                 Title = "Editing Scene: " + Scene.Model.Name;
@@ -105,19 +95,19 @@ namespace TjMott.Writer.Views
             e.Cancel = true;
             if (await _manuscriptEditor.HasUnsavedEdits())
             {
-                var msgBox = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Save Before Closing?",
+                var msgBox = MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard("Save Before Closing?",
                     "Your document has unsaved edits. Save before closing?",
-                    MessageBox.Avalonia.Enums.ButtonEnum.YesNoCancel,
-                    MessageBox.Avalonia.Enums.Icon.Question,
+                    MsBox.Avalonia.Enums.ButtonEnum.YesNoCancel,
+                    MsBox.Avalonia.Enums.Icon.Question,
                     WindowStartupLocation.CenterOwner);
-                var msgBoxResult = await msgBox.ShowDialog(this);
-                if (msgBoxResult == MessageBox.Avalonia.Enums.ButtonResult.Yes)
+                var msgBoxResult = await msgBox.ShowWindowDialogAsync(this);
+                if (msgBoxResult == MsBox.Avalonia.Enums.ButtonResult.Yes)
                 {
                     setStatusText("Saving document...", 0);
                     await _manuscriptEditor.Save();
                     setStatusText("Document saved.", 0);
                 }
-                else if (msgBoxResult == MessageBox.Avalonia.Enums.ButtonResult.Cancel)
+                else if (msgBoxResult == MsBox.Avalonia.Enums.ButtonResult.Cancel)
                 {
                     setStatusText("Close cancelled.", 5000);
                     return;

@@ -29,7 +29,7 @@
 			</MenuItem>
 			<MenuItem Header="Universe">
 				<MenuItem Header="Create Universe" Command="{Binding Database.CreateUniverseCommand}" CommandParameter="{Binding $parent[Window]}" />
-				<MenuItem x:Name="selectUniverseMenu" Header="Select Universe" Items="{Binding UniverseMenuItems}">
+				<MenuItem x:Name="selectUniverseMenu" Header="Select Universe" ItemsSource="{Binding UniverseMenuItems}">
 					<MenuItem.Styles>
 						<Style Selector="#selectUniverseMenu MenuItem">
 							<Setter Property="Icon">
@@ -54,7 +54,7 @@
 				<Separator />
 				<MenuItem Header="Spellcheck Dictionary" />
 			</MenuItem>
-			<MenuItem x:Name="windowsMenu" Header="Windows" Items="{Binding OpenWindowsViewModel.AllWindows}">
+			<MenuItem x:Name="windowsMenu" Header="Windows" ItemsSource="{Binding OpenWindowsViewModel.AllWindows}">
 				<MenuItem.Styles>
 					<Style Selector="#windowsMenu MenuItem">
 						<Setter Property="Header" Value="{Binding Name}" />

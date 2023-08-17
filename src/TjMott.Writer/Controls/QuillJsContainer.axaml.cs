@@ -73,27 +73,22 @@ namespace TjMott.Writer.Controls
         public QuillJsContainer()
         {
             InitializeComponent();
-        }
-
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
 
             if (CefNetAppImpl.InitSuccess)
             {
                 _editor = new QuillJsEditor();
                 _editor.DocumentTitleChanged += _editor_DocumentTitleChanged;
-                
-                this.FindControl<Grid>("webViewContainer").Children.Add(_editor);
-                this.FindControl<Slider>("zoomSlider").PropertyChanged += zoomSlider_PropertyChanged;
+
+                webViewContainer.Children.Add(_editor);
+                zoomSlider.PropertyChanged += zoomSlider_PropertyChanged;
             }
             else if (!CefNetAppImpl.IsCefInstalled)
             {
-                this.FindControl<Grid>("webViewContainer").Children.Add(new CefNotInstalledContainer());
+                webViewContainer.Children.Add(new CefNotInstalledContainer());
             }
             else
             {
-                this.FindControl<Grid>("webViewContainer").Children.Add(new EditorCefErrorDisplay());
+                webViewContainer.Children.Add(new EditorCefErrorDisplay());
             }
         }
 
@@ -292,17 +287,17 @@ namespace TjMott.Writer.Controls
             }
             if (await HasUnsavedEdits())
             {
-                var msgBox = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Save Before Locking?",
+                var msgBox = MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard("Save Before Locking?",
                     "Your document has unsaved edits. Save before locking? You will lose your changes if you answer no!",
-                    MessageBox.Avalonia.Enums.ButtonEnum.YesNoCancel,
-                    MessageBox.Avalonia.Enums.Icon.Question,
+                    MsBox.Avalonia.Enums.ButtonEnum.YesNoCancel,
+                    MsBox.Avalonia.Enums.Icon.Question,
                     WindowStartupLocation.CenterOwner);
-                var msgBoxResult = await msgBox.ShowDialog(getOwner());
-                if (msgBoxResult == MessageBox.Avalonia.Enums.ButtonResult.Yes)
+                var msgBoxResult = await msgBox.ShowWindowDialogAsync(getOwner());
+                if (msgBoxResult == MsBox.Avalonia.Enums.ButtonResult.Yes)
                 {
                     await Save();
                 }
-                else if (msgBoxResult == MessageBox.Avalonia.Enums.ButtonResult.Cancel)
+                else if (msgBoxResult == MsBox.Avalonia.Enums.ButtonResult.Cancel)
                 {
                     return;
                 }
@@ -336,21 +331,21 @@ namespace TjMott.Writer.Controls
             }
             if (await HasUnsavedEdits())
             {
-                var msgBox = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Document is Unsaved",
+                var msgBox = MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard("Document is Unsaved",
                         "Your document has unsaved changes. Save these changes before encrypting?",
-                        MessageBox.Avalonia.Enums.ButtonEnum.YesNoCancel,
-                        MessageBox.Avalonia.Enums.Icon.Question,
+                        MsBox.Avalonia.Enums.ButtonEnum.YesNoCancel,
+                        MsBox.Avalonia.Enums.Icon.Question,
                         WindowStartupLocation.CenterOwner);
-                var msgBoxResult = await msgBox.Show(getOwner());
-                if (msgBoxResult == MessageBox.Avalonia.Enums.ButtonResult.Yes)
+                var msgBoxResult = await msgBox.ShowWindowDialogAsync(getOwner());
+                if (msgBoxResult == MsBox.Avalonia.Enums.ButtonResult.Yes)
                 {
                     await Save();
                 }
-                else if (msgBoxResult == MessageBox.Avalonia.Enums.ButtonResult.No)
+                else if (msgBoxResult == MsBox.Avalonia.Enums.ButtonResult.No)
                 {
 
                 }
-                else if (msgBoxResult == MessageBox.Avalonia.Enums.ButtonResult.Cancel)
+                else if (msgBoxResult == MsBox.Avalonia.Enums.ButtonResult.Cancel)
                 {
                     return;
                 }
@@ -386,12 +381,12 @@ namespace TjMott.Writer.Controls
                 }
                 catch (CryptographicException)
                 {
-                    var msgBox = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Invalid Password",
+                    var msgBox = MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard("Invalid Password",
                         "Incorrect password, your document could not be decrypted.",
-                        MessageBox.Avalonia.Enums.ButtonEnum.Ok,
-                        MessageBox.Avalonia.Enums.Icon.Error,
+                        MsBox.Avalonia.Enums.ButtonEnum.Ok,
+                        MsBox.Avalonia.Enums.Icon.Error,
                         WindowStartupLocation.CenterOwner);
-                    await msgBox.Show(getOwner());
+                    await msgBox.ShowWindowDialogAsync(getOwner());
                 }
             }
         }
@@ -448,12 +443,12 @@ namespace TjMott.Writer.Controls
                 catch (CryptographicException)
                 {
                     this.FindControl<TextBox>("passwordTextBox").Text = "";
-                    var msgBox = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Invalid Password",
+                    var msgBox = MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard("Invalid Password",
                         "Incorrect password, your document could not be unlocked.",
-                        MessageBox.Avalonia.Enums.ButtonEnum.Ok,
-                        MessageBox.Avalonia.Enums.Icon.Error,
+                        MsBox.Avalonia.Enums.ButtonEnum.Ok,
+                        MsBox.Avalonia.Enums.Icon.Error,
                         WindowStartupLocation.CenterOwner);
-                    await msgBox.Show(getOwner());
+                    await msgBox.ShowWindowDialogAsync(getOwner());
 
                 }
             }
@@ -502,10 +497,10 @@ namespace TjMott.Writer.Controls
 
         private Window getOwner()
         {
-            IControl parent = this.Parent;
+            Control parent = (Control)this.Parent;
             while (parent != null && parent is not Window)
             {
-                parent = parent.Parent;
+                parent = (Control)parent.Parent;
             }
             return parent as Window;
         }

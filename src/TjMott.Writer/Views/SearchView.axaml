@@ -11,7 +11,7 @@
 		<TextBlock Text="{Binding Status}" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,3" />
 
 		<DataGrid x:Name="searchResultsGrid" Grid.Row="2" Grid.ColumnSpan="2" SelectionMode="Single" SelectedItem="{Binding SelectedResult}"
-				  Items="{Binding SearchResults}" AutoGenerateColumns="False" IsReadOnly="True">
+				  ItemsSource="{Binding SearchResults}" AutoGenerateColumns="False" IsReadOnly="True">
 			<DataGrid.ContextMenu>
 				<ContextMenu>
 					<MenuItem Header="Rename" Command="{Binding SelectedResult.RenameCommand}" CommandParameter="{Binding $parent[Window]}" />

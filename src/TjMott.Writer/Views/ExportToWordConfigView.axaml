@@ -35,7 +35,7 @@
 				<TextBlock Grid.Row="2" Text="Default Paragraph Alignment" />
 				<TextBlock Grid.Row="3" Text="Export Encrypted Items" IsVisible="False" />
 
-				<ComboBox Grid.Column="1" Items="{Binding FontFamilies}" SelectedItem="{Binding SelectedFont}">
+				<ComboBox Grid.Column="1" ItemsSource="{Binding FontFamilies}" SelectedItem="{Binding SelectedFont}">
 					<ComboBox.ItemTemplate>
 						<DataTemplate>
 							<TextBlock Text="{Binding}" FontFamily="{Binding}" />
@@ -43,7 +43,7 @@
 					</ComboBox.ItemTemplate>
 				</ComboBox>
 				<TextBox Grid.Row="1" Grid.Column="1" Text="{Binding DefaultFontSize}" Width="300" HorizontalAlignment="Left" />
-				<ComboBox Grid.Row="2" Grid.Column="1" Items="{Binding ParagraphAlignment}" SelectedItem="{Binding SelectedParagraphAlignment}" />
+				<ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding ParagraphAlignment}" SelectedItem="{Binding SelectedParagraphAlignment}" />
 				<CheckBox Grid.Row="4" Grid.Column="1" IsVisible="False" IsChecked="{Binding ExportEncryptedItems}" />
 			</Grid>
 		</HeaderedContentControl>

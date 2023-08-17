@@ -36,25 +36,12 @@ namespace TjMott.Writer.Views
         public ExportToWordWindow()
         {
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
         }
 
         public ExportToWordWindow(IExportToWordDocument itemToExport)
         {
             DataContext = new ExportToWordViewModel(itemToExport);
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
-            
-        }
-
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-
             if (!Avalonia.Controls.Design.IsDesignMode)
             {
                 dynamic item = (DataContext as ExportToWordViewModel).ItemToExport;
@@ -63,7 +50,7 @@ namespace TjMott.Writer.Views
             }
         }
 
-        private void ExportToWordWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void ExportToWordWindow_Closing(object sender, WindowClosingEventArgs e)
         {
             if (OpenWindowsViewModel.Instance.ExportToWordWindows.Contains(this))
                 OpenWindowsViewModel.Instance.ExportToWordWindows.Remove(this);

@@ -1,5 +1,5 @@
 ﻿using Avalonia.Controls;
-using MessageBox.Avalonia.DTO;
+using MsBox.Avalonia;
 using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
@@ -8,6 +8,9 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Xml;
 using TjMott.Writer.ViewModels;
+using MsBox.Avalonia.Dto;
+using System.Reflection.PortableExecutable;
+using MsBox.Avalonia.Models;
 
 namespace TjMott.Writer.Models.SqlScripts
 {
@@ -470,17 +473,19 @@ namespace TjMott.Writer.Models.SqlScripts
                     decrypted = false;
                     if (_aesPasswords.Count == 0)
                     {
-                        MessageBoxInputParams mbp = new MessageBoxInputParams();
-                        mbp.IsPassword = true;
+                        MessageBoxCustomParams mbp = new MessageBoxCustomParams();
+                        mbp.InputParams = new InputParams() { DefaultValue = "" };
                         mbp.ContentTitle = "FlowDocument is encrypted";
                         mbp.ContentMessage = "Enter your AES password.";
-                        mbp.Icon = MessageBox.Avalonia.Enums.Icon.Question;
+                        mbp.ButtonDefinitions = new List<ButtonDefinition>() { new ButtonDefinition() { Name = "OK", IsDefault = true }, new ButtonDefinition() { Name = "Cancel", IsCancel = true } };
+                        mbp.Icon = MsBox.Avalonia.Enums.Icon.Question;
                         mbp.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                        var msgbox = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxInputWindow(mbp);
-                        var msgboxResult = await msgbox.ShowDialog(_dialogOwner);
-                        if (msgboxResult.Button == "Confirm")
+                        var msgbox = MsBox.Avalonia.MessageBoxManager.GetMessageBoxCustom(mbp);
+                        var msgboxResult = await msgbox.ShowWindowDialogAsync(_dialogOwner);
+
+                        if (msgboxResult == "OK")
                         {
-                            _aesPasswords.Add(msgboxResult.Message);
+                            _aesPasswords.Add(msgbox.InputValue);
                         }
                     }
                     for (int i = 0; i < _aesPasswords.Count; i++)
@@ -497,17 +502,18 @@ namespace TjMott.Writer.Models.SqlScripts
                         {
                             if (i == _aesPasswords.Count - 1)
                             {
-                                MessageBoxInputParams mbp = new MessageBoxInputParams();
-                                mbp.IsPassword = true;
+                                MessageBoxCustomParams mbp = new MessageBoxCustomParams();
+                                mbp.InputParams = new InputParams() { DefaultValue = "" };
                                 mbp.ContentTitle = "FlowDocument is encrypted";
                                 mbp.ContentMessage = "Enter your AES password.";
-                                mbp.Icon = MessageBox.Avalonia.Enums.Icon.Question;
+                                mbp.ButtonDefinitions = new List<ButtonDefinition>() { new ButtonDefinition() { Name = "OK", IsDefault = true }, new ButtonDefinition() { Name = "Cancel", IsCancel = true } };
+                                mbp.Icon = MsBox.Avalonia.Enums.Icon.Question;
                                 mbp.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                                var msgbox = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxInputWindow(mbp);
-                                var msgboxResult = await msgbox.ShowDialog(_dialogOwner);
-                                if (msgboxResult.Button == "Confirm")
+                                var msgbox = MessageBoxManager.GetMessageBoxCustom(mbp);
+                                var msgboxResult = await msgbox.ShowWindowDialogAsync(_dialogOwner);
+                                if (msgboxResult == "OK")
                                 {
-                                    _aesPasswords.Add(msgboxResult.Message);
+                                    _aesPasswords.Add(msgbox.InputValue);
                                 }
                             }
                         }

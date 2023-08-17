@@ -11,18 +11,12 @@ namespace TjMott.Writer.Views
         public DocumentJsonWindow()
         {
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
         }
 
         public DocumentJsonWindow(Document doc)
         {
             _document = doc;
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
             Activated += DocumentJsonWindow_Activated;
         }
 
@@ -45,11 +39,6 @@ namespace TjMott.Writer.Views
         private void CloseMenuItem_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             Close();
-        }
-
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
         }
 
         private async void reload()

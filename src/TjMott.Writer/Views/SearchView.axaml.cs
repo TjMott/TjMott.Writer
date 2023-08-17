@@ -10,10 +10,5 @@ namespace TjMott.Writer.Views
         {
             InitializeComponent();
         }
-
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
     }
 }

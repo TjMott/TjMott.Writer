@@ -204,12 +204,12 @@ namespace TjMott.Writer.ViewModels
                     doc.Save();
                 }
 
-                var openFile = await MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Export Complete",
+                var openFile = await MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard("Export Complete",
                                     "Export complete. Open document?",
-                                    MessageBox.Avalonia.Enums.ButtonEnum.YesNo,
-                                    MessageBox.Avalonia.Enums.Icon.Success,
-                                    WindowStartupLocation.CenterOwner).ShowDialog(dialogOwner);
-                if (openFile == MessageBox.Avalonia.Enums.ButtonResult.Yes)
+                                    MsBox.Avalonia.Enums.ButtonEnum.YesNo,
+                                    MsBox.Avalonia.Enums.Icon.Success,
+                                    WindowStartupLocation.CenterOwner).ShowWindowDialogAsync(dialogOwner);
+                if (openFile == MsBox.Avalonia.Enums.ButtonResult.Yes)
                 {
                     Process.Start(new ProcessStartInfo(OutputFile) { UseShellExecute = true });
                 }
@@ -224,11 +224,11 @@ namespace TjMott.Writer.ViewModels
             }
             catch (Exception ex)
             {
-                await MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Error While Exporting",
+                await MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard("Error While Exporting",
                     ex.Message,
-                    MessageBox.Avalonia.Enums.ButtonEnum.Ok,
-                    MessageBox.Avalonia.Enums.Icon.Error,
-                    WindowStartupLocation.CenterOwner).ShowDialog(dialogOwner);
+                    MsBox.Avalonia.Enums.ButtonEnum.Ok,
+                    MsBox.Avalonia.Enums.Icon.Error,
+                    WindowStartupLocation.CenterOwner).ShowWindowDialogAsync(dialogOwner);
                 dialogOwner.Close();
             }
 

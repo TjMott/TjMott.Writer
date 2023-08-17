@@ -15,25 +15,14 @@ namespace TjMott.Writer.Views
         public ConfirmDeleteWindow(string message)
         {
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
 
-            this.FindControl<TextBlock>("itemInfoTextBlock").Text = message;
-            this.FindControl<Button>("deleteButton").Content = string.Format("Delete ({0})", secondsBeforeDelete);
+            itemInfoTextBlock.Text = message;
+            deleteButton.Content = string.Format("Delete ({0})", secondsBeforeDelete);
         }
 
         public ConfirmDeleteWindow()
         {
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
-        }
-
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
         }
 
         private void ConfirmDeleteWindow_Activated(object sender, System.EventArgs e)

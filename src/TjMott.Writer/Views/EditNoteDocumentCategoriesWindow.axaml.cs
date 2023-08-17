@@ -17,9 +17,6 @@ namespace TjMott.Writer.Views
         public EditNoteDocumentCategoriesWindow()
         {
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
         }
 
         public EditNoteDocumentCategoriesWindow(NoteDocumentViewModel document, NotesTree tree)
@@ -27,17 +24,14 @@ namespace TjMott.Writer.Views
             _tree = tree;
             _document = document;
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
         }
 
         private void EditNoteDocumentCategoriesWindow_Activated(object sender, System.EventArgs e)
         {
             this.Activated -= EditNoteDocumentCategoriesWindow_Activated;
 
-            this.FindControl<ListBox>("availableCategoriesListBox").Items = _availableCategories;
-            this.FindControl<ListBox>("selectedCategoriesListBox").Items = _selectedCategories;
+            availableCategoriesListBox.ItemsSource = _availableCategories;
+            selectedCategoriesListBox.ItemsSource = _selectedCategories;
 
             foreach (var category in _tree.Categories)
             {
@@ -54,10 +48,9 @@ namespace TjMott.Writer.Views
 
         private void selectCategory_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            ListBox lb = this.FindControl<ListBox>("availableCategoriesListBox");
-            if (lb.SelectedItem != null && _selectedCategories.Count == 0)
+            if (availableCategoriesListBox.SelectedItem != null && _selectedCategories.Count == 0)
             {
-                NoteCategoryViewModel category  = (NoteCategoryViewModel)lb.SelectedItem;
+                NoteCategoryViewModel category  = (NoteCategoryViewModel)availableCategoriesListBox.SelectedItem;
                 _availableCategories.Remove(category);
                 _selectedCategories.Add(category);
             }
@@ -65,10 +58,9 @@ namespace TjMott.Writer.Views
 
         private void deselectCategory_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            ListBox lb = this.FindControl<ListBox>("selectedCategoriesListBox");
-            if (lb.SelectedItem != null)
+            if (selectedCategoriesListBox.SelectedItem != null)
             {
-                NoteCategoryViewModel category = (NoteCategoryViewModel)lb.SelectedItem;
+                NoteCategoryViewModel category = (NoteCategoryViewModel)selectedCategoriesListBox.SelectedItem;
                 _selectedCategories.Remove(category);
                 _availableCategories.Add(category);
             }
@@ -83,11 +75,6 @@ namespace TjMott.Writer.Views
         private void cancel_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             Close();
-        }
-
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
         }
     }
 }

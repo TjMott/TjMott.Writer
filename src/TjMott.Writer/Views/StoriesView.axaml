@@ -12,7 +12,7 @@
 		</Grid.ColumnDefinitions>
 
 		<Border BorderThickness="1" BorderBrush="DarkGray">
-			<TreeView Items="{Binding SubItems}" SelectedItem="{Binding SelectedTreeViewItem}">
+			<TreeView ItemsSource="{Binding SubItems}" SelectedItem="{Binding SelectedTreeViewItem}">
 				<TreeView.Resources>
 					<ContextMenu x:Key="categoryContextMenu">
 						<MenuItem Header="Rename Category" Command="{Binding RenameCommand}" CommandParameter="{Binding $parent[Window]}" />
@@ -36,14 +36,14 @@
 						<MenuItem Header="Rename Scene" Command="{Binding RenameCommand}" CommandParameter="{Binding $parent[Window]}" />
 						<MenuItem Header="Show JSON" Command="{Binding ShowJson}" IsVisible="{Binding IsDebugMode}" />
 						<MenuItem Header="Color">
-							<MenuItem Background="Black" />
-							<MenuItem Background="Gray" />
-							<MenuItem Background="Red" />
-							<MenuItem Background="Orange" />
-							<MenuItem Background="Yellow" />
-							<MenuItem Background="Green" />
-							<MenuItem Background="Blue" />
-							<MenuItem Background="Violet" />
+							<MenuItem Background="Black" Command="{Binding SetColor}" CommandParameter="Black" />
+							<MenuItem Background="Gray" Command="{Binding SetColor}" CommandParameter="Gray" />
+							<MenuItem Background="Red" Command="{Binding SetColor}" CommandParameter="Red" />
+							<MenuItem Background="Orange" Command="{Binding SetColor}" CommandParameter="Orange" />
+							<MenuItem Background="Yellow" Command="{Binding SetColor}" CommandParameter="Yellow" />
+							<MenuItem Background="Green" Command="{Binding SetColor}" CommandParameter="Green" />
+							<MenuItem Background="Blue" Command="{Binding SetColor}" CommandParameter="Blue" />
+							<MenuItem Background="Violet" Command="{Binding SetColor}" CommandParameter="Violet" />
 						</MenuItem>
 						<MenuItem Header="Delete Scene" Command="{Binding DeleteCommand}" CommandParameter="{Binding $parent[Window]}" />
 					</ContextMenu>
@@ -84,7 +84,7 @@
 						<StackPanel Orientation="Horizontal" ContextMenu="{StaticResource sceneContextMenu}">
 							<Image Classes="padlock" />
 							<TextBlock Text="Scene:" Classes="treeLabel" />
-							<TextBlock Text="{Binding Model.Name}" />
+							<TextBlock Text="{Binding Model.Name}" Foreground="{Binding TextColorBrush}" />
 						</StackPanel>
 					</TreeDataTemplate>
 				</TreeView.DataTemplates>

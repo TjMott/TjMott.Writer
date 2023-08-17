@@ -60,8 +60,8 @@ namespace TjMott.Writer.ViewModels
         private SolidColorBrush _textColorBrush;
         public SolidColorBrush TextColorBrush
         {
-            get 
-            { 
+            get
+            {
                 if (_textColorBrush == null)
                 {
                     _textColorBrush = new SolidColorBrush(Color.FromArgb(Model.ColorA, Model.ColorR, Model.ColorG, Model.ColorB));
@@ -99,9 +99,15 @@ namespace TjMott.Writer.ViewModels
             RenameCommand = ReactiveCommand.CreateFromTask<Window>(Rename);
             DeleteCommand = ReactiveCommand.CreateFromTask<Window>(Delete);
             MoveToChapterCommand = ReactiveCommand.CreateFromTask<Window>(MoveToChapter);
-            
+
             // Inits the IsEncrypted field.
             CanDecrypt();
+        }
+
+        public void SetColor(string colorString)
+        {
+            SolidColorBrush brush = new SolidColorBrush(Color.Parse(colorString));
+            TextColorBrush = brush;
         }
 
         public async Task Rename(Window owner)
