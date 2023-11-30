@@ -260,7 +260,7 @@ namespace TjMott.Writer.Controls
             {
                 return;
             }
-            Document.Json = await GetJsonText();
+            Document.PublicJson = await GetJsonText();
             if (Document.IsEncrypted)
             {
                 Document.PlainText = "";
