@@ -20,7 +20,7 @@ echo "Package: tjm-writer" >> ${PACKAGE}/DEBIAN/control
 echo "Version: ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_REVISION}" >> ${PACKAGE}/DEBIAN/control
 echo "Architecture: amd64" >> ${PACKAGE}/DEBIAN/control
 echo "Maintainer: TJ Mott <tj@tjmott.com>" >> ${PACKAGE}/DEBIAN/control
-echo "Depends: dotnet-sdk-6.0, libx11-dev" >> ${PACKAGE}/DEBIAN/control
+echo "Depends: dotnet-sdk-8.0, libx11-dev" >> ${PACKAGE}/DEBIAN/control
 echo "HomePage: https://www.tjmott.com" >> ${PACKAGE}/DEBIAN/control
 echo "Description: A word processor with useful features for authors." >> ${PACKAGE}/DEBIAN/control
 

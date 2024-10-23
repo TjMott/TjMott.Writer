@@ -48,7 +48,7 @@ Name: tjm-writer
 Version: ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_REVISION}
 Release: 1
 License: BSD 3-Clause
-Requires: dotnet-sdk-6.0
+Requires: dotnet-sdk-8.0
 Requires: libX11-devel
 Group: Office
 URL: https://www.tjmott.com
