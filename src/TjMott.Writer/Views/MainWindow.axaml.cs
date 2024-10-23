@@ -22,11 +22,11 @@ namespace TjMott.Writer.Views
             if (vm.OpenWindowsViewModel.AllWindows.Count() > 1)
             {
                 args.Cancel = true;
-                await MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Open Windows",
+                /*await MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Open Windows",
                     "You have several open windows. Please save and close your work before closing the main window.",
                     MessageBox.Avalonia.Enums.ButtonEnum.Ok,
                     MessageBox.Avalonia.Enums.Icon.Warning,
-                    WindowStartupLocation.CenterOwner).ShowDialog(this);
+                    WindowStartupLocation.CenterOwner).ShowDialog(this);*/
                 return;
             }
 

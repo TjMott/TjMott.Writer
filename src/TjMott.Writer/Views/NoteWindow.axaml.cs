@@ -37,9 +37,6 @@ namespace TjMott.Writer.Views
         public NoteWindow()
         {
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
         }
 
         public NoteWindow(NoteDocumentViewModel vm)
@@ -47,12 +44,9 @@ namespace TjMott.Writer.Views
             DataContext = vm;
             _noteDocViewModel = vm;
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
         }
 
-        private void InitializeComponent()
+        /*private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
             if (!Avalonia.Controls.Design.IsDesignMode)
@@ -69,7 +63,7 @@ namespace TjMott.Writer.Views
                 AddHandler(KeyDownEvent, onKeyDown);
                 OpenWindowsViewModel.Instance.NotesWindows.Add(this);
             }
-        }
+        }*/
 
         private async void _documentEditor_EditorLoaded(object sender, EventArgs e)
         {
@@ -85,7 +79,7 @@ namespace TjMott.Writer.Views
             e.Cancel = true;
             if (await _documentEditor.HasUnsavedEdits())
             {
-                var msgBox = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Save Before Closing?",
+                /*var msgBox = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Save Before Closing?",
                     "Your document has unsaved edits. Save before closing?",
                     MessageBox.Avalonia.Enums.ButtonEnum.YesNoCancel,
                     MessageBox.Avalonia.Enums.Icon.Question,
@@ -101,7 +95,7 @@ namespace TjMott.Writer.Views
                 {
                     setStatusText("Close cancelled.", 5000);
                     return;
-                }
+                }*/
             }
 
             Closing -= NoteWindow_Closing;

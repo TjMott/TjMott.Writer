@@ -10,9 +10,6 @@ namespace TjMott.Writer.Views
         public QuillHashWindow()
         {
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
             Activated += QuillHashWindow_Activated;
         }
 
@@ -21,12 +18,7 @@ namespace TjMott.Writer.Views
             Activated -= QuillHashWindow_Activated;
 
             DataGrid dg = this.FindControl<DataGrid>("hashesDataGrid");
-            dg.Items = QuillJsEditor.AssetHashes;
-        }
-
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
+            dg.ItemsSource = QuillJsEditor.AssetHashes;
         }
     }
 }

@@ -9,15 +9,10 @@ namespace TjMott.Writer.Views
     public partial class NameItemWindow : Window
     {
 
-        private string _userInput;
+        private string _userInput = "";
         public NameItemWindow()
         {
-            _userInput = "";
             InitializeComponent();
-            
-#if DEBUG
-            this.AttachDevTools();
-#endif
         }
 
         public NameItemWindow(string userInput)
@@ -26,11 +21,11 @@ namespace TjMott.Writer.Views
             InitializeComponent();
         }
 
-        private void InitializeComponent()
+        /*private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
             this.FindControl<TextBox>("nameTextBox").Text = _userInput;
-        }
+        }*/
 
         private void okButton_Click(object sender, RoutedEventArgs e)
         {

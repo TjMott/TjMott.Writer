@@ -44,9 +44,6 @@ namespace TjMott.Writer.Views
         public EditCopyrightPageWindow()
         {
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
         }
         #endregion
 
@@ -54,12 +51,9 @@ namespace TjMott.Writer.Views
         {
             Story = story;
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
         }
 
-        private void InitializeComponent()
+        /*private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
 
@@ -77,7 +71,7 @@ namespace TjMott.Writer.Views
                 AddHandler(KeyDownEvent, onKeyDown);
                 OpenWindowsViewModel.Instance.CopyrightWindows.Add(this);
             }
-        }
+        }*/
 
         private async void _manuscriptEditor_EditorLoaded(object sender, EventArgs e)
         {
@@ -92,7 +86,7 @@ namespace TjMott.Writer.Views
             e.Cancel = true;
             if (await _manuscriptEditor.HasUnsavedEdits())
             {
-                var msgBox = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Save Before Closing?",
+                /*var msgBox = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Save Before Closing?",
                     "Your copyright page has unsaved edits. Save before closing?",
                     MessageBox.Avalonia.Enums.ButtonEnum.YesNoCancel,
                     MessageBox.Avalonia.Enums.Icon.Question,
@@ -108,7 +102,7 @@ namespace TjMott.Writer.Views
                 {
                     setStatusText("Close cancelled.", 5000);
                     return;
-                }
+                }*/
             }
 
             Closing -= EditCopyrightPageWindow_Closing;

@@ -9,14 +9,6 @@ namespace TjMott.Writer.Views
         public DecryptWindow()
         {
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
-        }
-
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
         }
 
         private void DecryptWindow_Activated(object sender, System.EventArgs e)

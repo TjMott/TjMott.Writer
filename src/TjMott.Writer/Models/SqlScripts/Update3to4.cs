@@ -1,6 +1,7 @@
 ﻿using Avalonia.Controls;
-using MessageBox.Avalonia.DTO;
 using Microsoft.Data.Sqlite;
+using MsBox.Avalonia;
+using MsBox.Avalonia.Dto;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -470,7 +471,7 @@ namespace TjMott.Writer.Models.SqlScripts
                     decrypted = false;
                     if (_aesPasswords.Count == 0)
                     {
-                        MessageBoxInputParams mbp = new MessageBoxInputParams();
+                        /*MessageBoxCustomParams mbp = new MessageBoxCustomParams();
                         mbp.IsPassword = true;
                         mbp.ContentTitle = "FlowDocument is encrypted";
                         mbp.ContentMessage = "Enter your AES password.";
@@ -481,11 +482,11 @@ namespace TjMott.Writer.Models.SqlScripts
                         if (msgboxResult.Button == "Confirm")
                         {
                             _aesPasswords.Add(msgboxResult.Message);
-                        }
+                        }*/
                     }
                     for (int i = 0; i < _aesPasswords.Count; i++)
                     {
-                        string tmpPass = _aesPasswords[i];
+                        /*string tmpPass = _aesPasswords[i];
                         try
                         {
                             xml = AESHelper.AesDecrypt(xml, tmpPass);
@@ -510,7 +511,7 @@ namespace TjMott.Writer.Models.SqlScripts
                                     _aesPasswords.Add(msgboxResult.Message);
                                 }
                             }
-                        }
+                        }*/
                     }
                 }
                 if (decrypted)

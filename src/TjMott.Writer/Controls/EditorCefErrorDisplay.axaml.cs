@@ -11,7 +11,7 @@ namespace TjMott.Writer.Controls
             InitializeComponent();
         }
 
-        private void InitializeComponent()
+        /*private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
 
@@ -19,6 +19,6 @@ namespace TjMott.Writer.Controls
             {
                 this.FindControl<TextBox>("cefErrorTextBox").Text += Environment.NewLine + Environment.NewLine + "CEF Initialization Error Details: " + Environment.NewLine + CefNetAppImpl.InitErrorMessage;
             }
-        }
+        }*/
     }
 }

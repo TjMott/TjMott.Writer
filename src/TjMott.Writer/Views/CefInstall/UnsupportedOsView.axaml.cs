@@ -10,10 +10,5 @@ namespace TjMott.Writer.Views.CefInstall
         {
             InitializeComponent();
         }
-
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
     }
 }

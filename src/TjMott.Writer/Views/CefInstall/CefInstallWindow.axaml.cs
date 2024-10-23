@@ -9,14 +9,7 @@ namespace TjMott.Writer.Views.CefInstall
         public CefInstallWindow()
         {
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
         }
 
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
     }
 }

@@ -44,9 +44,6 @@ namespace TjMott.Writer.Views
         public PacingWindow()
         {
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
         }
 
         private PacingWindow(IEnumerable<ChapterViewModel> chapters, string title, string id)
@@ -54,9 +51,6 @@ namespace TjMott.Writer.Views
             _chapters = chapters;
             _id = id;
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
             Title = title;
             Closing += PacingWindow_Closing;
             Activated += PacingWindow_Activated;
@@ -81,12 +75,6 @@ namespace TjMott.Writer.Views
             Activated -= PacingWindow_Activated;
             doRender();
         }
-
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
-
         private void doRender()
         {
             Grid grid = this.FindControl<Grid>("chapterGrid");

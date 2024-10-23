@@ -6,7 +6,6 @@ using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
 using Avalonia.Controls;
-using MessageBox.Avalonia;
 using Microsoft.Data.Sqlite;
 using ReactiveUI;
 using TjMott.Writer.Models.SQLiteClasses;

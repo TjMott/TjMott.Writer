@@ -9,14 +9,6 @@ namespace TjMott.Writer.Views
         public EncryptWindow()
         {
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
-        }
-
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
         }
 
         private void EncryptWindow_Activated(object sender, System.EventArgs e)
@@ -47,13 +39,13 @@ namespace TjMott.Writer.Views
 
             if (string.IsNullOrWhiteSpace(p1.Text))
             {
-                await MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Invalid Password", "Your password cannot be empty.", MessageBox.Avalonia.Enums.ButtonEnum.Ok, MessageBox.Avalonia.Enums.Icon.Warning, WindowStartupLocation.CenterOwner).ShowDialog(this);
+                //await MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Invalid Password", "Your password cannot be empty.", MessageBox.Avalonia.Enums.ButtonEnum.Ok, MessageBox.Avalonia.Enums.Icon.Warning, WindowStartupLocation.CenterOwner).ShowDialog(this);
                 p1.Focus();
                 return;
             }
             else if (p1.Text != p2.Text)
             {
-                await MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Password Mismatch", "Your passwords do not match.", MessageBox.Avalonia.Enums.ButtonEnum.Ok, MessageBox.Avalonia.Enums.Icon.Warning, WindowStartupLocation.CenterOwner).ShowDialog(this);
+                //await MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Password Mismatch", "Your passwords do not match.", MessageBox.Avalonia.Enums.ButtonEnum.Ok, MessageBox.Avalonia.Enums.Icon.Warning, WindowStartupLocation.CenterOwner).ShowDialog(this);
                 p1.Text = "";
                 p2.Text = "";
                 p1.Focus();

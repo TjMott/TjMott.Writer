@@ -11,11 +11,6 @@ namespace TjMott.Writer.Controls
             InitializeComponent();
         }
 
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
-
         private void InstallButton_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             CefNetAppImpl.RestartAndInstallCef();

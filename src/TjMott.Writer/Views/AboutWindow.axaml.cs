@@ -11,18 +11,15 @@ namespace TjMott.Writer.Views
         public AboutWindow()
         {
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
         }
 
-        private void InitializeComponent()
+        /*private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
             this.FindControl<TextBlock>("versionTextBox").Text = GetType().Assembly.GetName().Version.ToString();
 
             this.FindControl<TextBlock>("dotNetInfoTextBlock").Text = string.Format("Runtime Info: .NET {0} on {1}.", System.Environment.Version.ToString(), System.Environment.OSVersion.VersionString);
-        }
+        }*/
 
         private void okButton_Click(object sender, RoutedEventArgs args)
         {

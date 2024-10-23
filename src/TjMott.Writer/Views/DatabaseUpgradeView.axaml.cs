@@ -12,19 +12,11 @@ namespace TjMott.Writer.Views
         public DatabaseUpgradeView()
         {
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
         }
 
         private void DatabaseUpgradeView_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             e.Cancel = (DataContext as DatabaseUpgradeViewModel).IsBusy;
-        }
-
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
         }
 
         private void QuitButton_Click(object sender, RoutedEventArgs e)
