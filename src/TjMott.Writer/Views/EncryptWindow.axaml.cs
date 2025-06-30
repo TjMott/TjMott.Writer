@@ -34,26 +34,23 @@ namespace TjMott.Writer.Views
 
         private async void confirm()
         {
-            TextBox p1 = this.FindControl<TextBox>("passwordBox");
-            TextBox p2 = this.FindControl<TextBox>("confirmPasswordBox");
-
-            if (string.IsNullOrWhiteSpace(p1.Text))
+            if (string.IsNullOrWhiteSpace(passwordBox.Text))
             {
                 //await MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Invalid Password", "Your password cannot be empty.", MessageBox.Avalonia.Enums.ButtonEnum.Ok, MessageBox.Avalonia.Enums.Icon.Warning, WindowStartupLocation.CenterOwner).ShowDialog(this);
-                p1.Focus();
+                passwordBox.Focus();
                 return;
             }
-            else if (p1.Text != p2.Text)
+            else if (passwordBox.Text != confirmPasswordBox.Text)
             {
                 //await MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Password Mismatch", "Your passwords do not match.", MessageBox.Avalonia.Enums.ButtonEnum.Ok, MessageBox.Avalonia.Enums.Icon.Warning, WindowStartupLocation.CenterOwner).ShowDialog(this);
-                p1.Text = "";
-                p2.Text = "";
-                p1.Focus();
+                passwordBox.Text = "";
+                confirmPasswordBox.Text = "";
+                passwordBox.Focus();
                 return;
             }
             else
             {
-                Close(p1.Text);
+                Close(passwordBox.Text);
             }
         }
         

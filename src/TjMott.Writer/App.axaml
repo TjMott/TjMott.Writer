@@ -1,17 +1,17 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="using:TjMott.Writer"
-             x:Class="TjMott.Writer.App">
+             x:Class="TjMott.Writer.App"
+			 RequestedThemeVariant="Light">
     <Application.DataTemplates>
         <local:ViewLocator/>
     </Application.DataTemplates>
 
     <Application.Styles>
-		<StyleInclude Source="avares://Avalonia.Themes.Default/DefaultTheme.xaml"/>
-		<StyleInclude Source="avares://Avalonia.Themes.Default/Accents/BaseLight.xaml"/>
-		<StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Default.xaml"/>
+		<FluentTheme />
+		
+		<StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
 
-		<FluentTheme Mode="Light"/>
 		<Style Selector="Window">
 			<Setter Property="Icon" Value="avares://TjMott.Writer/TjMott.Writer.ico" />
 		</Style>
@@ -33,7 +33,7 @@
 					<ControlTemplate>
 						<Border>
 							<StackPanel>
-								<ContentPresenter TextBlock.FontWeight="Bold" Content="{TemplateBinding Header}" />
+								<ContentPresenter Content="{TemplateBinding Header}" />
 								<Border
                                     BorderBrush="{TemplateBinding Background}"
                                     BorderThickness="1"

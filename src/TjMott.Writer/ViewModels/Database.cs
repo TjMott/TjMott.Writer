@@ -225,7 +225,7 @@ namespace TjMott.Writer.ViewModels
                 Universes.Add(uni);
 
                 if (Universes.Count == 1)
-                    SelectUniverse(uni);
+                    await SelectUniverse(uni);
             }
         }
 

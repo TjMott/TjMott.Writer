@@ -6,7 +6,6 @@
 		xmlns:views="clr-namespace:TjMott.Writer.Views"
         x:Class="TjMott.Writer.Views.ExportToWordWindow"
 		WindowStartupLocation="CenterScreen"
-		Closing="ExportToWordWindow_Closing"
         Title="ExportToWordWindow">
 	<Grid>
 		<views:ExportToWordConfigView IsVisible="{Binding ConfigViewVisible}" />

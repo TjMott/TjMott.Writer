@@ -8,7 +8,6 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="TjMott.Writer.Views.MainWindow"
 		WindowStartupLocation="CenterScreen"
-		Closing="Window_Closing"
         Title="TJ Mott's Writer" Height="450" Width="800">
 	
 	<Grid>
@@ -29,7 +28,7 @@
 			</MenuItem>
 			<MenuItem Header="Universe">
 				<MenuItem Header="Create Universe" Command="{Binding Database.CreateUniverseCommand}" CommandParameter="{Binding $parent[Window]}" />
-				<MenuItem x:Name="selectUniverseMenu" Header="Select Universe" Items="{Binding UniverseMenuItems}">
+				<MenuItem x:Name="selectUniverseMenu" Header="Select Universe" ItemsSource="{Binding UniverseMenuItems}">
 					<MenuItem.Styles>
 						<Style Selector="#selectUniverseMenu MenuItem">
 							<Setter Property="Icon">
@@ -54,13 +53,18 @@
 				<Separator />
 				<MenuItem Header="Spellcheck Dictionary" />
 			</MenuItem>
-			<MenuItem x:Name="windowsMenu" Header="Windows" Items="{Binding OpenWindowsViewModel.AllWindows}">
+			<MenuItem x:Name="windowsMenu" Header="Windows" ItemsSource="{Binding OpenWindowsViewModel.AllWindows}">
 				<MenuItem.Styles>
 					<Style Selector="#windowsMenu MenuItem">
 						<Setter Property="Header" Value="{Binding Name}" />
 						<Setter Property="Command" Value="{Binding Activate}" />
 					</Style>
 				</MenuItem.Styles>
+			</MenuItem>
+			<MenuItem Header="Theme">
+				<CheckBox IsChecked="{Binding UseDefaultTheme}" Content="Default" />
+				<CheckBox IsChecked="{Binding UseLightTheme}" Content="Light" />
+				<CheckBox IsChecked="{Binding UseDarkTheme}" Content="Dark" />
 			</MenuItem>
 			<MenuItem Header="Help">
 				<MenuItem Header="Readme" Command="{Binding ShowReadmeWindow}" />

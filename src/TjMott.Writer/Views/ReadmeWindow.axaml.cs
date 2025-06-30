@@ -19,6 +19,7 @@ namespace TjMott.Writer.Views
         public ReadmeWindow()
         {
             InitializeComponent();
+            Closing += ReadmeWindow_Closing;
             OpenWindowsViewModel.Instance.ReadmeWindow = this;
         }
 

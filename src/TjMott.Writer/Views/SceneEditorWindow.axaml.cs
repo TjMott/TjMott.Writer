@@ -48,6 +48,7 @@ namespace TjMott.Writer.Views
         public SceneEditorWindow()
         {
             InitializeComponent();
+            internalInitialize();
         }
 
         #endregion
@@ -56,12 +57,11 @@ namespace TjMott.Writer.Views
         {
             Scene = scene;
             InitializeComponent();
+            internalInitialize();
         }
 
-        /*private void InitializeComponent()
+        private void internalInitialize()
         {
-            AvaloniaXamlLoader.Load(this);
-
             if (!Avalonia.Controls.Design.IsDesignMode)
             {
                 Title = "Editing Scene: " + Scene.Model.Name;
@@ -76,7 +76,7 @@ namespace TjMott.Writer.Views
                 AddHandler(KeyDownEvent, onKeyDown);
                 OpenWindowsViewModel.Instance.EditorWindows.Add(this);
             }
-        }*/
+        }
 
         private async void _manuscriptEditor_EditorLoaded(object sender, EventArgs e)
         {

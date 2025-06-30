@@ -5,7 +5,6 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="TjMott.Writer.Views.DatabaseUpgradeView"
 		WindowStartupLocation="CenterOwner" CanResize="False"
-		Closing="DatabaseUpgradeView_Closing"
         Title="Database Upgrade" Height="250" Width="500">
 	<Grid RowDefinitions="Auto,*,Auto">
 		<TextBlock Text="Database Upgrade Required" Margin="10" FontSize="24" />

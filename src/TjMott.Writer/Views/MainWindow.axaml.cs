@@ -10,6 +10,7 @@ namespace TjMott.Writer.Views
         public MainWindow()
         {
             InitializeComponent();
+            Closing += Window_Closing;
 
             Width = AppSettings.Default.mainWindowWidth;
             Height = AppSettings.Default.mainWindowHeight;

@@ -2,7 +2,6 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using TjMott.Writer.ViewModels;
 
 namespace TjMott.Writer.Views
@@ -12,6 +11,7 @@ namespace TjMott.Writer.Views
         public DatabaseUpgradeView()
         {
             InitializeComponent();
+            Closing += DatabaseUpgradeView_Closing;
         }
 
         private void DatabaseUpgradeView_Closing(object sender, System.ComponentModel.CancelEventArgs e)

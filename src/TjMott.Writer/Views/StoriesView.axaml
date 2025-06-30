@@ -12,7 +12,7 @@
 		</Grid.ColumnDefinitions>
 
 		<Border BorderThickness="1" BorderBrush="DarkGray">
-			<TreeView Items="{Binding SubItems}" SelectedItem="{Binding SelectedTreeViewItem}">
+			<TreeView ItemsSource="{Binding SubItems}" SelectedItem="{Binding SelectedTreeViewItem}">
 				<TreeView.Resources>
 					<ContextMenu x:Key="categoryContextMenu">
 						<MenuItem Header="Rename Category" Command="{Binding RenameCommand}" CommandParameter="{Binding $parent[Window]}" />

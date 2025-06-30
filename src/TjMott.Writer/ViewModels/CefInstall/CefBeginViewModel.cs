@@ -2,10 +2,6 @@
 using Avalonia.Controls.ApplicationLifetimes;
 using CefNet;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TjMott.Writer.ViewModels.CefInstall
 {

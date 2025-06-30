@@ -1,14 +1,12 @@
 ﻿using Avalonia.Controls;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TjMott.Writer.ViewModels
 {
     public static class FileDialogFilters
     {
+#pragma warning disable CS0618 // Type or member is obsolete
         public static FileDialogFilter DatabaseFilter
         {
             get
@@ -16,5 +14,6 @@ namespace TjMott.Writer.ViewModels
                 return new FileDialogFilter() { Name = "Writer Database (*.wdb)", Extensions = new List<string>() { "wdb" } };
             }
         }
+#pragma warning restore CS0618 // Type or member is obsolete
     }
 }

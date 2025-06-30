@@ -14,7 +14,7 @@ namespace TjMott.Writer
         {
             get
             {
-                return "cef_binary_102.0.9+g1c5e658+chromium-102.0.5005.63";
+                return "cef_binary_105.3.28+g002805e+chromium-105.0.5195.54";
             }
         }
         internal static string CefDownloadUrl

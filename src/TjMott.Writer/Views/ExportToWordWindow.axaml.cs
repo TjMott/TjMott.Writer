@@ -36,6 +36,7 @@ namespace TjMott.Writer.Views
         public ExportToWordWindow()
         {
             InitializeComponent();
+            Closing += ExportToWordWindow_Closing;
         }
 
         public ExportToWordWindow(IExportToWordDocument itemToExport)

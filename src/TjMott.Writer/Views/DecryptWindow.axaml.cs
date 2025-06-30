@@ -38,7 +38,11 @@ namespace TjMott.Writer.Views
 
             if (string.IsNullOrWhiteSpace(p1.Text))
             {
-                await MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Invalid Password", "Your password cannot be empty.", MessageBox.Avalonia.Enums.ButtonEnum.Ok, MessageBox.Avalonia.Enums.Icon.Warning, WindowStartupLocation.CenterOwner).ShowDialog(this);
+                await MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard("Invalid Password",
+                    "Your password cannot be empty.",
+                    MsBox.Avalonia.Enums.ButtonEnum.Ok,
+                    MsBox.Avalonia.Enums.Icon.Warning,
+                    WindowStartupLocation.CenterOwner).ShowWindowDialogAsync(this);
                 p1.Focus();
                 return;
             }

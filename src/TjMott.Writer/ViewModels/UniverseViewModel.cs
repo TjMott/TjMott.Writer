@@ -382,11 +382,14 @@ namespace TjMott.Writer.ViewModels
             ExportToWordWindow.ShowExportWindow(item);           
         }
 
-        public async Task ShowWordCount(Window owner)
+        public async Task ShowWordCount(Window dialogOwner)
         {
             IGetWordCount item = SelectedTreeViewItem as IGetWordCount;
-            var dialog = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Word Count", string.Format("Word Count: {0}", item.GetWordCount()), MessageBox.Avalonia.Enums.ButtonEnum.Ok, MessageBox.Avalonia.Enums.Icon.Info);
-            await dialog.ShowDialog(owner);
+            var dialog = MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard("Word Count", 
+                string.Format("Word Count: {0}", item.GetWordCount()), 
+                MsBox.Avalonia.Enums.ButtonEnum.Ok, 
+                MsBox.Avalonia.Enums.Icon.Info);
+            await dialog.ShowWindowDialogAsync(dialogOwner);
         }
     }
 }

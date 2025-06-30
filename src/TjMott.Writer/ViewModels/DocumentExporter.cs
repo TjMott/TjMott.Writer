@@ -52,7 +52,7 @@ namespace TjMott.Writer.ViewModels
             {
                 string colorString = attributes["color"].Value<string>();
                 Color c = Color.Parse(colorString);
-                format.FontColor = System.Drawing.Color.FromArgb(c.A, c.R, c.G, c.B);
+                format.FontColor = new Xceed.Drawing.Color(new SkiaSharp.SKColor(c.R, c.G, c.B, c.A));
             }
 
             if (attributes.ContainsKey("script"))

@@ -5,7 +5,6 @@
 		xmlns:md="clr-namespace:Markdown.Avalonia;assembly=Markdown.Avalonia"
         mc:Ignorable="d" Width="800" Height="1000"
 		WindowStartupLocation="CenterScreen"
-		Closing="ReadmeWindow_Closing"
         x:Class="TjMott.Writer.Views.ReadmeWindow"
         Title="Readme">
 	<Grid RowDefinitions="Auto,*,Auto" Margin="5">
