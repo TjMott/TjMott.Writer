@@ -21,7 +21,7 @@ namespace TjMott.Writer
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                if (InstallCef)
+                /*if (InstallCef)
                 {
                     // Set file cookie used to tell parent process we're up and running,
                     // and we're past the pkexec/UAC prompts.
@@ -30,7 +30,7 @@ namespace TjMott.Writer
                     mainWindow.DataContext = new CefInstallViewModel();
                     desktop.MainWindow = mainWindow;
                 }
-                else
+                else*/
                 {
                     MainWindow mainWindow = new MainWindow();
                     MainWindowViewModel vm = new MainWindowViewModel(mainWindow);

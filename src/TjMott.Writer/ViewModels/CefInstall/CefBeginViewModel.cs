@@ -1,10 +1,10 @@
 ﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
-using CefNet;
 using System;
 
 namespace TjMott.Writer.ViewModels.CefInstall
 {
+#if FALSE
     public class CefBeginViewModel : ViewModelBase
     {
         public void Continue()
@@ -35,4 +35,5 @@ namespace TjMott.Writer.ViewModels.CefInstall
             (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime).Shutdown();
         }
     }
+#endif
 }

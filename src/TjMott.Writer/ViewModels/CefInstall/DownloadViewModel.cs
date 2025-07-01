@@ -8,13 +8,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
-using CefNet;
 using ICSharpCode.SharpZipLib.BZip2;
 using ICSharpCode.SharpZipLib.Tar;
 using ReactiveUI;
 
 namespace TjMott.Writer.ViewModels.CefInstall
 {
+#if FALSE
     public class DownloadViewModel : ViewModelBase
     {
         private string _statusMessage = "";
@@ -202,4 +202,5 @@ namespace TjMott.Writer.ViewModels.CefInstall
             _cancelToken.Cancel();
         }
     }
+#endif
 }

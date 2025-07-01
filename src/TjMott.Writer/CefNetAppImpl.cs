@@ -1,6 +1,5 @@
 ﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
-using CefNet;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -8,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace TjMott.Writer
 {
+#if FALSE
     internal class CefNetAppImpl : CefNetApplication
     {
         internal static string ExpectedCefVersion
@@ -326,4 +326,5 @@ namespace TjMott.Writer
             (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime).Shutdown();
         }
     }
+#endif
 }

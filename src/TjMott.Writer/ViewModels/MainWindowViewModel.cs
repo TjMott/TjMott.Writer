@@ -1,7 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using CefNet;
 using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
@@ -95,6 +94,7 @@ namespace TjMott.Writer.ViewModels
                 await Task.Delay(100);
 
             // Check that CEF initialized.
+#if FALSE
             if (!CefNetAppImpl.InitSuccess)
             {
                 if (!CefNetAppImpl.IsCefInstalled)
@@ -133,6 +133,7 @@ namespace TjMott.Writer.ViewModels
                     }
                 }
             }
+#endif
 
             // Check QuillJS hashes.
             // Was nice in theory, but somehow the hashing algorithm is sensitive to newline differences between Windows and Linux even though it operates in byte mode.
@@ -311,7 +312,7 @@ namespace TjMott.Writer.ViewModels
             {
                 if (Database != null)
                     Database.Close();
-                CefNetAppImpl.RestartAndInstallCef();
+                //CefNetAppImpl.RestartAndInstallCef();
             }
         }
     }

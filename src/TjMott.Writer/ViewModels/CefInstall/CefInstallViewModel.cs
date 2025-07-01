@@ -3,6 +3,7 @@ using ReactiveUI;
 
 namespace TjMott.Writer.ViewModels.CefInstall
 {
+#if FALSE
     public class CefInstallViewModel : ViewModelBase
     {
         public static CefInstallViewModel Instance { get; private set; }
@@ -16,4 +17,5 @@ namespace TjMott.Writer.ViewModels.CefInstall
             CurrentViewModel = new CefBeginViewModel();
         }
     }
+#endif
 }

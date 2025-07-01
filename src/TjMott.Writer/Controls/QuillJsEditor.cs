@@ -1,13 +1,13 @@
-﻿using CefNet.Avalonia;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using Xilium.CefGlue.Avalonia;
 
 namespace TjMott.Writer.Controls
 {
-    public class QuillJsEditor : WebView
+    public class QuillJsEditor : AvaloniaCefBrowser
     {
         public class AssetHash
         {
@@ -44,7 +44,19 @@ namespace TjMott.Writer.Controls
 
         public QuillJsEditor()
         {
-            InitialUrl = editor_path;
+            Address = editor_path;
+            UnhandledException += QuillJsEditor_UnhandledException;
+            BrowserInitialized += QuillJsEditor_BrowserInitialized;
+        }
+
+        private void QuillJsEditor_BrowserInitialized()
+        {
+            System.Diagnostics.Debug.WriteLine("Browser initialized.");
+        }
+
+        private void QuillJsEditor_UnhandledException(object sender, Xilium.CefGlue.Common.Events.AsyncUnhandledExceptionEventArgs e)
+        {
+            System.Diagnostics.Debug.WriteLine($"QuillJsEditor exception: {e.Exception}");
         }
 
         public static ObservableCollection<AssetHash> AssetHashes { get; private set; }

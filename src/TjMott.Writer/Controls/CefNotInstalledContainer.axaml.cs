@@ -13,7 +13,7 @@ namespace TjMott.Writer.Controls
 
         private void InstallButton_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            CefNetAppImpl.RestartAndInstallCef();
+            //CefNetAppImpl.RestartAndInstallCef();
         }
     }
 }

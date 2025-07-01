@@ -3,32 +3,23 @@ using Avalonia.ReactiveUI;
 using System;
 using System.IO;
 using System.Reflection;
+using Xilium.CefGlue;
+using Xilium.CefGlue.Common;
 
 namespace TjMott.Writer
 {
     internal class Program
     {
+
+        private static string _cachePath;
+
         // Initialization code. Don't use any Avalonia, third-party APIs or any
         // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
         // yet and stuff might break.
         [STAThread]
         public static void Main(string[] args)
         {
-            // Make sure working directory is set to the EXE's location. This tends to not be the case
-            // on Linux when entering CEF install mode using pkexec.
-            Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-            foreach (var arg in args)
-            {
-                if (arg.Equals("-installcef", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    App.InstallCef = true;
-                }
-            }
-            // Initialize CEF.
-            if (!App.InstallCef)
-            {
-                CefNetAppImpl.Initialize();
-            }
+            AppDomain.CurrentDomain.ProcessExit += delegate { Cleanup(); };
 
             BuildAvaloniaApp()
             .StartWithClassicDesktopLifetime(args);
@@ -38,7 +29,46 @@ namespace TjMott.Writer
         public static AppBuilder BuildAvaloniaApp()
             => AppBuilder.Configure<App>()
                 .UsePlatformDetect()
+                .With(new Win32PlatformOptions())
+                .AfterSetup(_ =>
+                {
+                    // generate a unique cache path to avoid problems when launching more than one process
+                    // https://www.magpcss.org/ceforum/viewtopic.php?f=6&t=19665
+                    _cachePath = Path.Combine(Path.GetTempPath(), "CefGlue_" + Guid.NewGuid().ToString().Replace("-", null));
+                    CefRuntimeLoader.Initialize(new CefSettings()
+                    {
+                        RootCachePath = _cachePath,
+#if WINDOWLESS
+                            // its recommended to leave this off (false), since its less performant and can cause more issues
+                            WindowlessRenderingEnabled = true
+#else
+                        WindowlessRenderingEnabled = false
+#endif
+                    });
+                })
                 .LogToTrace()
                 .UseReactiveUI();
+
+        private static void Cleanup()
+        {
+            CefRuntime.Shutdown(); // must shutdown cef to free cache files (so that cleanup is able to delete files)
+
+            try
+            {
+                var dirInfo = new DirectoryInfo(_cachePath);
+                if (dirInfo.Exists)
+                {
+                    dirInfo.Delete(true);
+                }
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // ignore
+            }
+            catch (IOException)
+            {
+                // ignore
+            }
+        }
     }
 }
