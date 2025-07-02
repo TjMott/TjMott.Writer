@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Xilium.CefGlue.Avalonia;
@@ -45,8 +47,13 @@ namespace TjMott.Writer.Controls
         public QuillJsEditor()
         {
             Address = editor_path;
-            UnhandledException += QuillJsEditor_UnhandledException;
             BrowserInitialized += QuillJsEditor_BrowserInitialized;
+            JavascriptUncaughException += QuillJsEditor_JavascriptUncaughException;
+        }
+
+        private void QuillJsEditor_JavascriptUncaughException(object sender, Xilium.CefGlue.Common.Events.JavascriptUncaughtExceptionEventArgs e)
+        {
+            System.Diagnostics.Debug.WriteLine($"QuillJsEditor exception: {e.Message}");
         }
 
         private void QuillJsEditor_BrowserInitialized()
@@ -54,10 +61,6 @@ namespace TjMott.Writer.Controls
             System.Diagnostics.Debug.WriteLine("Browser initialized.");
         }
 
-        private void QuillJsEditor_UnhandledException(object sender, Xilium.CefGlue.Common.Events.AsyncUnhandledExceptionEventArgs e)
-        {
-            System.Diagnostics.Debug.WriteLine($"QuillJsEditor exception: {e.Exception}");
-        }
 
         public static ObservableCollection<AssetHash> AssetHashes { get; private set; }
 

@@ -37,6 +37,7 @@ namespace TjMott.Writer.ViewModels.Search
 
         public async Task OpenEditor(Window dialogOwner)
         {
+            await Task.Yield();
             NoteDocumentViewModel vm = Owner as NoteDocumentViewModel;
             NoteWindow.ShowEditorWindow(vm);
         }

@@ -70,6 +70,7 @@ namespace TjMott.Writer.ViewModels.Search
 
         public async Task OpenEditor(Window dialogOwner)
         {
+            await Task.Yield();
             if (Owner is SceneViewModel)
             {
                 SceneViewModel vm = Owner as SceneViewModel;

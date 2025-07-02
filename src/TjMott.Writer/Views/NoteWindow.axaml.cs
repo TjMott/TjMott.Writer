@@ -1,11 +1,8 @@
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using TjMott.Writer.Controls;
 using TjMott.Writer.Models.SQLiteClasses;
 using TjMott.Writer.ViewModels;
 
@@ -32,7 +29,6 @@ namespace TjMott.Writer.Views
 
         private NoteDocumentViewModel _noteDocViewModel;
         private Document _document;
-        private QuillJsContainer _documentEditor;
 
         public NoteWindow()
         {
@@ -44,17 +40,16 @@ namespace TjMott.Writer.Views
             DataContext = vm;
             _noteDocViewModel = vm;
             InitializeComponent();
+            internalInitialize();
         }
 
-        /*private void InitializeComponent()
+        private void internalInitialize()
         {
-            AvaloniaXamlLoader.Load(this);
             if (!Avalonia.Controls.Design.IsDesignMode)
             {
                 Title = "Editing Note: " + _noteDocViewModel.Model.Name;
 
-                _documentEditor = this.FindControl<QuillJsContainer>("noteEditor");
-                _documentEditor.EditorLoaded += _documentEditor_EditorLoaded;
+                noteEditor.EditorLoaded += _documentEditor_EditorLoaded;
                 this.Width = AppSettings.Default.editorWindowWidth;
                 this.Height = AppSettings.Default.editorWindowHeight;
                 Closing += NoteWindow_Closing;
@@ -63,39 +58,40 @@ namespace TjMott.Writer.Views
                 AddHandler(KeyDownEvent, onKeyDown);
                 OpenWindowsViewModel.Instance.NotesWindows.Add(this);
             }
-        }*/
+        }
 
         private async void _documentEditor_EditorLoaded(object sender, EventArgs e)
         {
-            _documentEditor.EditorLoaded -= _documentEditor_EditorLoaded;
-            _documentEditor.ZoomLevel = AppSettings.Default.editorZoom;
+            noteEditor.EditorLoaded -= _documentEditor_EditorLoaded;
+            noteEditor.ZoomLevel = AppSettings.Default.editorZoom;
             await _document.LoadAsync();
 
-            _documentEditor.Document = _document;
+            noteEditor.Document = _document;
         }
 
         private async void NoteWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            await Task.Yield(); // Shut up compiler warning for now.
             e.Cancel = true;
-            if (await _documentEditor.HasUnsavedEdits())
+            if (noteEditor.HasUnsavedEdits())
             {
-                /*var msgBox = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Save Before Closing?",
+                var msgBox = MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard("Save Before Closing?",
                     "Your document has unsaved edits. Save before closing?",
-                    MessageBox.Avalonia.Enums.ButtonEnum.YesNoCancel,
-                    MessageBox.Avalonia.Enums.Icon.Question,
+                    MsBox.Avalonia.Enums.ButtonEnum.YesNoCancel,
+                    MsBox.Avalonia.Enums.Icon.Question,
                     WindowStartupLocation.CenterOwner);
-                var msgBoxResult = await msgBox.ShowDialog(this);
-                if (msgBoxResult == MessageBox.Avalonia.Enums.ButtonResult.Yes)
+                var msgBoxResult = await msgBox.ShowWindowDialogAsync(this);
+                if (msgBoxResult == MsBox.Avalonia.Enums.ButtonResult.Yes)
                 {
                     setStatusText("Saving document...", 0);
-                    await _documentEditor.Save();
+                    await noteEditor.Save();
                     setStatusText("Document saved.", 0);
                 }
-                else if (msgBoxResult == MessageBox.Avalonia.Enums.ButtonResult.Cancel)
+                else if (msgBoxResult == MsBox.Avalonia.Enums.ButtonResult.Cancel)
                 {
-                    setStatusText("Close cancelled.", 5000);
+                    setStatusText("Close canceled.", 5000);
                     return;
-                }*/
+                }
             }
 
             Closing -= NoteWindow_Closing;
@@ -103,7 +99,7 @@ namespace TjMott.Writer.Views
                 _windows.Remove(_noteDocViewModel.Model.id);
             AppSettings.Default.editorWindowWidth = this.Width;
             AppSettings.Default.editorWindowHeight = this.Height;
-            AppSettings.Default.editorZoom = _documentEditor.ZoomLevel;
+            AppSettings.Default.editorZoom = noteEditor.ZoomLevel;
             AppSettings.Default.Save();
 
             if (OpenWindowsViewModel.Instance.NotesWindows.Contains(this))
@@ -116,7 +112,7 @@ namespace TjMott.Writer.Views
         {
             if (_document.IsUnlocked)
             {
-                _documentEditor.Print(string.Format("Note: {0}", _noteDocViewModel.Model.Name));
+                noteEditor.Print(string.Format("Note: {0}", _noteDocViewModel.Model.Name));
             }
         }
 
@@ -125,18 +121,18 @@ namespace TjMott.Writer.Views
             if (e.Key == Avalonia.Input.Key.S && e.KeyModifiers == Avalonia.Input.KeyModifiers.Control)
             {
                 setStatusText("Saving document...", 0);
-                await _documentEditor.Save();
+                await noteEditor.Save();
                 setStatusText("Document saved.", 5000);
             }
         }
 
         private async void setStatusText(string text, int timeoutMillis)
         {
-            this.FindControl<TextBlock>("statusBarTextBlock").Text = text;
+            statusBarTextBlock.Text = text;
             if (timeoutMillis > 0)
             {
                 await Task.Delay(timeoutMillis);
-                this.FindControl<TextBlock>("statusBarTextBlock").Text = "";
+                statusBarTextBlock.Text = "";
             }
         }
     }

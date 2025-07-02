@@ -4,8 +4,10 @@ using Avalonia.Interactivity;
 using Avalonia.Threading;
 using SixLabors.Fonts;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TjMott.Writer.Models.SQLiteClasses;
@@ -62,10 +64,13 @@ namespace TjMott.Writer.Controls
                 SetAndRaise(AllowUserEditingProperty, ref _allowUserEditing, value);
                 if (_editor != null)
                 {
-                    _ = setIsReadOnly(!value);
+                    setIsReadOnly(!value);
                 }
             }
         }
+
+        private DocumentInterop _documentInterop;
+        private const string DOCUMENT_INTEROP_KEY = "DocumentInterop"; // Must match value in JS code.
 
         public QuillJsContainer()
         {
@@ -77,12 +82,17 @@ namespace TjMott.Writer.Controls
         {
             //if (CefNetAppImpl.InitSuccess)
             {
+                _documentInterop = new DocumentInterop();
+                _documentInterop.ReadyToInitialize += _documentInterop_ReadyToInitialize;
+                _documentInterop.EditorLoaded += _documentInterop_EditorLoaded;
+                _documentInterop.TextChanged += _documentInterop_TextChanged;
+
                 _editor = new QuillJsEditor();
-                _editor.TitleChanged += _editor_DocumentTitleChanged;
+                _editor.RegisterJavascriptObject(_documentInterop, DOCUMENT_INTEROP_KEY, DocumentInterop.AsyncCallNativeMethod);
                 
                 webViewContainer.Children.Add(_editor);
                 zoomSlider.PropertyChanged += zoomSlider_PropertyChanged;
-                _editor.ShowDeveloperTools();
+                
             }
             /*else if (!CefNetAppImpl.IsCefInstalled)
             {
@@ -94,87 +104,90 @@ namespace TjMott.Writer.Controls
             }*/
         }
 
+        private async void _documentInterop_TextChanged(object sender, EventArgs e)
+        {
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                if (TextChanged != null)
+                    TextChanged(this, new EventArgs());
+                int wordCount = GetWordCount();
+                wordCountTextBlock.Text = string.Format("Word Count: {0}", wordCount);
+            });
+        }
+
+        private async void _documentInterop_EditorLoaded(object sender, EventArgs e)
+        {
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                IsEnabled = true;
+                setIsReadOnly(true);
+                if (_document != null)
+                    loadDocument();
+                if (EditorLoaded != null)
+                    EditorLoaded(this, new EventArgs());
+            });
+        }
+
+        private void _documentInterop_ReadyToInitialize(object sender, EventArgs e)
+        {
+            if (!_isInitialized)
+            {
+                initEditor();
+                setTextZoom(ZoomLevel);
+            }
+        }
+
         private void zoomSlider_PropertyChanged(object sender, AvaloniaPropertyChangedEventArgs e)
         {
             if (e.Property.Name == "Value")
             {
                 _zoomLevel = (double)e.NewValue;
                 if (_editor != null)
-                    _ = setTextZoom(_zoomLevel);
+                    setTextZoom(_zoomLevel);
             }
         }
 
-        private async void _editor_DocumentTitleChanged(object sender, string title)
+        /*public async Task<string> GetText()
         {
-            // Kind of a hack but it works. The easiest way to get an event from the JS side to the C# side is to change
-            // the HTML document title, because that is already routed as a C# event. And the user never sees
-            // the HTML title anyway.
-            System.Diagnostics.Debug.WriteLine($"Browser title changed to {title}.");
-            if (title == "readyForInit" && !_isInitialized)
-            {
-                await initEditor();
-                await setTextZoom(ZoomLevel);
-            }
-            else if (title == "loaded")
-            {
-                await Dispatcher.UIThread.InvokeAsync(async () =>
-                {
-                    IsEnabled = true;
-                    await setIsReadOnly(true);
-                    if (_document != null)
-                        loadDocument();
-                    if (EditorLoaded != null)
-                        EditorLoaded(this, new EventArgs());
-                });
-            }
-            else if (title == "TextChanged")
-            {
-                await Dispatcher.UIThread.InvokeAsync(async () =>
-                {
-                    if (TextChanged != null)
-                        TextChanged(this, new EventArgs());
-                    int wordCount = await GetWordCount();
-                    wordCountTextBlock.Text = string.Format("Word Count: {0}", wordCount);
-                });
-            }
-        }
-
-        public async Task<string> GetText()
-        {
-            return await _editor.EvaluateJavaScript<string>("editor.getText();");
+            return await _editor.EvaluateJavaScript<string>("return window.editor.getText();");
         }
 
         public async Task<object> GetJsonDocument()
         {
-            return await _editor.EvaluateJavaScript<string>("editor.getContents();");
+            return await _editor.EvaluateJavaScript<string>("return window.editor.getContents();");
         }
 
         public async Task<string> GetJsonText()
         {
-            return await _editor.EvaluateJavaScript<string>("window.JSON.stringify(editor.getContents(), null, 4);");
-        }
+            return await _editor.EvaluateJavaScript<string>("return window.JSON.stringify(window.editor.getContents(), null, 4);");
+        }*/
 
-        public async void SetJsonDocument(dynamic json)
+        public void SetJsonDocument(dynamic jsonObject)
         {
             /*dynamic scriptableObject = await _editor.GetMainFrame().GetScriptableObjectAsync(CancellationToken.None).ConfigureAwait(false);
             dynamic window = scriptableObject.window;
             dynamic quill = window.editor;
             quill.setContents(json);*/
         }
+        
 
-        public async Task SetJsonText(string json)
+        public void SetJsonText(string jsonString)
         {
-            // Ugh. Escaping things.
-            // Match double quotes not preceded by a backslash, and add a backslash.
-            // TODO: This doesn't work yet. Content does not show in the Quill control.
-            Regex quoteEscaper = new Regex("(?<!\\\\)\"");
-            json = quoteEscaper.Replace(json, "\\\"");
-            _editor.ExecuteJavaScript(string.Format("window.editor.setContents(window.JSON.parse(\"{0}\"));", json));
+            // Update data in the interop object.
+            _documentInterop.SetDocumentJson(jsonString);
+
+            // Tell web app to retrieve and load the new document.
+            string script = "(function() {" +
+                DOCUMENT_INTEROP_KEY + ".getDocumentJson().then(result => window.editor.setContents(window.JSON.parse(result)));" +
+                "})()";
+
+            _editor.ExecuteJavaScript(script);
         }
 
-        public async Task<int> GetWordCount()
+        public int GetWordCount()
         {
-            string text = await GetText();
+            string text = _documentInterop.GetDocumentText();
+            if (string.IsNullOrWhiteSpace(text)) return 0;
             string[] words = text.Split(new string[] { " ", "\r", "\n", "\t" }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             return words.Length;
         }
@@ -191,10 +204,10 @@ namespace TjMott.Writer.Controls
             }
         }
 
-        private async Task initEditor()
+        private void initEditor()
         {
             _isInitialized = true;
-            await setTextZoom(ZoomLevel);
+            setTextZoom(ZoomLevel);
 
             // Enumerate installed fonts, add them to the Quill editor.
             FontCollection col = new FontCollection();
@@ -208,7 +221,7 @@ namespace TjMott.Writer.Controls
             _editor.ExecuteJavaScript("window.initEditor();");
         }
 
-        private async Task setIsReadOnly(bool isReadOnly)
+        private void setIsReadOnly(bool isReadOnly)
         {
             if (isReadOnly)
                 _editor.ExecuteJavaScript("window.editor.disable();");
@@ -219,7 +232,7 @@ namespace TjMott.Writer.Controls
 
         public async Task Save()
         {
-            Document.PublicJson = await GetJsonText();
+            Document.PublicJson = _documentInterop.GetDocumentJson();
             if (Document.IsEncrypted)
             {
                 Document.PlainText = "";
@@ -227,8 +240,8 @@ namespace TjMott.Writer.Controls
             }
             else
             {
-                Document.PlainText = await GetText();
-                Document.WordCount = await GetWordCount();
+                Document.PlainText = _documentInterop.GetDocumentText();
+                Document.WordCount = GetWordCount();
             }
             await Document.SaveAsync().ConfigureAwait(false);
         }
@@ -236,12 +249,12 @@ namespace TjMott.Writer.Controls
         public async void Revert()
         {
             await Document.LoadAsync().ConfigureAwait(false);
-            await SetJsonText(Document.PublicJson).ConfigureAwait(false);
+            SetJsonText(Document.PublicJson);
         }
 
         public async void Lock()
         {
-            if (await HasUnsavedEdits())
+            if (HasUnsavedEdits())
             {
                 var msgBox = MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard("Save Before Locking?",
                     "Your document has unsaved edits. Save before locking? You will lose your changes if you answer no!",
@@ -264,6 +277,7 @@ namespace TjMott.Writer.Controls
 
         public async void Print(string title)
         {
+            await Task.Yield(); // Shut up compiler warnings for now.
             /*if (_editor != null && _document.IsUnlocked)
             {
                 dynamic scriptableObject = await _editor.GetMainFrame().GetScriptableObjectAsync(CancellationToken.None).ConfigureAwait(false);
@@ -277,7 +291,7 @@ namespace TjMott.Writer.Controls
 
         public async void Encrypt()
         {
-            if (await HasUnsavedEdits())
+            if (HasUnsavedEdits())
             {
                 var msgBox = MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard("Document is Unsaved",
                         "Your document has unsaved changes. Save these changes before encrypting?",
@@ -335,11 +349,11 @@ namespace TjMott.Writer.Controls
             }
         }
 
-        public async Task<bool> HasUnsavedEdits()
+        public bool HasUnsavedEdits()
         {
             if (Document.IsUnlocked)
             {
-                string editorCopy = await GetJsonText().ConfigureAwait(true);
+                string editorCopy = _documentInterop.GetDocumentJson();
                 return editorCopy != Document.PublicJson;
             }
             return false;
@@ -382,28 +396,28 @@ namespace TjMott.Writer.Controls
             }
         }
 
-        private async void setUnlockedState()
+        private void setUnlockedState()
         {
             passwordTextBox.Text = "";
             aesPasswordContainer.IsVisible = false;
             webViewContainer.IsVisible = true;
-            await SetJsonText(Document.PublicJson);
+            SetJsonText(Document.PublicJson);
             if (AllowUserEditing)
-                await setIsReadOnly(false);
+                setIsReadOnly(false);
             else
-                await setIsReadOnly(true);
+                setIsReadOnly(true);
         }
 
-        private async void setLockedState()
+        private void setLockedState()
         {
             aesPasswordContainer.IsVisible = true;
             webViewContainer.IsVisible = false;
             passwordTextBox.Focus();
-            await setIsReadOnly(true);
-            await SetJsonText(Document.PublicJson);
+            setIsReadOnly(true);
+            SetJsonText(Document.PublicJson);
         }
 
-        private async Task setTextZoom(double zoom)
+        private void setTextZoom(double zoom)
         {
             _editor.ExecuteJavaScript(string.Format("window.setTextZoom(\"{0}\");", zoom.ToString("P")));
             Dispatcher.UIThread.Post(() => zoomTextBlock.Text = string.Format("Zoom: {0:P0}", zoom));
@@ -418,6 +432,5 @@ namespace TjMott.Writer.Controls
             }
             return parent as Window;
         }
-        
     }
 }

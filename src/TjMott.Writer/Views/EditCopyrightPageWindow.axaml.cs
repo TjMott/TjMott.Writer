@@ -1,11 +1,9 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using TjMott.Writer.Controls;
 using TjMott.Writer.Models.SQLiteClasses;
 using TjMott.Writer.ViewModels;
 
@@ -37,7 +35,6 @@ namespace TjMott.Writer.Views
         #endregion
 
         private Document _copyrightPage;
-        private QuillJsContainer _manuscriptEditor;
         public StoryViewModel Story { get; private set; }
 
         #region Unused constructor -- still needed to compile
@@ -51,18 +48,16 @@ namespace TjMott.Writer.Views
         {
             Story = story;
             InitializeComponent();
+            internalInitialize();
         }
 
-        /*private void InitializeComponent()
+        private void internalInitialize()
         {
-            AvaloniaXamlLoader.Load(this);
-
             if (!Avalonia.Controls.Design.IsDesignMode)
             {
                 Title = "Copyright Page: " + Story.Model.Name;
 
-                _manuscriptEditor = this.FindControl<QuillJsContainer>("manuscriptEditor");
-                _manuscriptEditor.EditorLoaded += _manuscriptEditor_EditorLoaded;
+                manuscriptEditor.EditorLoaded += _manuscriptEditor_EditorLoaded;
                 this.Width = AppSettings.Default.editorWindowWidth;
                 this.Height = AppSettings.Default.editorWindowHeight;
                 Closing += EditCopyrightPageWindow_Closing;
@@ -71,38 +66,39 @@ namespace TjMott.Writer.Views
                 AddHandler(KeyDownEvent, onKeyDown);
                 OpenWindowsViewModel.Instance.CopyrightWindows.Add(this);
             }
-        }*/
+        }
 
         private async void _manuscriptEditor_EditorLoaded(object sender, EventArgs e)
         {
-            _manuscriptEditor.EditorLoaded -= _manuscriptEditor_EditorLoaded;
-            _manuscriptEditor.ZoomLevel = AppSettings.Default.editorZoom;
+            manuscriptEditor.EditorLoaded -= _manuscriptEditor_EditorLoaded;
+            manuscriptEditor.ZoomLevel = AppSettings.Default.editorZoom;
             await _copyrightPage.LoadAsync();
-            _manuscriptEditor.Document = _copyrightPage;
+            manuscriptEditor.Document = _copyrightPage;
         }
 
         private async void EditCopyrightPageWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            await Task.Yield(); // Shut up compiler warning for now.
             e.Cancel = true;
-            if (await _manuscriptEditor.HasUnsavedEdits())
+            if (manuscriptEditor.HasUnsavedEdits())
             {
-                /*var msgBox = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Save Before Closing?",
+                var msgBox = MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard("Save Before Closing?",
                     "Your copyright page has unsaved edits. Save before closing?",
-                    MessageBox.Avalonia.Enums.ButtonEnum.YesNoCancel,
-                    MessageBox.Avalonia.Enums.Icon.Question,
+                    MsBox.Avalonia.Enums.ButtonEnum.YesNoCancel,
+                    MsBox.Avalonia.Enums.Icon.Question,
                     WindowStartupLocation.CenterOwner);
-                var msgBoxResult = await msgBox.ShowDialog(this);
-                if (msgBoxResult == MessageBox.Avalonia.Enums.ButtonResult.Yes)
+                var msgBoxResult = await msgBox.ShowWindowDialogAsync(this);
+                if (msgBoxResult == MsBox.Avalonia.Enums.ButtonResult.Yes)
                 {
                     setStatusText("Saving copyright page...", 0);
-                    await _manuscriptEditor.Save();
+                    await manuscriptEditor.Save();
                     setStatusText("Copyright page saved.", 0);
                 }
-                else if (msgBoxResult == MessageBox.Avalonia.Enums.ButtonResult.Cancel)
+                else if (msgBoxResult == MsBox.Avalonia.Enums.ButtonResult.Cancel)
                 {
-                    setStatusText("Close cancelled.", 5000);
+                    setStatusText("Close canceled.", 5000);
                     return;
-                }*/
+                }
             }
 
             Closing -= EditCopyrightPageWindow_Closing;
@@ -110,7 +106,7 @@ namespace TjMott.Writer.Views
                 _windows.Remove(Story.Model.id);
             AppSettings.Default.editorWindowWidth = this.Width;
             AppSettings.Default.editorWindowHeight = this.Height;
-            AppSettings.Default.editorZoom = _manuscriptEditor.ZoomLevel;
+            AppSettings.Default.editorZoom = manuscriptEditor.ZoomLevel;
             AppSettings.Default.Save();
 
             if (OpenWindowsViewModel.Instance.CopyrightWindows.Contains(this))
@@ -123,7 +119,7 @@ namespace TjMott.Writer.Views
         {
             if (_copyrightPage.IsUnlocked)
             {
-                _manuscriptEditor.Print(string.Format("Copyright Page: {0}", Story.Model.Name));
+                manuscriptEditor.Print(string.Format("Copyright Page: {0}", Story.Model.Name));
             }
         }
 
@@ -132,18 +128,18 @@ namespace TjMott.Writer.Views
             if (e.Key == Avalonia.Input.Key.S && e.KeyModifiers == Avalonia.Input.KeyModifiers.Control)
             {
                 setStatusText("Saving copyright page...", 0);
-                await _manuscriptEditor.Save();
+                await manuscriptEditor.Save();
                 setStatusText("Copyright page saved.", 5000);
             }
         }
 
         private async void setStatusText(string text, int timeoutMillis)
         {
-            this.FindControl<TextBlock>("statusBarTextBlock").Text = text;
+            statusBarTextBlock.Text = text;
             if (timeoutMillis > 0)
             {
                 await Task.Delay(timeoutMillis);
-                this.FindControl<TextBlock>("statusBarTextBlock").Text = "";
+                statusBarTextBlock.Text = "";
             }
         }
     }

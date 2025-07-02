@@ -92,7 +92,7 @@ namespace TjMott.Writer.ViewModels
 
         public override async Task SetCategories(Window dialogOwner)
         {
-
+            await Task.Yield();
         }
     }
 }

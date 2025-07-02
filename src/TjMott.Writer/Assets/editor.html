@@ -214,9 +214,10 @@
                 });
             }
 
-            // Hack -- communicate with C# layer using the document title.
-            document.title = "blank";
-            document.title = "TextChanged";
+            // Signal C# layer that the text has changed.
+            DocumentInterop.setDocumentText(window.editor.getText());
+            DocumentInterop.setDocumentJson(window.editor.getContents());
+            DocumentInterop.raiseTextChangedEvent();
         }
 
         function showToolbar(visible) {
@@ -293,7 +294,8 @@
             window.editor.on('text-change', quillTextChanged);
 
             // Hack -- communicate with C# layer using the document title.
-            document.title = "loaded";
+            //document.title = "loaded";
+            DocumentInterop.raiseEditorLoadedEvent();
         }
 
         // Uncomment to load/test in a normal browser window.
@@ -304,7 +306,8 @@
         //initEditor();
 
         // Signal C# that we're ready to create Quill
-        document.title = "readyForInit";
+        //document.title = "readyForInit";
+        DocumentInterop.raiseReadyToInitEvent();
 	
 	</script>
 </body>

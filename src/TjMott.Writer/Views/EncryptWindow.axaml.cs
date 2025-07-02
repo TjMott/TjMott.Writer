@@ -36,13 +36,21 @@ namespace TjMott.Writer.Views
         {
             if (string.IsNullOrWhiteSpace(passwordBox.Text))
             {
-                //await MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Invalid Password", "Your password cannot be empty.", MessageBox.Avalonia.Enums.ButtonEnum.Ok, MessageBox.Avalonia.Enums.Icon.Warning, WindowStartupLocation.CenterOwner).ShowDialog(this);
+                await MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard("Invalid Password", 
+                    "Your password cannot be empty.", 
+                    MsBox.Avalonia.Enums.ButtonEnum.Ok, 
+                    MsBox.Avalonia.Enums.Icon.Warning, 
+                    WindowStartupLocation.CenterOwner).ShowWindowDialogAsync(this);
                 passwordBox.Focus();
                 return;
             }
             else if (passwordBox.Text != confirmPasswordBox.Text)
             {
-                //await MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Password Mismatch", "Your passwords do not match.", MessageBox.Avalonia.Enums.ButtonEnum.Ok, MessageBox.Avalonia.Enums.Icon.Warning, WindowStartupLocation.CenterOwner).ShowDialog(this);
+                await MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard("Password Mismatch",
+                    "Your passwords do not match.",
+                    MsBox.Avalonia.Enums.ButtonEnum.Ok,
+                    MsBox.Avalonia.Enums.Icon.Warning,
+                    WindowStartupLocation.CenterOwner).ShowWindowDialogAsync(this);
                 passwordBox.Text = "";
                 confirmPasswordBox.Text = "";
                 passwordBox.Focus();
