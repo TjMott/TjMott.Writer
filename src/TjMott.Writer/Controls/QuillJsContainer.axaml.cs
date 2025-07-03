@@ -1,21 +1,19 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Styling;
 using Avalonia.Threading;
 using SixLabors.Fonts;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TjMott.Writer.Models.SQLiteClasses;
 using TjMott.Writer.Views;
 
 namespace TjMott.Writer.Controls
 {
-    public partial class QuillJsContainer : UserControl
+    public partial class QuillJsContainer : UserControl, IDisposable
     {
         public event EventHandler EditorLoaded;
         public event EventHandler TextChanged;
@@ -78,6 +76,14 @@ namespace TjMott.Writer.Controls
             internalInitialize();
         }
 
+        private void updateEditorTheme()
+        {
+            if (Application.Current.ActualThemeVariant == ThemeVariant.Light)
+                _editor.ExecuteJavaScript("enableLightTheme();");
+            else
+                _editor.ExecuteJavaScript("enableDarkTheme();");
+        }
+
         private void internalInitialize()
         {
             //if (CefNetAppImpl.InitSuccess)
@@ -88,6 +94,12 @@ namespace TjMott.Writer.Controls
                 _documentInterop.TextChanged += _documentInterop_TextChanged;
 
                 _editor = new QuillJsEditor();
+                _editor.IsVisible = false; // Start invisible to hide any flashing due to theme loading.
+
+                // Push theme down to JS app.
+                Application.Current.ActualThemeVariantChanged += Application_ActualThemeVariantChanged;
+                updateEditorTheme();
+
                 _editor.RegisterJavascriptObject(_documentInterop, DOCUMENT_INTEROP_KEY, DocumentInterop.AsyncCallNativeMethod);
                 
                 webViewContainer.Children.Add(_editor);
@@ -104,28 +116,32 @@ namespace TjMott.Writer.Controls
             }*/
         }
 
-        private async void _documentInterop_TextChanged(object sender, EventArgs e)
+        private void Application_ActualThemeVariantChanged(object sender, EventArgs e)
         {
-            await Dispatcher.UIThread.InvokeAsync(() =>
-            {
-                if (TextChanged != null)
-                    TextChanged(this, new EventArgs());
-                int wordCount = GetWordCount();
-                wordCountTextBlock.Text = string.Format("Word Count: {0}", wordCount);
-            });
+            updateEditorTheme();
         }
 
-        private async void _documentInterop_EditorLoaded(object sender, EventArgs e)
+        private void _documentInterop_TextChanged(object sender, EventArgs e)
         {
-            await Dispatcher.UIThread.InvokeAsync(() =>
-            {
-                IsEnabled = true;
-                setIsReadOnly(true);
-                if (_document != null)
-                    loadDocument();
-                if (EditorLoaded != null)
-                    EditorLoaded(this, new EventArgs());
-            });
+            if (TextChanged != null)
+                TextChanged(this, new EventArgs());
+            int wordCount = GetWordCount();
+            wordCountTextBlock.Text = string.Format("Word Count: {0}", wordCount);
+        }
+
+        private void _documentInterop_EditorLoaded(object sender, EventArgs e)
+        {
+            IsEnabled = true;
+            setIsReadOnly(true);
+            if (_document != null)
+                loadDocument();
+
+            if (!AllowUserEditing)
+                _editor.ExecuteJavaScript("window.showToolbar(false);");
+            _editor.IsVisible = true;
+
+            if (EditorLoaded != null)
+                EditorLoaded(this, new EventArgs());
         }
 
         private void _documentInterop_ReadyToInitialize(object sender, EventArgs e)
@@ -420,7 +436,7 @@ namespace TjMott.Writer.Controls
         private void setTextZoom(double zoom)
         {
             _editor.ExecuteJavaScript(string.Format("window.setTextZoom(\"{0}\");", zoom.ToString("P")));
-            Dispatcher.UIThread.Post(() => zoomTextBlock.Text = string.Format("Zoom: {0:P0}", zoom));
+            zoomTextBlock.Text = string.Format("Zoom: {0:P0}", zoom);
         }
 
         private Window getOwner()
@@ -431,6 +447,16 @@ namespace TjMott.Writer.Controls
                 parent = parent.Parent;
             }
             return parent as Window;
+        }
+
+        public void Dispose()
+        {
+            Application.Current.ActualThemeVariantChanged -= Application_ActualThemeVariantChanged;
+            if (_editor != null)
+            {
+                _editor.Dispose();
+                _editor = null;
+            }    
         }
     }
 }

@@ -1,7 +1,5 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
-using TjMott.Writer.Controls;
 
 namespace TjMott.Writer.Views
 {
@@ -10,13 +8,7 @@ namespace TjMott.Writer.Views
         public NotesView()
         {
             InitializeComponent();
+            notePreviewContainer.ZoomLevel = AppSettings.Default.editorZoom;
         }
-
-        /*private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-
-            this.FindControl<QuillJsContainer>("notePreviewContainer").ZoomLevel = AppSettings.Default.editorZoom;
-        }*/
     }
 }

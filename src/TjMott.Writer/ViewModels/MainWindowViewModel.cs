@@ -9,7 +9,6 @@ using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
-using TjMott.Writer.Controls;
 using TjMott.Writer.Models.SQLiteClasses;
 using TjMott.Writer.Views;
 
@@ -33,6 +32,8 @@ namespace TjMott.Writer.ViewModels
             get => Application.Current.RequestedThemeVariant == Avalonia.Styling.ThemeVariant.Default;
             set
             {
+                AppSettings.Default.selectedTheme = "default";
+                AppSettings.Default.Save();
                 Application.Current.RequestedThemeVariant = Avalonia.Styling.ThemeVariant.Default;
                 this.RaisePropertyChanged(nameof(UseDefaultTheme));
                 this.RaisePropertyChanged(nameof(UseLightTheme));
@@ -45,6 +46,8 @@ namespace TjMott.Writer.ViewModels
             get => Application.Current.RequestedThemeVariant == Avalonia.Styling.ThemeVariant.Light;
             set
             {
+                AppSettings.Default.selectedTheme = "light";
+                AppSettings.Default.Save();
                 Application.Current.RequestedThemeVariant = Avalonia.Styling.ThemeVariant.Light;
                 this.RaisePropertyChanged(nameof(UseDefaultTheme));
                 this.RaisePropertyChanged(nameof(UseLightTheme));
@@ -57,6 +60,8 @@ namespace TjMott.Writer.ViewModels
             get => Application.Current.RequestedThemeVariant == Avalonia.Styling.ThemeVariant.Dark;
             set
             {
+                AppSettings.Default.selectedTheme = "dark";
+                AppSettings.Default.Save();
                 Application.Current.RequestedThemeVariant = Avalonia.Styling.ThemeVariant.Dark;
                 this.RaisePropertyChanged(nameof(UseDefaultTheme));
                 this.RaisePropertyChanged(nameof(UseLightTheme));

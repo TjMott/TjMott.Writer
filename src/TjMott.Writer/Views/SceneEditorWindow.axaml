@@ -16,12 +16,12 @@
 				<MenuItem x:Name="lockButton" Header="Lock" Command="{Binding ElementName=manuscriptEditor, Path=Lock}" IsEnabled="False" />
 				<MenuItem x:Name="encryptButton" Header="Encrypt" Command="{Binding ElementName=manuscriptEditor, Path=Encrypt}" IsEnabled="False" />
 				<MenuItem x:Name="decryptButton" Header="Decrypt" Command="{Binding ElementName=manuscriptEditor, Path=Decrypt}" IsEnabled="False" />
-				<MenuItem x:Name="printButton" Header="Print" Click="printButton_Click" IsEnabled="False" />
+				<MenuItem x:Name="printButton" Header="Print" Click="printButton_Click" />
 				<MenuItem Header="Close" Click="closeButton_Click" />
 			</MenuItem>
 		</Menu>
 
-		<Border Grid.Row="1" BorderBrush="DarkGray" BorderThickness="1">
+		<Border Grid.Row="1" BorderBrush="DarkGray" BorderThickness="0" x:Name="manuscriptEditorBorder">
 			<controls:QuillJsContainer x:Name="manuscriptEditor" Margin="5" />
 		</Border>
 		

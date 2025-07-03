@@ -105,6 +105,9 @@ namespace TjMott.Writer.Views
             if (OpenWindowsViewModel.Instance.NotesWindows.Contains(this))
                 OpenWindowsViewModel.Instance.NotesWindows.Remove(this);
 
+            noteEditorBorder.Child = null;
+            noteEditor.Dispose();
+
             Close();
         }
 

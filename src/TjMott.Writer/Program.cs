@@ -32,6 +32,14 @@ namespace TjMott.Writer
                 .With(new Win32PlatformOptions())
                 .AfterSetup(_ =>
                 {
+                    // Initialize theme from persisted user settings.
+                    if (AppSettings.Default.selectedTheme == "light")
+                        Application.Current.RequestedThemeVariant = Avalonia.Styling.ThemeVariant.Light;
+                    else if (AppSettings.Default.selectedTheme == "dark")
+                        Application.Current.RequestedThemeVariant = Avalonia.Styling.ThemeVariant.Dark;
+                    else
+                        Application.Current.RequestedThemeVariant = Avalonia.Styling.ThemeVariant.Default;
+
                     // generate a unique cache path to avoid problems when launching more than one process
                     // https://www.magpcss.org/ceforum/viewtopic.php?f=6&t=19665
                     _cachePath = Path.Combine(Path.GetTempPath(), "CefGlue_" + Guid.NewGuid().ToString().Replace("-", null));

@@ -16,7 +16,7 @@
 				<MenuItem Header="Close" />
 			</MenuItem>
 		</Menu>
-		<Border Grid.Row="1" BorderBrush="DarkGray" BorderThickness="1">
+		<Border Grid.Row="1" BorderBrush="DarkGray" BorderThickness="0" x:Name="noteEditorBorder">
 			<controls:QuillJsContainer x:Name="noteEditor" Margin="5" />
 		</Border>
 

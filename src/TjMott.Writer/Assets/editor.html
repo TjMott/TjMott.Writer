@@ -95,7 +95,8 @@
 </head>
 <body class="html-container">
 	<!-- Include Quill stylesheet -->
-	<link href="quilljs/quill.snow.css" rel="stylesheet">
+	<link href="quilljs/quill.snow.css" rel="stylesheet" id="editorLightTheme">
+	<link href="quilljs/quill.snow.dark.css" rel="stylesheet" id="editorDarkTheme">
 
     <!-- Header is used on print media -->
     <h3 id="printTitle" class="print-only"></h3>
@@ -111,7 +112,18 @@
 	<script>
 	//https://stackoverflow.com/questions/43728080/how-to-add-font-types-on-quill-js-with-toolbar-options
 
+        // Global array of system fonts, to be populated by C# code.
         fonts = [];
+
+        function enableLightTheme() {
+            document.getElementById("editorDarkTheme").disabled = true;
+            document.getElementById("editorLightTheme").disabled = false;
+        }
+
+        function enableDarkTheme() {
+            document.getElementById("editorLightTheme").disabled = true;
+            document.getElementById("editorDarkTheme").disabled = false;
+        }
 
         function setPrintTitle(title) {
             document.getElementById("printTitle").innerText = title;
@@ -215,9 +227,13 @@
             }
 
             // Signal C# layer that the text has changed.
-            DocumentInterop.setDocumentText(window.editor.getText());
-            DocumentInterop.setDocumentJson(window.editor.getContents());
-            DocumentInterop.raiseTextChangedEvent();
+            if (typeof DocumentInterop != "undefined") { // DocumentInterop is null if testing in a browser and not in the app.
+                var newText = window.editor.getText();
+                var newJson = window.editor.getContents();
+                DocumentInterop.setDocumentText(newText);
+                DocumentInterop.setDocumentJson(window.JSON.stringify(newJson));
+                DocumentInterop.raiseTextChangedEvent();
+            }
         }
 
         function showToolbar(visible) {
@@ -269,7 +285,7 @@
             Size.whitelist = fontSizeArr;
             Quill.register(Size, true);
 
-
+            // Create Quill editor.
             window.editor = new Quill('#quill-container', {
                 modules: {
                     toolbar: [
@@ -293,21 +309,22 @@
 
             window.editor.on('text-change', quillTextChanged);
 
-            // Hack -- communicate with C# layer using the document title.
-            //document.title = "loaded";
-            DocumentInterop.raiseEditorLoadedEvent();
+            // Tell C# the editor is fully loaded and ready to go.
+            if (typeof DocumentInterop != "undefined") // DocumentInterop is null if testing in a browser and not in the app.
+                DocumentInterop.raiseEditorLoadedEvent();
         }
 
         // Uncomment to load/test in a normal browser window.
         //addFont("Times New Roman");
         //addFont("Arial");
         //addFont("Consolas");
-        //addFont("Garamound");
+        //addFont("Garamond");
+        //enableDarkTheme();
         //initEditor();
 
-        // Signal C# that we're ready to create Quill
-        //document.title = "readyForInit";
-        DocumentInterop.raiseReadyToInitEvent();
+        // Signal C# that the page is loaded and ready to initialize Quill.
+        if (typeof DocumentInterop != "undefined") // DocumentInterop is null if testing in a browser and not in the app.
+            DocumentInterop.raiseReadyToInitEvent();
 	
 	</script>
 </body>

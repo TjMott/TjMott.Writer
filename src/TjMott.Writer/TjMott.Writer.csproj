@@ -26,6 +26,7 @@
     <AvaloniaResource Remove="Assets\quilljs\quill.min.js" />
     <AvaloniaResource Remove="Assets\quilljs\quill.min.js.map" />
     <AvaloniaResource Remove="Assets\quilljs\quill.snow.css" />
+    <AvaloniaResource Remove="Assets\quilljs\quill.snow.dark.css" />
     <None Remove=".gitignore" />
     <None Remove="Assets\editor.html" />
     <None Remove="Assets\icons8-abacus-40.png" />
@@ -87,6 +88,9 @@
     </AvaloniaResource>
   </ItemGroup>
   <ItemGroup>
+	  <Content Include="Assets\quilljs\quill.snow.dark.css">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
 	  <Content Include="TjMott.Writer.ico">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>

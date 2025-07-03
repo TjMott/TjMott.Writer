@@ -128,6 +128,9 @@ namespace TjMott.Writer.Views
             if (OpenWindowsViewModel.Instance.EditorWindows.Contains(this))
                 OpenWindowsViewModel.Instance.EditorWindows.Remove(this);
 
+            manuscriptEditorBorder.Child = null;
+            manuscriptEditor.Dispose();
+
             Close();
         }
 
@@ -159,7 +162,10 @@ namespace TjMott.Writer.Views
             lockButton.IsEnabled = _sceneManuscript.IsEncrypted && _sceneManuscript.IsUnlocked;
             encryptButton.IsEnabled = !_sceneManuscript.IsEncrypted;
             decryptButton.IsEnabled = _sceneManuscript.IsEncrypted;
-            printButton.IsEnabled = _sceneManuscript.IsUnlocked;
+            
+            // I don't know how to print with CefGlue, so leave disabled for now.
+            printButton.IsEnabled = false;
+            //printButton.IsEnabled = _sceneManuscript.IsUnlocked;
         }
 
         private async void onKeyDown(object sender, Avalonia.Input.KeyEventArgs e)
