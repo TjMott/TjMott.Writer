@@ -7,6 +7,6 @@ namespace TjMott.Writer.ViewModels
 {
     public interface IGetWordCount
     {
-        long GetWordCount();
+        Task<long> GetWordCountAsync();
     }
 }

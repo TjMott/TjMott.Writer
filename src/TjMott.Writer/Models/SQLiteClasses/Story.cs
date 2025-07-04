@@ -162,6 +162,7 @@ namespace TjMott.Writer.Models.SQLiteClasses
         #endregion
 
         private static DbHelper<Story> _dbHelper;
+        private static DbCommandHelper _storyLoader;
 
         public Story(SqliteConnection connection)
         {
@@ -217,6 +218,41 @@ namespace TjMott.Writer.Models.SQLiteClasses
 
             List<Story> retval = new List<Story>();
             List<long> ids = await _dbHelper.GetAllIdsAsync().ConfigureAwait(false);
+            foreach (long id in ids)
+            {
+                Story story = new Story(connection);
+                story.id = id;
+                await story.LoadAsync().ConfigureAwait(false);
+                retval.Add(story);
+            }
+            return retval;
+        }
+
+        public static async Task<List<Story>> LoadForUniverse(long universeId, SqliteConnection connection)
+        {
+            if (_dbHelper == null)
+                _dbHelper = new DbHelper<Story>(connection);
+
+            if (_storyLoader == null)
+            {
+                _storyLoader = new DbCommandHelper(connection);
+                _storyLoader.Command.CommandText = string.Format("SELECT [id] FROM {0} WHERE {1} = @universeId",
+                                                                    _dbHelper.TableName,
+                                                                    nameof(UniverseId));
+                _storyLoader.AddParameter("@universeId");
+            }
+
+            _storyLoader.Parameters["@universeId"].Value = universeId;
+            List<long> ids = new List<long>();
+            using (var reader = await _storyLoader.Command.ExecuteReaderAsync())
+            {
+                while (await reader.ReadAsync())
+                {
+                    ids.Add(reader.GetInt64(0));
+                }
+            }
+
+            List<Story> retval = new List<Story>();
             foreach (long id in ids)
             {
                 Story story = new Story(connection);

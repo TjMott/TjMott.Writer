@@ -40,9 +40,14 @@ namespace TjMott.Writer.ViewModels
         public SortBySortIndexBindingList<StoryViewModel> Stories { get; private set; }
         #endregion
 
-        public long GetWordCount()
+        public async Task<long> GetWordCountAsync()
         {
-            return Stories.Sum(i => i.GetWordCount());
+            long wordCount = 0;
+            foreach (var story in Stories)
+            {
+                wordCount += await story.GetWordCountAsync();
+            }
+            return wordCount;
         }
         public CategoryViewModel(Category model)
         {

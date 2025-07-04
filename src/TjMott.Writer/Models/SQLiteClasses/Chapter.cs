@@ -79,6 +79,7 @@ namespace TjMott.Writer.Models.SQLiteClasses
         #endregion
 
         private static DbHelper<Chapter> _dbHelper;
+        private static DbCommandHelper _chapterLoader;
 
         public Chapter(SqliteConnection connection)
         {
@@ -126,6 +127,41 @@ namespace TjMott.Writer.Models.SQLiteClasses
 
             List<Chapter> retval = new List<Chapter>();
             List<long> ids = await _dbHelper.GetAllIdsAsync().ConfigureAwait(false);
+            foreach (long id in ids)
+            {
+                Chapter chapter = new Chapter(connection);
+                chapter.id = id;
+                await chapter.LoadAsync().ConfigureAwait(false);
+                retval.Add(chapter);
+            }
+            return retval;
+        }
+
+        public static async Task<List<Chapter>> LoadForStory(long storyId, SqliteConnection connection)
+        {
+            if (_dbHelper == null)
+                _dbHelper = new DbHelper<Chapter>(connection);
+
+            if (_chapterLoader == null)
+            {
+                _chapterLoader = new DbCommandHelper(connection);
+                _chapterLoader.Command.CommandText = string.Format("SELECT [id] FROM {0} WHERE {1} = @storyId",
+                                                                    _dbHelper.TableName,
+                                                                    nameof(StoryId));
+                _chapterLoader.AddParameter("@storyId");
+            }
+
+            _chapterLoader.Parameters["@storyId"].Value = storyId;
+            List<long> ids = new List<long>();
+            using (var reader = await _chapterLoader.Command.ExecuteReaderAsync())
+            {
+                while (await reader.ReadAsync())
+                {
+                    ids.Add(reader.GetInt64(0));
+                }
+            }
+
+            List<Chapter> retval = new List<Chapter>();
             foreach (long id in ids)
             {
                 Chapter chapter = new Chapter(connection);

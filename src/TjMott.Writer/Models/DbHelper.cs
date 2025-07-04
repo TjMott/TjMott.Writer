@@ -13,6 +13,8 @@ namespace TjMott.Writer.Models
         private SqliteConnection _connection;
         private string _tableName;
 
+        public string TableName { get => _tableName; }
+
         private DbCommandHelper _selectCommand;
         private DbCommandHelper _insertCommand;
         private DbCommandHelper _deleteCommand;

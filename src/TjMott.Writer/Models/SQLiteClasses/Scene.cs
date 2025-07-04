@@ -134,6 +134,7 @@ namespace TjMott.Writer.Models.SQLiteClasses
         #endregion
 
         private static DbHelper<Scene> _dbHelper;
+        private static DbCommandHelper _sceneLoader;
 
         public Scene(SqliteConnection connection)
         {
@@ -189,6 +190,41 @@ namespace TjMott.Writer.Models.SQLiteClasses
 
             List<Scene> retval = new List<Scene>();
             List<long> ids = await _dbHelper.GetAllIdsAsync().ConfigureAwait(false);
+            foreach (long id in ids)
+            {
+                Scene scene = new Scene(connection);
+                scene.id = id;
+                await scene.LoadAsync().ConfigureAwait(false);
+                retval.Add(scene);
+            }
+            return retval;
+        }
+
+        public static async Task<List<Scene>> LoadForChapter(long chapterId, SqliteConnection connection)
+        {
+            if (_dbHelper == null)
+                _dbHelper = new DbHelper<Scene>(connection);
+
+            if (_sceneLoader == null)
+            {
+                _sceneLoader = new DbCommandHelper(connection);
+                _sceneLoader.Command.CommandText = string.Format("SELECT [id] FROM {0} WHERE {1} = @chapterId",
+                                                                    _dbHelper.TableName,
+                                                                    nameof(ChapterId));
+                _sceneLoader.AddParameter("@chapterId");
+            }
+
+            _sceneLoader.Parameters["@chapterId"].Value = chapterId;
+            List<long> ids = new List<long>();
+            using (var reader = await _sceneLoader.Command.ExecuteReaderAsync())
+            {
+                while (await reader.ReadAsync())
+                {
+                    ids.Add(reader.GetInt64(0));
+                }
+            }
+
+            List<Scene> retval = new List<Scene>();
             foreach (long id in ids)
             {
                 Scene scene = new Scene(connection);

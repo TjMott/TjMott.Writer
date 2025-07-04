@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Security.Cryptography;
 using TjMott.Writer.Models;
 using TjMott.Writer.Models.SQLiteClasses;
 using Avalonia.Media;
@@ -44,15 +43,15 @@ namespace TjMott.Writer.ViewModels
         public ReactiveCommand<Window, Unit> MoveToChapterCommand { get; }
         #endregion
 
-        public long GetWordCount()
+        public async Task<long> GetWordCountAsync()
         {
-            Document fd = new Document(Model.Connection);
-            fd.id = Model.DocumentId;
-            fd.LoadAsync().Wait();
-            if (fd.IsEncrypted)
+            Document doc = new Document(Model.Connection);
+            doc.id = Model.DocumentId;
+            await doc.LoadAsync();
+            if (doc.IsEncrypted)
                 return 0;
             else
-                return fd.WordCount;
+                return doc.WordCount;
         }
         public Scene Model { get; private set; }
         public ChapterViewModel ChapterVm { get; set; }

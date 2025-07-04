@@ -130,23 +130,11 @@ namespace TjMott.Writer.ViewModels
         {
             SelectedUniverseViewModel = new UniverseViewModel(SelectedUniverse, this);
 
-            // Load database entities on background threads.
-            List<Task> loadingTasks = new List<Task>();
-            Task<List<CategoryViewModel>> loadCategoriesTask = Task.Run(async () => (await Category.LoadAll(_connection)).Where(i => i.UniverseId == SelectedUniverse.id).Select(i => new CategoryViewModel(i)).ToList());
-            Task<List<StoryViewModel>> loadStoriesTask = Task.Run(async () => (await Story.LoadAll(_connection)).Where(i => i.UniverseId == SelectedUniverse.id).Select(i => new StoryViewModel(i)).ToList());
-            Task<List<Chapter>> loadChaptersTask = Task.Run(async () => (await Chapter.LoadAll(_connection)).ToList());
-            Task<List<Scene>> loadScenesTask = Task.Run(async () => (await Scene.GetAllScenes(_connection)).ToList());
-
-            loadingTasks.Add(loadCategoriesTask);
-            loadingTasks.Add(loadStoriesTask);
-            loadingTasks.Add(loadChaptersTask);
-            loadingTasks.Add(loadScenesTask);
-            await Task.WhenAll(loadingTasks);
-
-            var categories = loadCategoriesTask.Result;
-            var stories = loadStoriesTask.Result;
-            var chapters = loadChaptersTask.Result;
-            var scenes = loadScenesTask.Result;
+            // Load database entities.
+            var categoryModels = await Category.LoadForUniverse(SelectedUniverse.id, _connection);
+            var categories = categoryModels.Select(i => new CategoryViewModel(i)).ToList();
+            var storyModels = await Story.LoadForUniverse(SelectedUniverse.id, _connection);
+            var stories = storyModels.Select(i => new StoryViewModel(i)).ToList();
 
             // Link up objects.
             foreach (var cat in categories)
@@ -167,27 +155,6 @@ namespace TjMott.Writer.ViewModels
                 SelectedUniverseViewModel.Stories.Add(s);
                 s.UniverseVm = SelectedUniverseViewModel;
                 SelectedUniverseViewModel.UpdateStoryInTree(s);
-
-                foreach (var c in chapters)
-                {
-                    if (c.StoryId == s.Model.id)
-                    {
-                        ChapterViewModel cvm = new ChapterViewModel(c);
-                        cvm.StoryVm = s;
-                        s.Chapters.Add(cvm);
-
-                        foreach (var scene in scenes)
-                        {
-                            if (scene.ChapterId == c.id)
-                            {
-                                SceneViewModel svm = new SceneViewModel(scene);
-                                svm.ChapterVm = cvm;
-                                cvm.Scenes.Add(svm);
-                            }
-                        }
-
-                    }
-                }
             }
             
         }

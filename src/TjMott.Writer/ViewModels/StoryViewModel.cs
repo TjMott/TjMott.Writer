@@ -48,9 +48,17 @@ namespace TjMott.Writer.ViewModels
         public ReactiveCommand<Unit, Unit> ShowPacingCommand { get; }
         #endregion
 
-        public long GetWordCount()
+        public async Task<long> GetWordCountAsync()
         {
-            return Chapters.Sum(i => i.GetWordCount());
+            if (Chapters.Count == 0)
+                await LoadChapters();
+            long wordCount = 0;
+
+            foreach (var chapter in Chapters)
+            {
+                wordCount += await chapter.GetWordCountAsync();
+            }
+            return wordCount;
         }
 
         public Story Model { get; private set; }
@@ -112,6 +120,33 @@ namespace TjMott.Writer.ViewModels
             {
                 EditCopyrightPageWindow.ShowEditorWindow(this);
             }
+        }
+
+        public async Task LoadChapters()
+        {
+            Chapters.Clear();
+            var chapterModels = await Chapter.LoadForStory(Model.id, Model.Connection);
+            foreach (var chapter in chapterModels)
+            {
+                ChapterViewModel cvm = new ChapterViewModel(chapter);
+                cvm.StoryVm = this;
+
+                // Load scenes.
+                var scenes = await Scene.LoadForChapter(chapter.id, Model.Connection);
+                foreach (var scene in scenes)
+                {
+                    SceneViewModel svm = new SceneViewModel(scene);
+                    svm.ChapterVm = cvm;
+                    cvm.Scenes.Add(svm);
+                }
+
+                Chapters.Add(cvm);
+            }
+        }
+
+        public void UnloadChapters()
+        {
+            Chapters.Clear();
         }
 
         public async Task Delete(Window owner)

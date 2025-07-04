@@ -43,9 +43,14 @@ namespace TjMott.Writer.ViewModels
         public ReactiveCommand<Unit, Unit> ShowPacingCommand { get; }
         #endregion
 
-        public long GetWordCount()
+        public async Task<long> GetWordCountAsync()
         {
-            return Scenes.Sum(i => i.GetWordCount());
+            long wordCount = 0;
+            foreach (var scene in Scenes)
+            {
+                wordCount += await scene.GetWordCountAsync();
+            }
+            return wordCount;
         }
         public Chapter Model { get; private set; }
         public StoryViewModel StoryVm { get; set; }

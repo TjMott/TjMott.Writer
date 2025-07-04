@@ -23,14 +23,33 @@ namespace TjMott.Writer.ViewModels
         public BindingList<StoryViewModel> Stories { get; private set; }
         public SortBySortIndexBindingList<IUniverseSubItem> SubItems { get; private set; }
 
-        private ISortable _selectedTreeViewItem;
-        public ISortable SelectedTreeViewItem
+        private ISortable _selectedStorySubItem;
+        public ISortable SelectedStorySubItem
         {
-            get { return _selectedTreeViewItem; }
+            get => _selectedStorySubItem;
+            set => this.RaiseAndSetIfChanged(ref _selectedStorySubItem, value);
+        }
+
+        private ISortable _selectedCategoryOrStory;
+        public ISortable SelectedCategoryOrStory
+        {
+            get => _selectedCategoryOrStory; 
             set
             {
-                _selectedTreeViewItem = value;
-                OnPropertyChanged("SelectedTreeViewItem");
+                if (value != _selectedCategoryOrStory)
+                {
+                    if (_selectedCategoryOrStory != null && _selectedCategoryOrStory is StoryViewModel)
+                    {
+                        var oldStory = _selectedCategoryOrStory as StoryViewModel;
+                        oldStory.UnloadChapters();
+                    }
+                    this.RaiseAndSetIfChanged(ref _selectedCategoryOrStory, value);
+                    if (_selectedCategoryOrStory != null && _selectedCategoryOrStory is StoryViewModel)
+                    {
+                        var newStory = _selectedCategoryOrStory as StoryViewModel;
+                        _ = newStory.LoadChapters();
+                    }
+                }
             }
         }
 
@@ -78,17 +97,24 @@ namespace TjMott.Writer.ViewModels
         #region ICommands
         public ReactiveCommand<Window, Unit> CreateCategoryCommand { get; }
         public ReactiveCommand<Window, Unit> CreateStoryCommand { get; }
-        public ReactiveCommand<Unit, Unit> MoveItemUpCommand { get; }
-        public ReactiveCommand<Unit, Unit> MoveItemDownCommand { get; }
+        public ReactiveCommand<object, Unit> MoveItemUpCommand { get; }
+        public ReactiveCommand<object, Unit> MoveItemDownCommand { get; }
         public ReactiveCommand<Unit, Unit> OpenEditorCommand { get; }
         public ReactiveCommand<Unit, Unit> ExportToWordCommand { get; }
+        public ReactiveCommand<Unit, Unit> ExportStoryToWordCommand { get; }
+        public ReactiveCommand<Window, Unit> ShowCategoryOrStoryWordCountCommand { get; }
         public ReactiveCommand<Window, Unit> ShowWordCountCommand { get; }
         public ReactiveCommand<Window, Unit> RenameCommand { get; }
         #endregion
 
-        public long GetWordCount()
+        public async Task<long> GetWordCountAsync()
         {
-            return Stories.Sum(i => i.GetWordCount());
+            long wordCount = 0;
+            foreach (var story in Stories)
+            {
+                wordCount += await story.GetWordCountAsync();
+            }
+            return wordCount;
         }
 
         public UniverseViewModel(Universe model, Database database)
@@ -98,11 +124,13 @@ namespace TjMott.Writer.ViewModels
             model.PropertyChanged += Model_PropertyChanged;
             CreateCategoryCommand = ReactiveCommand.CreateFromTask<Window>(CreateCategory);
             CreateStoryCommand = ReactiveCommand.CreateFromTask<Window>(CreateStory);
-            MoveItemUpCommand = ReactiveCommand.Create(MoveItemUp, this.WhenAny(x => x.SelectedTreeViewItem.SortIndex, (item) => CanMoveItemUp()));
-            MoveItemDownCommand = ReactiveCommand.Create(MoveItemDown, this.WhenAny(x => x.SelectedTreeViewItem.SortIndex, (item) => CanMoveItemDown()));
-            OpenEditorCommand = ReactiveCommand.Create(OpenEditor, this.WhenAny(x => x.SelectedTreeViewItem, (item) => (item.Value as SceneViewModel) != null));
-            ExportToWordCommand = ReactiveCommand.Create(ExportToWord, this.WhenAny(x => x.SelectedTreeViewItem, (item) => (item.Value as IExportToWordDocument) != null));
-            ShowWordCountCommand = ReactiveCommand.CreateFromTask<Window>(ShowWordCount, this.WhenAny(x => x.SelectedTreeViewItem, (item) => (item.Value as IGetWordCount) != null));
+            MoveItemUpCommand = ReactiveCommand.Create<object>(MoveItemUp);
+            MoveItemDownCommand = ReactiveCommand.Create<object>(MoveItemDown);
+            OpenEditorCommand = ReactiveCommand.Create(OpenEditor, this.WhenAny(x => x.SelectedStorySubItem, (item) => (item.Value as SceneViewModel) != null));
+            ExportToWordCommand = ReactiveCommand.Create(ExportToWord);
+            ExportStoryToWordCommand = ReactiveCommand.CreateFromTask(ExportStoryToWord);
+            ShowWordCountCommand = ReactiveCommand.CreateFromTask<Window>(ShowWordCount);
+            ShowCategoryOrStoryWordCountCommand = ReactiveCommand.CreateFromTask<Window>(ShowStoryOrCategoryWordCount);
             RenameCommand = ReactiveCommand.CreateFromTask<Window>(Rename);
 
             _ = initializeAsync();
@@ -227,17 +255,17 @@ namespace TjMott.Writer.ViewModels
                 SubItems.Remove(cat);
             }
         }
-        public bool CanMoveItemUp()
+        public bool CanMoveItemUp(object item)
         {
-            if (SelectedTreeViewItem == null)
+            if (item == null)
                 return false;
-            if (SelectedTreeViewItem is CategoryViewModel)
+            if (item is CategoryViewModel)
             {
-                return SubItems.CanMoveItemUp(SelectedTreeViewItem as CategoryViewModel);
+                return SubItems.CanMoveItemUp(item as CategoryViewModel);
             }
-            else if (SelectedTreeViewItem is StoryViewModel)
+            else if (item is StoryViewModel)
             {
-                StoryViewModel vm = SelectedTreeViewItem as StoryViewModel;
+                StoryViewModel vm = item as StoryViewModel;
                 if (vm.Model.CategoryId == null)
                 {
                     return SubItems.CanMoveItemUp(vm);
@@ -248,30 +276,30 @@ namespace TjMott.Writer.ViewModels
                     return category.Stories.CanMoveItemUp(vm);
                 }
             }
-            else if (SelectedTreeViewItem is ChapterViewModel)
+            else if (item is ChapterViewModel)
             {
-                ChapterViewModel vm = SelectedTreeViewItem as ChapterViewModel;
+                ChapterViewModel vm = item as ChapterViewModel;
                 return vm.StoryVm.Chapters.CanMoveItemUp(vm);
             }
-            else if (SelectedTreeViewItem is SceneViewModel)
+            else if (item is SceneViewModel)
             {
-                SceneViewModel vm = SelectedTreeViewItem as SceneViewModel;
+                SceneViewModel vm = item as SceneViewModel;
                 return vm.ChapterVm.Scenes.CanMoveItemUp(vm);
             }
 
             return false;
         }
-        public bool CanMoveItemDown()
+        public bool CanMoveItemDown(object item)
         {
-            if (SelectedTreeViewItem == null)
+            if (item == null)
                 return false;
-            if (SelectedTreeViewItem is CategoryViewModel)
+            if (item is CategoryViewModel)
             {
-                return SubItems.CanMoveItemDown(SelectedTreeViewItem as CategoryViewModel);
+                return SubItems.CanMoveItemDown(item as CategoryViewModel);
             }
-            else if (SelectedTreeViewItem is StoryViewModel)
+            else if (item is StoryViewModel)
             {
-                StoryViewModel vm = SelectedTreeViewItem as StoryViewModel;
+                StoryViewModel vm = item as StoryViewModel;
                 if (vm.Model.CategoryId == null)
                 {
                     return SubItems.CanMoveItemDown(vm);
@@ -282,29 +310,32 @@ namespace TjMott.Writer.ViewModels
                     return category.Stories.CanMoveItemDown(vm);
                 }
             }
-            else if (SelectedTreeViewItem is ChapterViewModel)
+            else if (item is ChapterViewModel)
             {
-                ChapterViewModel vm = SelectedTreeViewItem as ChapterViewModel;
+                ChapterViewModel vm = item as ChapterViewModel;
                 return vm.StoryVm.Chapters.CanMoveItemDown(vm);
             }
-            else if (SelectedTreeViewItem is SceneViewModel)
+            else if (item is SceneViewModel)
             {
-                SceneViewModel vm = SelectedTreeViewItem as SceneViewModel;
+                SceneViewModel vm = item as SceneViewModel;
                 return vm.ChapterVm.Scenes.CanMoveItemDown(vm);
             }
             return false;
         }
 
-        public void MoveItemUp()
+        public void MoveItemUp(object item)
         {
-            if (SelectedTreeViewItem is CategoryViewModel)
+            if (item == null)
+                return;
+
+            if (item is CategoryViewModel)
             {
-                CategoryViewModel vm = SelectedTreeViewItem as CategoryViewModel;
+                CategoryViewModel vm = item as CategoryViewModel;
                 SubItems.MoveItemUp(vm);
             }
-            else if (SelectedTreeViewItem is StoryViewModel)
+            else if (item is StoryViewModel)
             {
-                StoryViewModel vm = SelectedTreeViewItem as StoryViewModel;
+                StoryViewModel vm = item as StoryViewModel;
                 if (vm.Model.CategoryId == null)
                 {
                     SubItems.MoveItemUp(vm);
@@ -315,28 +346,30 @@ namespace TjMott.Writer.ViewModels
                     category.Stories.MoveItemUp(vm);
                 }
             }
-            else if (SelectedTreeViewItem is ChapterViewModel)
+            else if (item is ChapterViewModel)
             {
-                ChapterViewModel vm = SelectedTreeViewItem as ChapterViewModel;
+                ChapterViewModel vm = item as ChapterViewModel;
                 vm.StoryVm.Chapters.MoveItemUp(vm);
             }
-            else if (SelectedTreeViewItem is SceneViewModel)
+            else if (item is SceneViewModel)
             {
-                SceneViewModel vm = SelectedTreeViewItem as SceneViewModel;
+                SceneViewModel vm = item as SceneViewModel;
                 vm.ChapterVm.Scenes.MoveItemUp(vm);
             }
         }
 
-        public void MoveItemDown()
+        public void MoveItemDown(object item)
         {
-            if (SelectedTreeViewItem is CategoryViewModel)
+            if (item == null)
+                return;
+            if (item is CategoryViewModel)
             {
-                CategoryViewModel vm = SelectedTreeViewItem as CategoryViewModel;
+                CategoryViewModel vm = item as CategoryViewModel;
                 SubItems.MoveItemDown(vm);
             }
-            else if (SelectedTreeViewItem is StoryViewModel)
+            else if (item is StoryViewModel)
             {
-                StoryViewModel vm = SelectedTreeViewItem as StoryViewModel;
+                StoryViewModel vm = item as StoryViewModel;
                 if (vm.Model.CategoryId == null)
                 {
                     SubItems.MoveItemDown(vm);
@@ -347,14 +380,14 @@ namespace TjMott.Writer.ViewModels
                     category.Stories.MoveItemDown(vm);
                 }
             }
-            else if (SelectedTreeViewItem is ChapterViewModel)
+            else if (item is ChapterViewModel)
             {
-                ChapterViewModel vm = SelectedTreeViewItem as ChapterViewModel;
+                ChapterViewModel vm = item as ChapterViewModel;
                 vm.StoryVm.Chapters.MoveItemDown(vm);
             }
-            else if (SelectedTreeViewItem is SceneViewModel)
+            else if (item is SceneViewModel)
             {
-                SceneViewModel vm = SelectedTreeViewItem as SceneViewModel;
+                SceneViewModel vm = item as SceneViewModel;
                 vm.ChapterVm.Scenes.MoveItemDown(vm);
             }
         }
@@ -372,24 +405,54 @@ namespace TjMott.Writer.ViewModels
 
         public void OpenEditor()
         {
-            SceneViewModel vm = SelectedTreeViewItem as SceneViewModel;
+            SceneViewModel vm = SelectedStorySubItem as SceneViewModel;
             SceneEditorWindow.ShowEditorWindow(vm);
+        }
+
+        public async Task ExportStoryToWord()
+        {
+            if (SelectedCategoryOrStory != null && SelectedCategoryOrStory is StoryViewModel)
+            {
+                StoryViewModel vm = SelectedCategoryOrStory as StoryViewModel;
+                if (vm.Chapters.Count == 0)
+                    await vm.LoadChapters();
+                ExportToWordWindow.ShowExportWindow(vm);
+            }
         }
 
         public void ExportToWord()
         {
-            IExportToWordDocument item = SelectedTreeViewItem as IExportToWordDocument;
-            ExportToWordWindow.ShowExportWindow(item);           
+            if (SelectedStorySubItem != null)
+            {
+                IExportToWordDocument item = SelectedStorySubItem as IExportToWordDocument;
+                ExportToWordWindow.ShowExportWindow(item);
+            }
         }
 
         public async Task ShowWordCount(Window dialogOwner)
         {
-            IGetWordCount item = SelectedTreeViewItem as IGetWordCount;
-            var dialog = MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard("Word Count", 
-                string.Format("Word Count: {0}", item.GetWordCount()), 
-                MsBox.Avalonia.Enums.ButtonEnum.Ok, 
-                MsBox.Avalonia.Enums.Icon.Info);
-            await dialog.ShowWindowDialogAsync(dialogOwner);
+            if (SelectedStorySubItem != null)
+            {
+                IGetWordCount item = SelectedStorySubItem as IGetWordCount;
+                var dialog = MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard("Word Count",
+                    string.Format("Word Count: {0}", await item.GetWordCountAsync()),
+                    MsBox.Avalonia.Enums.ButtonEnum.Ok,
+                    MsBox.Avalonia.Enums.Icon.Info);
+                await dialog.ShowWindowDialogAsync(dialogOwner);
+            }
+        }
+
+        public async Task ShowStoryOrCategoryWordCount(Window dialogOwner)
+        {
+            if (SelectedCategoryOrStory != null)
+            {
+                IGetWordCount item = SelectedCategoryOrStory as IGetWordCount;
+                var dialog = MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard("Word Count",
+                    string.Format("Word Count: {0}", await item.GetWordCountAsync()),
+                    MsBox.Avalonia.Enums.ButtonEnum.Ok,
+                    MsBox.Avalonia.Enums.Icon.Info);
+                await dialog.ShowWindowDialogAsync(dialogOwner);
+            }
         }
     }
 }

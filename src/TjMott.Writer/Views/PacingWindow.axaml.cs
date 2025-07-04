@@ -75,7 +75,7 @@ namespace TjMott.Writer.Views
             Activated -= PacingWindow_Activated;
             doRender();
         }
-        private void doRender()
+        private async void doRender()
         {
             Grid grid = this.FindControl<Grid>("chapterGrid");
 
@@ -86,13 +86,13 @@ namespace TjMott.Writer.Views
 
             foreach (var chap in _chapters)
             {
-                totalWordCount += chap.GetWordCount();
+                totalWordCount += await chap.GetWordCountAsync();
             }
 
             foreach (var chap in _chapters)
             {
                 ColumnDefinition cd = new ColumnDefinition();
-                cd.Width = new GridLength(chap.GetWordCount(), GridUnitType.Star);
+                cd.Width = new GridLength(await chap.GetWordCountAsync(), GridUnitType.Star);
                 grid.ColumnDefinitions.Add(cd);
 
                 Border b = new Border();
@@ -108,7 +108,7 @@ namespace TjMott.Writer.Views
 
                 TextBlock t = new TextBlock();
                 g.Children.Add(t);
-                t.Text = string.Format("{0}\n{1} scenes\n{2} words\n{3:p1} of story", chap.Model.Name, chap.Scenes.Count, chap.GetWordCount(), chap.GetWordCount() / totalWordCount);
+                t.Text = string.Format("{0}\n{1} scenes\n{2} words\n{3:p1} of story", chap.Model.Name, chap.Scenes.Count, await chap.GetWordCountAsync(), await chap.GetWordCountAsync() / totalWordCount);
                 t.Margin = new Thickness(1);
                 ToolTip.SetTip(t, t.Text);
                 Grid.SetRow(t, 1);
@@ -121,7 +121,7 @@ namespace TjMott.Writer.Views
                 foreach (var scene in chap.Scenes)
                 {
                     cd = new ColumnDefinition();
-                    cd.Width = new GridLength(scene.GetWordCount(), GridUnitType.Star);
+                    cd.Width = new GridLength(await scene.GetWordCountAsync(), GridUnitType.Star);
                     sceneGrid.ColumnDefinitions.Add(cd);
 
                     b = new Border();
@@ -140,7 +140,7 @@ namespace TjMott.Writer.Views
 
                     t = new TextBlock();
                     tContainer.Child = t;
-                    t.Text = string.Format("{0}\n{1} words\n{2:p1} of chapter", scene.Model.Name, scene.GetWordCount(), scene.GetWordCount() / (double)chap.GetWordCount());
+                    t.Text = string.Format("{0}\n{1} words\n{2:p1} of chapter", scene.Model.Name, await scene.GetWordCountAsync(), await scene.GetWordCountAsync() / (double)await chap.GetWordCountAsync());
                     ToolTip.SetTip(b, t.Text);
 
                     sceneCol++;

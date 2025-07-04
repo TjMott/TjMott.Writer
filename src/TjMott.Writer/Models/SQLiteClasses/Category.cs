@@ -76,6 +76,7 @@ namespace TjMott.Writer.Models.SQLiteClasses
         #endregion
 
         private static DbHelper<Category> _dbHelper;
+        private static DbCommandHelper _categoryLoader;
 
         public Category(SqliteConnection connection)
         {
@@ -123,6 +124,41 @@ namespace TjMott.Writer.Models.SQLiteClasses
                 series.id = id;
                 await series.LoadAsync().ConfigureAwait(false);
                 retval.Add(series);
+            }
+            return retval;
+        }
+
+        public static async Task<List<Category>> LoadForUniverse(long universeId, SqliteConnection connection)
+        {
+            if (_dbHelper == null)
+                _dbHelper = new DbHelper<Category>(connection);
+
+            if (_categoryLoader == null)
+            {
+                _categoryLoader = new DbCommandHelper(connection);
+                _categoryLoader.Command.CommandText = string.Format("SELECT [id] FROM {0} WHERE {1} = @universeId",
+                                                                    _dbHelper.TableName,
+                                                                    nameof(UniverseId));
+                _categoryLoader.AddParameter("@universeId");
+            }
+
+            _categoryLoader.Parameters["@universeId"].Value = universeId;
+            List<long> ids = new List<long>();
+            using (var reader = await _categoryLoader.Command.ExecuteReaderAsync())
+            {
+                while (await reader.ReadAsync())
+                {
+                    ids.Add(reader.GetInt64(0));
+                }
+            }
+
+            List<Category> retval = new List<Category>();
+            foreach (long id in ids)
+            {
+                Category category = new Category(connection);
+                category.id = id;
+                await category.LoadAsync().ConfigureAwait(false);
+                retval.Add(category);
             }
             return retval;
         }
