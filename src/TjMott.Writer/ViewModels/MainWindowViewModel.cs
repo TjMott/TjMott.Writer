@@ -98,48 +98,6 @@ namespace TjMott.Writer.ViewModels
             while (!dialogOwner.IsActive)
                 await Task.Delay(100);
 
-            // Check that CEF initialized.
-#if FALSE
-            if (!CefNetAppImpl.InitSuccess)
-            {
-                if (!CefNetAppImpl.IsCefInstalled)
-                {
-                    var msgBox = MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard("CEF Not Installed",
-                        "CEF, a necessary component for the editor, is not installed." + Environment.NewLine +
-                        "Would you like to install it now?" + Environment.NewLine +
-                        "You can continue using the application without it," + Environment.NewLine + "but you will not be able to open or view any documents.",
-                        MsBox.Avalonia.Enums.ButtonEnum.YesNoAbort,
-                        MsBox.Avalonia.Enums.Icon.Question,
-                        WindowStartupLocation.CenterOwner);
-                    var result = await msgBox.ShowWindowDialogAsync(dialogOwner);
-                    if (result == MsBox.Avalonia.Enums.ButtonResult.Abort)
-                    {
-                        (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime).Shutdown(1);
-                        return;
-                    }
-                    else if (result == MsBox.Avalonia.Enums.ButtonResult.Yes)
-                    {
-                        CefNetAppImpl.RestartAndInstallCef();
-                        return;
-                    }
-                }
-                else
-                {
-                    var msgBox = MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard("CEF Initialization Error",
-                        CefNetAppImpl.InitErrorMessage + Environment.NewLine + "You can try to continue using the application," + Environment.NewLine +  "but you will not be able to open or view any documents.",
-                        MsBox.Avalonia.Enums.ButtonEnum.OkAbort,
-                        MsBox.Avalonia.Enums.Icon.Error,
-                        WindowStartupLocation.CenterOwner);
-                    var result = await msgBox.ShowWindowDialogAsync(dialogOwner);
-                    if (result == MsBox.Avalonia.Enums.ButtonResult.Abort)
-                    {
-                        (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime).Shutdown(1);
-                        return;
-                    }
-                }
-            }
-#endif
-
             // Check QuillJS hashes.
             // Was nice in theory, but somehow the hashing algorithm is sensitive to newline differences between Windows and Linux even though it operates in byte mode.
             // Disable for now.
@@ -302,22 +260,6 @@ namespace TjMott.Writer.ViewModels
                     menuItem.Command = ReactiveCommand.Create<Universe>(SelectUniverse);
                     UniverseMenuItems.Add(menuItem);
                 }
-            }
-        }
-
-        public async void InstallCef(Window dialogOwner)
-        {
-           var buttonResult = await MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard("Install CEF?",
-                                    "Install CEF? This will restart the application.",
-                                    MsBox.Avalonia.Enums.ButtonEnum.YesNo,
-                                    MsBox.Avalonia.Enums.Icon.Question,
-                                    WindowStartupLocation.CenterOwner).ShowWindowDialogAsync(dialogOwner);
-
-            if (buttonResult == MsBox.Avalonia.Enums.ButtonResult.Yes)
-            {
-                if (Database != null)
-                    Database.Close();
-                //CefNetAppImpl.RestartAndInstallCef();
             }
         }
     }

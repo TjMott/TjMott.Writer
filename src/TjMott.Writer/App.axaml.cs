@@ -1,7 +1,6 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using System.IO;
 using TjMott.Writer.ViewModels;
 using TjMott.Writer.Views;
 
@@ -9,7 +8,6 @@ namespace TjMott.Writer
 {
     public partial class App : Application
     {
-        public static bool InstallCef = false;
         public override void Initialize()
         {
             AvaloniaXamlLoader.Load(this);

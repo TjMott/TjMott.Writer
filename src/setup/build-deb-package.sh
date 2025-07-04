@@ -1,8 +1,8 @@
 #!/bin/sh
 
-export VERSION_MAJOR="0"
-export VERSION_MINOR="5"
-export VERSION_REVISION="3"
+export VERSION_MAJOR="1"
+export VERSION_MINOR="0"
+export VERSION_REVISION="0"
 
 export PACKAGE=tjm-writer_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_REVISION}-1_amd64
 
@@ -38,9 +38,6 @@ chmod 0775 ${PACKAGE}/DEBIAN/prerm
 echo "#!/bin/sh" >> ${PACKAGE}/DEBIAN/prerm
 echo "rm -rf /opt/TjMott.Writer/Assets" >> ${PACKAGE}/DEBIAN/prerm
 echo "rm -rf /opt/TjMott.Writer/GPUCache" >> ${PACKAGE}/DEBIAN/prerm
-echo "if [ -f /opt/TjMott.Writer/cefinstalled ]; then rm /opt/TjMott.Writer/cefinstalled; fi" >> ${PACKAGE}/DEBIAN/prerm
-echo "if [ -f /opt/TjMott.Writer/installingcef ]; then rm /opt/TjMott.Writer/installingcef; fi" >> ${PACKAGE}/DEBIAN/prerm
-echo "if [ -f /opt/TjMott.Writer/cef.tar.bz2 ]; then rm /opt/TjMott.Writer/cef.tar.bz2; fi" >> ${PACKAGE}/DEBIAN/prerm
 
 # Create uninstall post-removal file to update MIME types
 touch ${PACKAGE}/DEBIAN/postrm
@@ -60,10 +57,6 @@ cp src/setup/tjm-writer.desktop ${PACKAGE}/usr/share/applications/
 # Copy MIME type registration
 mkdir -p ${PACKAGE}/usr/share/mime/packages/
 cp src/setup/application-tjm-writer.xml ${PACKAGE}/usr/share/mime/packages/
-
-# Copy policykit policy to allow elevation when installing CEF
-mkdir -p ${PACKAGE}/usr/share/polkit-1/actions/
-cp src/setup/com.tjmott.tjm-writer.policy ${PACKAGE}/usr/share/polkit-1/actions/
 
 # Create deb
 dpkg-deb --build --root-owner-group ${PACKAGE}

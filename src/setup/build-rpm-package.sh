@@ -67,7 +67,6 @@ BuildRoot: ${RPM_TMP}
 %attr(0644, root, root) /opt/TjMott.Writer/README.md
 %attr(0644, root, root) /opt/TjMott.Writer/Assets/*
 %attr(0644, root, root) /opt/TjMott.Writer/WordTemplates/*
-%attr(0644, root, root) /usr/share/polkit-1/actions/com.tjmott.tjm-writer.policy
 %attr(0644, root, root) /usr/share/applications/tjm-writer.desktop
 %attr(0644, root, root) /usr/share/mime/packages/application-tjm-writer.xml
 
@@ -78,8 +77,6 @@ update-desktop-database /usr/share/applications
 exit
 
 %postun
-# Clean up installation folder
-rm -rf /opt/TjMott.Writer
 # Clean up MIME types and application
 update-mime-database /usr/share/mime
 update-desktop-database /usr/share/applications

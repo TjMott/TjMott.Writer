@@ -72,7 +72,6 @@
 			</MenuItem>
 			<MenuItem Header="Debug" IsVisible="{Binding IsDebugMode}">
 				<MenuItem Header="Show Quill Hashes" Command="{Binding ShowQuillHashes}" CommandParameter="{Binding $parent[Window]}" />
-				<MenuItem Header="Install CEF" Command="{Binding InstallCef}" CommandParameter="{Binding $parent[Window]}" />
 				<MenuItem Header="Database">
 					<MenuItem Header="Reload" Command="{Binding Database.LoadAsync}" />
 					<MenuItem Header="Vacuum" Command="{Binding Database.Vacuum}" />

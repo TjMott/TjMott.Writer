@@ -1,13 +1,13 @@
 [Setup]
 AppId="TjMott.Writer"
 AppName="TJ Mott's Writer"
-AppVersion=0.5.3
+AppVersion=1.0.0
 DefaultDirName="{commonpf}\TJ Mott\TJ Mott's Writer"
 VersionInfoCompany="TJ Mott"
-VersionInfoCopyright="Copyright (C) 2020, TJ Mott"
+VersionInfoCopyright="Copyright (C) 2025, TJ Mott"
 DefaultGroupName="TJ Mott's Writer"
 OutputDir=..\..
-OutputBaseFilename="tjm-writer-v0.5.3-win64"
+OutputBaseFilename="tjm-writer-v1.0.0-win64"
 Compression=lzma
 SolidCompression=yes
 AppContact="TJ Mott (tj@tjmott.com)"
@@ -44,9 +44,3 @@ Name: "{group}\Uninstall TJ Mott's Writer";   Filename: "{uninstallexe}";
 Name: "{group}\Visit TJ's Website";           Filename: "https://www.tjmott.com";
 Name: "{group}\Visit Project Website";        Filename: "https://github.com/TjMott/TjMott.Writer";
 
-[UninstallDelete]
-Type: filesandordirs;  Name: "{app}\Assets\cef-win64";
-Type: filesandordirs;  Name: "{app}\GPUCache";
-Type: files;           Name: "{app}\cefinstalled";
-Type: files;           Name: "{app}\installingcef";
-Type: files;           Name: "{app}\cef.tar.bz2";
