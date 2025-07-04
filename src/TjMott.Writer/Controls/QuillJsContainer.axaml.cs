@@ -85,34 +85,22 @@ namespace TjMott.Writer.Controls
 
         private void internalInitialize()
         {
-            //if (CefNetAppImpl.InitSuccess)
-            {
-                _documentInterop = new DocumentInterop();
-                _documentInterop.ReadyToInitialize += _documentInterop_ReadyToInitialize;
-                _documentInterop.EditorLoaded += _documentInterop_EditorLoaded;
-                _documentInterop.TextChanged += _documentInterop_TextChanged;
+            _documentInterop = new DocumentInterop();
+            _documentInterop.ReadyToInitialize += _documentInterop_ReadyToInitialize;
+            _documentInterop.EditorLoaded += _documentInterop_EditorLoaded;
+            _documentInterop.TextChanged += _documentInterop_TextChanged;
 
-                _editor = new QuillJsEditor();
-                _editor.IsVisible = false; // Start invisible to hide any flashing due to theme loading.
+            _editor = new QuillJsEditor();
+            _editor.IsVisible = false; // Start invisible to hide any flashing due to theme loading.
 
-                // Push theme down to JS app.
-                Application.Current.ActualThemeVariantChanged += Application_ActualThemeVariantChanged;
-                updateEditorTheme();
+            // Push theme down to JS app.
+            Application.Current.ActualThemeVariantChanged += Application_ActualThemeVariantChanged;
+            updateEditorTheme();
 
-                _editor.RegisterJavascriptObject(_documentInterop, DOCUMENT_INTEROP_KEY, DocumentInterop.AsyncCallNativeMethod);
+            _editor.RegisterJavascriptObject(_documentInterop, DOCUMENT_INTEROP_KEY, DocumentInterop.AsyncCallNativeMethod);
                 
-                webViewContainer.Children.Add(_editor);
-                zoomSlider.PropertyChanged += zoomSlider_PropertyChanged;
-                
-            }
-            /*else if (!CefNetAppImpl.IsCefInstalled)
-            {
-                webViewContainer.Children.Add(new CefNotInstalledContainer());
-            }
-            else
-            {
-                webViewContainer.Children.Add(new EditorCefErrorDisplay());
-            }*/
+            webViewContainer.Children.Add(_editor);
+            zoomSlider.PropertyChanged += zoomSlider_PropertyChanged;
         }
 
         private void Application_ActualThemeVariantChanged(object sender, EventArgs e)

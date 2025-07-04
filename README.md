@@ -13,18 +13,14 @@ The change log is at the end of this readme.
 
 ## Supported Platforms
 
-TJ Mott's Writer is cross-platform and fully tested/supported on Windows 10, Linux Mint 20, and Rocky Linux 8. Unofficially, it should work on any Linux that supports .NET 6, and it'll probably work on Mac with a bit of code tweaking. Only 64-bit operating systems are supported.
-
-## Beta Warning
-
-This software has come a long way since I started writing it many years ago. Technically it's still a beta, as is the GUI toolkit used, but that doesn't mean you should be scared to use it. I may do a 1.0 release once I am reasonably confident that the application is feature-complete and its dependencies are stable. (But don't hold your breath.)
+TJ Mott's Writer is cross-platform and fully tested/supported on Windows 11 and Linux Mint 22. Unofficially, it should work on any Linux that supports .NET 8, and it'll probably work on Mac with a bit of code tweaking. Only 64-bit operating systems are supported.
 
 
 ## Installation
 
 #### Windows
 
-1. Download and install the [64-bit .NET 6 Desktop runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) from Microsoft.
+1. Download and install the [64-bit .NET 8 Desktop runtime](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) from Microsoft.
 2. Then, grab the latest Windows installer from [my releases page](https://github.com/TjMott/TjMott.Writer/releases).
 3. Once downloaded, you may have to right-click the file, go to "Properties", and check the "Unblock" checkbox before Windows will allow you to install it.
 4. Double-click to install.
@@ -33,29 +29,26 @@ This software has come a long way since I started writing it many years ago. Tec
 
 #### Debian-based Linuxes (Debian, Ubuntu, Mint)
 
-1. Install the .NET 6 SDK and X11 dependency: `sudo apt-get install dotnet-sdk-6.0 libx11-dev`
+1. Install the .NET 8 SDK and X11 dependency: `sudo apt-get install dotnet-sdk-8.0 libx11-dev`
 2. Download the latest `.deb` file from [my releases page](https://github.com/TjMott/TjMott.Writer/releases).
-3. Install the deb file: `sudo dpkg -i tjm-writer_0.5.1-1_amd64.deb`
+3. Install the deb file: `sudo dpkg -i tjm-writer_1.0.0-1_amd64.deb`
 4. Now you can launch TJ Mott's Writer from your launcher, or by executing `/opt/TjMott.Writer/TjMott.Writer`
 5. On first run, it will need to download and install CEF. Let it do so, then re-launch the application and it'll be ready to use.
 
 #### Red Hat-based Linuxes (Red Hat, Fedora, CentOS, Rocky)
 
-1. Install the .NET 6 SDK and X11 dependency: `sudo dnf install dotnet-sdk-6.0 libX11-devel`
+1. Install the .NET 8 SDK and X11 dependency: `sudo dnf install dotnet-sdk-8.0 libX11-devel`
 2. Download the latest `.rpm` file from [my releases page](https://github.com/TjMott/TjMott.Writer/releases).
-3. Install the rpm: `sudo rpm -i tjm-writer-0.5.1-1.x86_64.rpm`
+3. Install the rpm: `sudo rpm -i tjm-writer-1.0.0-1.x86_64.rpm`
 4. Now you can launch TJ Mott's Writer from your launcher, or by executing `/opt/TjMott.Writer/TjMott.Writer`
 5. On first run, it will need to download and install CEF. Let it do so, then re-launch the application and it'll be ready to use.
 
 #### Portable Installation
 
-There are portable installations for both Windows and Linux available from my releases page. Download and extract the zip file for Windows and run `TjMott.Writer.exe`, or the tar.gz file on Linux and run `TjMott.Writer` from a terminal. You still need .NET 6 on all platforms, and the libx11 dependency on Linux. Note that you don't get Start Menu/launcher entries or .wdb file associations with the portable installation.
+There are portable installations for both Windows and Linux available from my releases page. Download and extract the zip file for Windows and run `TjMott.Writer.exe`, or the tar.gz file on Linux and run `TjMott.Writer` from a terminal. You still need .NET 8 on all platforms, and the libx11 dependency on Linux. Note that you don't get Start Menu/launcher entries or .wdb file associations with the portable installation.
 
-If you are installing to a USB drive, you need at least 1 GB of free space (Windows) or 3 GB free space (Linux) on first run or it may fail to download/extract CEF. If you really want to keep the application on a small-capacity USB drive, first install it to your main system drive, run it once, then copy the application to the USB drive after it's done installing CEF. Once CEF is installed into the application, it requires about 500 MB storage on Windows and about 1.5 GB on Linux.
 
 ## Upgrading
-
-If you are updating an existing installation, I recommend fully removing older versions before installing the new version. On Windows, you can uninstall through the Control Panel, and on Linux it'll be either `sudo dpkg -r tjm-writer` or `sudo rpm -e tjm-writer`. If you don't do this, you may run into issues with CEF.
 
 TJ Mott's Writer will automatically upgrade your .wdb files if the file format changes between versions. However, it's always recommended to back them up first just in case! If you have any issues upgrading .wdb's or notice a loss of data, please contact me with details so I can investigate.
 
@@ -147,11 +140,11 @@ The installers only include Release mode binaries. But if you build locally and 
 
 ### Main Dependencies
 
-The application framework is [Avalonia UI](https://github.com/AvaloniaUI/Avalonia), a cross-platform GUI toolkit for .NET 6 which is heavily inspired by the Windows Presentation Foundation (WPF) framework. The older Windows-only versions of TJ Mott's Writer used WPF which made Avalonia a natural choice when I began working towards cross-platform support.
+The application framework is [Avalonia UI](https://github.com/AvaloniaUI/Avalonia), a cross-platform GUI toolkit for .NET 8 which is heavily inspired by the Windows Presentation Foundation (WPF) framework. The older Windows-only versions of TJ Mott's Writer used WPF which made Avalonia a natural choice when I began working towards cross-platform support.
 
 The main editor control is built upon [Quill](https://quilljs.com/), a web-based rich text editor created in HTML/JavaScript/CSS. Quill is checked into source and distributed with the application, not loaded from a CDN. Quill uses its own JSON-based file format called ["delta"](https://quilljs.com/docs/delta/) which I store as plain text records inside the .wdb's "Document" table.
 
-I use the [Chromium Embedded Framework (CEF)](https://github.com/chromiumembedded) to create a browser frame which hosts the Quill editor. A Nuget package called [CefNet](https://github.com/CefNet/CefNet) provides the bridge between the application's main C# logic and the editor's JavaScript/JSON. CEF is not distributed with TJ Mott's Writer due to size concerns (the Linux .so is ~1.5 GB in size!!), but it is automatically downloaded and installed from [Spotify](https://cef-builds.spotifycdn.com/index.html) into the application's directory when you first run.
+I use the [Chromium Embedded Framework (CEF)](https://github.com/chromiumembedded) to create a browser frame which hosts the Quill editor. A Nuget package called [CefGlue](https://github.com/OutSystems/CefGlue) provides the bridge between the application's main C# logic and the editor's JavaScript/JSON.
 
 Using an HTML/JS editor inside an embedded Chromium frame might seem pretty weird, and it definitely wasn't my first choice. I'd have preferred a pure C# document editor. But I wasn't able to find anything out there that fit my needs and was cross-platform, nor was I ready to invest the time to write my own editor control. I played with Quill and it fit all my needs, hence the weird mashup of C#/.NET and HTML/JavaScript with Chromium glue.
 
@@ -173,7 +166,7 @@ I highly suggest only building from tags. Using a build from master for anything
 
 #### Windows
 
-If you only want to build, you need the [64-bit Visual Studio 2022 SDK for .NET 6.0]( https://dotnet.microsoft.com/en-us/download/visual-studio-sdks). Run `src/setup/publish-win64.bat` to create binaries at `win64`. Start the application by running `win64/TjMott.Writer.exe`.
+If you only want to build, you need the [64-bit Visual Studio 2022 SDK for .NET 8.0]( https://dotnet.microsoft.com/en-us/download/visual-studio-sdks). Run `src/setup/publish-win64.bat` to create binaries at `win64`. Start the application by running `win64/TjMott.Writer.exe`.
 
 If you want to generate an installer, compile `src/setup/TjMott.Writer-win64.iss` with [InnoSetup 6](https://jrsoftware.org/isdl.php) and you'll have an MSI. The MSI does some nice things like Start Menu entries and registering the .wdb file extension with the application.
 
@@ -181,13 +174,13 @@ If you want to dig around in the source, then I highly recommend installing [Vis
 
 #### Linux
 
-The .NET 6 SDK and X11 development dependencies must be installed first, using either `sudo apt-get install dotnet-sdk-6.0 libx11-dev` or `sudo dnf install dotnet-sdk-6.0 libX11-devel`. Then run `src/setup/publish-linux64.sh` to create binaries at `linux64` and a portable .tar.gz package in the repository root. Start the application by running `src/linux64/TjMott.Writer` from a terminal.
+The .NET 8 SDK and X11 development dependencies must be installed first, using either `sudo apt-get install dotnet-sdk-8.0 libx11-dev` or `sudo dnf install dotnet-sdk-8.0 libX11-devel`. Then run `src/setup/publish-linux64.sh` to create binaries at `linux64` and a portable .tar.gz package in the repository root. Start the application by running `src/linux64/TjMott.Writer` from a terminal.
 
 If you want to generate a .rpm or .deb installer, next run `src/setup/build-rpm-package.sh` or `src/setup/build-deb-package.sh`. The installers install to `/opt/TjMott.Writer`. They also register a new MIME type (application/tjm-writer) to `/usr/share/mime/packages` and place a .desktop file in `/usr/share/applications`, which adds the application to your launcher and associates .wdb files with it.
 
 #### Mac
 
-Apple/Mac is completely unsupported and untested, however the code should compile and run on Mac with relatively few changes. Apart from installing and initializing CEF, the Windows and Linux codepaths are 100% identical and I don't expect Mac to be any different. Fixing up the CEF install/initialization for Mac ought to be fairly straightforward, and I expect everything else to run as-is.
+Apple/Mac is completely unsupported and untested, however the code should compile and run on Mac with relatively few changes. The Windows and Linux codepaths are 100% identical and I don't expect Mac to be any different.
 
 Then I expect it'll require significant time and effort, and probably some expensive accounts and certificates to do whatever Apple requires to properly create a distributable package.
 
@@ -195,17 +188,26 @@ Apple support is not on my radar, but I will gladly accept pull requests.
 
 ### Privacy Notes
 
-I take data privacy seriously. Once fully installed, TJ Mott's Writer does not require an Internet connection. It should never use the Internet except for initially downloading CEF. QuillJS is loaded locally from the application directory using a `file:///` URI, and not from a CDN.
+I take data privacy seriously. Once fully installed, TJ Mott's Writer should not require an Internet connection. It should never use the Internet except for initially downloading CEF. QuillJS is loaded locally from the application directory using a `file:///` URI, and not from a CDN.
 
-The use of CEF to host/edit document data may be very concerning to some, since it's related to Chromium/Chrome. Initially, it performed a lot of telemetry and monitoring, including frequent and unnecessary communication with remote servers while editing local documents. I did my best to configure CEF to shut that down, and I don't see any network chatter from it in my logs anymore. But if you notice anything, please let me know. The details on how I shut CEF up can be found in `src/TjMott.Writer/CefNetAppImpl.cs`.
+A previous implementation using CefNet provided a lot of switches for my app to enable privacy features and prevent CEF from sending telemetry and other web requests to the Internet. Unfortunately, CefNet became unmaintained and the source was removed from GitHub. I had to migrate to CefGlue to update from AvaloniaUI 0.10 to the modern 11 version, and CefGlue doesn't provide nearly as much control over the embedded browser's behavior. I will make all reasonable efforts to provide data privacy, but I'm not responsible for any data leaks or IP theft that occur as a result of CEF doing unsavory things at runtime.
 
 ***
 
 ## Change Log
 
+###Version 1.0.0
+
+### General Updates
+
+* Upgraded to modern AvaloniaUI (version 11+)
+* Migrated from CefNet to CefGlue due to lack of Avalonia 11 support from CefNet
+* Lots of performance updates and improved features due to Avalonia framework updates, e.g. proper light/dark theme support.
+* Updated to .NET 8.0
+
 ### Version 0.5.2
 
-### New Features
+#### New Features
 
 * Enabled printing for notes documents.
 
@@ -244,4 +246,5 @@ The use of CEF to host/edit document data may be very concerning to some, since 
 * Ticket tracker
 * File repository
 * Spellcheck dictionary
+
 
