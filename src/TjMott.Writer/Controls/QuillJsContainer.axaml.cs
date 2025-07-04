@@ -75,14 +75,6 @@ namespace TjMott.Writer.Controls
             internalInitialize();
         }
 
-        private void updateEditorTheme()
-        {
-            if (Application.Current.ActualThemeVariant == ThemeVariant.Light)
-                _editor.ExecuteJavaScript("enableLightTheme();");
-            else
-                _editor.ExecuteJavaScript("enableDarkTheme();");
-        }
-
         private void internalInitialize()
         {
             _documentInterop = new DocumentInterop();
@@ -93,14 +85,18 @@ namespace TjMott.Writer.Controls
             _editor = new QuillJsEditor();
             _editor.IsVisible = false; // Start invisible to hide any flashing due to theme loading.
 
-            // Push theme down to JS app.
-            Application.Current.ActualThemeVariantChanged += Application_ActualThemeVariantChanged;
-            updateEditorTheme();
-
             _editor.RegisterJavascriptObject(_documentInterop, DOCUMENT_INTEROP_KEY, DocumentInterop.AsyncCallNativeMethod);
                 
             webViewContainer.Children.Add(_editor);
             zoomSlider.PropertyChanged += zoomSlider_PropertyChanged;
+        }
+
+        private void updateEditorTheme()
+        {
+            if (Application.Current.ActualThemeVariant == ThemeVariant.Light)
+                _editor.ExecuteJavaScript("enableLightTheme();");
+            else
+                _editor.ExecuteJavaScript("enableDarkTheme();");
         }
 
         private void Application_ActualThemeVariantChanged(object sender, EventArgs e)
@@ -122,6 +118,12 @@ namespace TjMott.Writer.Controls
             setIsReadOnly(true);
             if (_document != null)
                 loadDocument();
+
+            // Push theme down to JS app.
+            updateEditorTheme();
+
+            // Listen in case user changes theme while the editor exists.
+            Application.Current.ActualThemeVariantChanged += Application_ActualThemeVariantChanged;
 
             if (!AllowUserEditing)
                 _editor.ExecuteJavaScript("window.showToolbar(false);");

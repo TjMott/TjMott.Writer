@@ -1,0 +1,46 @@
+@import url("quill.snow.css");
+
+html {
+    background: black;
+}
+
+.ql-container {
+    color: white;
+    background: #181818;
+}
+
+.ql-snow a {
+    color: #06c;
+}
+
+.ql-container.ql-snow {
+    border: 1px solid #777;
+}
+
+.ql-toolbar.ql-snow {
+    border: 1px solid #777;
+    background: #181818;
+    color: white;
+}
+
+.ql-snow .ql-stroke {
+    stroke: #ccc;
+}
+
+.ql-snow .ql-stroke-miter {
+    stroke: #ccc;
+}
+
+.ql-snow .ql-fill,
+.ql-snow .ql-stroke.ql-fill {
+    fill: #ccc;
+}
+
+.ql-snow .ql-picker-label {
+    color: white;
+}
+
+.ql-snow .ql-picker-options {
+    background-color: #222;
+    color: white;
+}

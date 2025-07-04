@@ -14,6 +14,8 @@ namespace TjMott.Writer.Views
 
             Width = AppSettings.Default.mainWindowWidth;
             Height = AppSettings.Default.mainWindowHeight;
+
+            Title += " v" + GetType().Assembly.GetName().Version.ToString();
         }
 
         public async void Window_Closing(object sender, CancelEventArgs args)
