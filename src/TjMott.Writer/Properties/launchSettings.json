@@ -1,7 +1,8 @@
 {
   "profiles": {
     "TjMott.Writer": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "remoteDebugEnabled": true
     }
   }
 }

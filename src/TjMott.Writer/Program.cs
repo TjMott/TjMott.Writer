@@ -1,8 +1,10 @@
 using Avalonia;
 using Avalonia.ReactiveUI;
 using System;
+using System.Diagnostics;
 using System.IO;
-using System.Reflection;
+using System.Linq;
+using System.Threading;
 using Xilium.CefGlue;
 using Xilium.CefGlue.Common;
 
@@ -19,6 +21,19 @@ namespace TjMott.Writer
         [STAThread]
         public static void Main(string[] args)
         {
+            // Code to assist with remote debugging for Linux.
+            if (args.Contains("--wait-for-attach"))
+            {
+                Console.WriteLine("Waiting for debugger to attach...");
+                while (!Debugger.IsAttached)
+                {
+                    Thread.Sleep(100);
+                    if (Debugger.IsAttached)
+                    {
+                        Console.WriteLine("Debugger attached.");
+                    }
+                }
+            }
             AppDomain.CurrentDomain.ProcessExit += delegate { Cleanup(); };
 
             BuildAvaloniaApp()
@@ -29,7 +44,7 @@ namespace TjMott.Writer
         public static AppBuilder BuildAvaloniaApp()
             => AppBuilder.Configure<App>()
                 .UsePlatformDetect()
-                .With(new Win32PlatformOptions())
+                //.With(new Win32PlatformOptions())
                 .AfterSetup(_ =>
                 {
                     // Initialize theme from persisted user settings.
