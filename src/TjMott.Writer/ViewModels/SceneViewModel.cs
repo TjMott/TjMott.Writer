@@ -110,7 +110,7 @@ namespace TjMott.Writer.ViewModels
             if (result != null)
             {
                 Model.Name = result;
-                await Model.SaveAsync().ConfigureAwait(false);
+                await Model.SaveAsync();
             }
         }
 
@@ -120,7 +120,7 @@ namespace TjMott.Writer.ViewModels
             bool result = await dialog.ShowDialog<bool>(owner);
             if (result)
             {
-                await Model.DeleteAsync().ConfigureAwait(false);
+                await Model.DeleteAsync();
                 ChapterVm.DeleteScene(this);
             }
         }

@@ -93,23 +93,23 @@ namespace TjMott.Writer.Models.SQLiteClasses
 
         public async Task CreateAsync()
         {
-            await _dbHelper.InsertAsync(this).ConfigureAwait(false);
-            await LoadAsync().ConfigureAwait(false);
+            await _dbHelper.InsertAsync(this);
+            await LoadAsync();
         }
 
         public async Task DeleteAsync()
         {
-            await _dbHelper.DeleteAsync(this).ConfigureAwait(false);
+            await _dbHelper.DeleteAsync(this);
         }
 
         public async Task LoadAsync()
         {
-            await _dbHelper.LoadAsync(this).ConfigureAwait(false);
+            await _dbHelper.LoadAsync(this);
         }
 
         public async Task SaveAsync()
         {
-            await _dbHelper.UpdateAsync(this).ConfigureAwait(false);
+            await _dbHelper.UpdateAsync(this);
         }
 
         public Chapter Clone()
@@ -126,12 +126,12 @@ namespace TjMott.Writer.Models.SQLiteClasses
                 _dbHelper = new DbHelper<Chapter>(connection);
 
             List<Chapter> retval = new List<Chapter>();
-            List<long> ids = await _dbHelper.GetAllIdsAsync().ConfigureAwait(false);
+            List<long> ids = await _dbHelper.GetAllIdsAsync();
             foreach (long id in ids)
             {
                 Chapter chapter = new Chapter(connection);
                 chapter.id = id;
-                await chapter.LoadAsync().ConfigureAwait(false);
+                await chapter.LoadAsync();
                 retval.Add(chapter);
             }
             return retval;
@@ -166,7 +166,7 @@ namespace TjMott.Writer.Models.SQLiteClasses
             {
                 Chapter chapter = new Chapter(connection);
                 chapter.id = id;
-                await chapter.LoadAsync().ConfigureAwait(false);
+                await chapter.LoadAsync();
                 retval.Add(chapter);
             }
             return retval;

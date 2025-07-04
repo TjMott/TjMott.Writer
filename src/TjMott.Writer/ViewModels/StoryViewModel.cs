@@ -32,7 +32,7 @@ namespace TjMott.Writer.ViewModels
         }
         public async Task SaveAsync()
         {
-            await Model.SaveAsync().ConfigureAwait(false);
+            await Model.SaveAsync();
         }
         #endregion
 
@@ -95,7 +95,7 @@ namespace TjMott.Writer.ViewModels
             bool result = await dialog.ShowDialog<bool>(owner);
             if (result)
             {
-                await Model.SaveAsync().ConfigureAwait(false);
+                await Model.SaveAsync();
                 UniverseVm.UpdateStoryInTree(this);
             }
         }
@@ -155,7 +155,7 @@ namespace TjMott.Writer.ViewModels
             bool result = await dialog.ShowDialog<bool>(owner);
             if (result)
             {
-                await Model.DeleteAsync().ConfigureAwait(false);
+                await Model.DeleteAsync();
                 await UniverseVm.DeleteSubItem(this);
             }
         }
@@ -173,7 +173,7 @@ namespace TjMott.Writer.ViewModels
                     chapter.SortIndex = 0;
                 else
                     chapter.SortIndex = Chapters.Max(i => i.Model.SortIndex) + 1;
-                await chapter.CreateAsync().ConfigureAwait(false);
+                await chapter.CreateAsync();
                 ChapterViewModel chapterVm = new ChapterViewModel(chapter);
                 chapterVm.StoryVm = this;
                 Chapters.Add(chapterVm);

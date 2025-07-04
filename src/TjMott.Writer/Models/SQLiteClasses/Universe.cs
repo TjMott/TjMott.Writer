@@ -111,23 +111,23 @@ namespace TjMott.Writer.Models.SQLiteClasses
 
         public async Task CreateAsync()
         {
-            await _dbHelper.InsertAsync(this).ConfigureAwait(false);
-            await LoadAsync().ConfigureAwait(false);
+            await _dbHelper.InsertAsync(this);
+            await LoadAsync();
         }
 
         public async Task DeleteAsync()
         {
-            await _dbHelper.DeleteAsync(this).ConfigureAwait(false);
+            await _dbHelper.DeleteAsync(this);
         }
 
         public async Task LoadAsync()
         {
-            await _dbHelper.LoadAsync(this).ConfigureAwait(false);
+            await _dbHelper.LoadAsync(this);
         }
 
         public async Task SaveAsync()
         {
-            await _dbHelper.UpdateAsync(this).ConfigureAwait(false);
+            await _dbHelper.UpdateAsync(this);
         }
 
         public static async Task<List<Universe>> LoadAll(SqliteConnection connection)
@@ -136,12 +136,12 @@ namespace TjMott.Writer.Models.SQLiteClasses
                 _dbHelper = new DbHelper<Universe>(connection);
 
             List<Universe> retval = new List<Universe>();
-            List<long> ids = await _dbHelper.GetAllIdsAsync().ConfigureAwait(false);
+            List<long> ids = await _dbHelper.GetAllIdsAsync();
             foreach (long id in ids)
             {
                 Universe universe = new Universe(connection);
                 universe.id = id;
-                await universe.LoadAsync().ConfigureAwait(false);
+                await universe.LoadAsync();
                 retval.Add(universe);
             }
             return retval;

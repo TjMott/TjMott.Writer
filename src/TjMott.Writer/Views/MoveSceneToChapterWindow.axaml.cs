@@ -1,7 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using TjMott.Writer.ViewModels;
 
 namespace TjMott.Writer.Views
@@ -30,7 +29,7 @@ namespace TjMott.Writer.Views
         private async void okButton_Click(object sender, RoutedEventArgs e)
         {
             ChapterViewModel originalChapter = _scene.ChapterVm;
-            ChapterViewModel newChapter = (ChapterViewModel)this.FindControl<ListBox>("chapterListBox").SelectedItem;
+            ChapterViewModel newChapter = (ChapterViewModel)chapterListBox.SelectedItem;
 
             if (originalChapter != newChapter)
             {
@@ -38,7 +37,7 @@ namespace TjMott.Writer.Views
                 newChapter.Scenes.AddToEnd(_scene);
                 _scene.ChapterVm = newChapter;
                 _scene.Model.ChapterId = newChapter.Model.id;
-                await _scene.Model.SaveAsync().ConfigureAwait(false);
+                await _scene.Model.SaveAsync();
             }
             Close(true);
         }

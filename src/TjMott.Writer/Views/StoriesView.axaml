@@ -7,11 +7,11 @@
              x:Class="TjMott.Writer.Views.StoriesView">
 
 		<Grid RowDefinitions="Auto,*,Auto" ColumnDefinitions="300,5,*">
-			<TextBlock Text="Categories/Stories" />
+			<TextBlock Text="Categories/Stories" FontSize="16" />
 			<GridSplitter Grid.Column="1" Grid.RowSpan="2"
 							ResizeDirection="Columns" ResizeBehavior="PreviousAndNext"
 							Width="5" Cursor="SizeWestEast" />
-			<TextBlock Text="Selected Story" Grid.Column="2" />
+			<TextBlock Text="{Binding SelectedStoryName}" FontSize="16" Grid.Column="2" />
 
 			<!-- TreeView which only shows categories and stories. -->
 			<TreeView ItemsSource="{Binding SubItems}" SelectedItem="{Binding SelectedCategoryOrStory}"

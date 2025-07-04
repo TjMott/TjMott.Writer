@@ -153,23 +153,23 @@ namespace TjMott.Writer.Models.SQLiteClasses
 
         public async Task CreateAsync()
         {
-            await _dbHelper.InsertAsync(this).ConfigureAwait(false);
+            await _dbHelper.InsertAsync(this);
             await LoadAsync();
         }
 
         public async Task DeleteAsync()
         {
-            await _dbHelper.DeleteAsync(this).ConfigureAwait(false);
+            await _dbHelper.DeleteAsync(this);
         }
 
         public async Task LoadAsync()
         {
-            await _dbHelper.LoadAsync(this).ConfigureAwait(false);
+            await _dbHelper.LoadAsync(this);
         }
 
         public async Task SaveAsync()
         {
-            await _dbHelper.UpdateAsync(this).ConfigureAwait(false);
+            await _dbHelper.UpdateAsync(this);
         }
 
         public Scene Clone()
@@ -189,12 +189,12 @@ namespace TjMott.Writer.Models.SQLiteClasses
                 _dbHelper = new DbHelper<Scene>(connection);
 
             List<Scene> retval = new List<Scene>();
-            List<long> ids = await _dbHelper.GetAllIdsAsync().ConfigureAwait(false);
+            List<long> ids = await _dbHelper.GetAllIdsAsync();
             foreach (long id in ids)
             {
                 Scene scene = new Scene(connection);
                 scene.id = id;
-                await scene.LoadAsync().ConfigureAwait(false);
+                await scene.LoadAsync();
                 retval.Add(scene);
             }
             return retval;
@@ -229,7 +229,7 @@ namespace TjMott.Writer.Models.SQLiteClasses
             {
                 Scene scene = new Scene(connection);
                 scene.id = id;
-                await scene.LoadAsync().ConfigureAwait(false);
+                await scene.LoadAsync();
                 retval.Add(scene);
             }
             return retval;

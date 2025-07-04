@@ -179,7 +179,7 @@ namespace TjMott.Writer.ViewModels
             if (path != null)
             {
                 Database = new Database(path);
-                await Database.LoadAsync().ConfigureAwait(false);
+                await Database.LoadAsync();
                 AppSettings.Default.lastFile = Database.FileName;
                 AppSettings.Default.Save();
             }
@@ -234,7 +234,7 @@ namespace TjMott.Writer.ViewModels
                     return;
                 }
             }
-            await Database.LoadAsync().ConfigureAwait(false);
+            await Database.LoadAsync();
             AppSettings.Default.lastFile = filename;
             AppSettings.Default.Save();
             loadUniversesMenu();

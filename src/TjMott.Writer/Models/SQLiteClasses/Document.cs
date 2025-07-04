@@ -133,18 +133,18 @@ namespace TjMott.Writer.Models.SQLiteClasses
 
         public async Task CreateAsync()
         {
-            await _dbHelper.InsertAsync(this).ConfigureAwait(false);
-            await LoadAsync().ConfigureAwait(false);
+            await _dbHelper.InsertAsync(this);
+            await LoadAsync();
         }
 
         public async Task DeleteAsync()
         {
-            await _dbHelper.DeleteAsync(this).ConfigureAwait(false);
+            await _dbHelper.DeleteAsync(this);
         }
 
         public async Task LoadAsync()
         {
-            await _dbHelper.LoadAsync(this).ConfigureAwait(false);
+            await _dbHelper.LoadAsync(this);
             IsUnlocked = !IsEncrypted;
         }
 
@@ -161,7 +161,7 @@ namespace TjMott.Writer.Models.SQLiteClasses
                     return;
                 }
             }
-            await _dbHelper.UpdateAsync(this).ConfigureAwait(false);
+            await _dbHelper.UpdateAsync(this);
         }
 
         public static async Task<List<Document>> LoadAll(SqliteConnection connection)
@@ -170,12 +170,12 @@ namespace TjMott.Writer.Models.SQLiteClasses
                 _dbHelper = new DbHelper<Document>(connection);
 
             List<Document> retval = new List<Document>();
-            List<long> ids = await _dbHelper.GetAllIdsAsync().ConfigureAwait(false);
+            List<long> ids = await _dbHelper.GetAllIdsAsync();
             foreach (long id in ids)
             {
                 Document doc = new Document(connection);
                 doc.id = id;
-                await doc.LoadAsync().ConfigureAwait(false);
+                await doc.LoadAsync();
                 retval.Add(doc);
             }
             return retval;

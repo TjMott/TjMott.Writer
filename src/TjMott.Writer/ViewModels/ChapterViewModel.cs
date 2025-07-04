@@ -32,7 +32,7 @@ namespace TjMott.Writer.ViewModels
         }
         public async Task SaveAsync()
         {
-            await Model.SaveAsync().ConfigureAwait(false);
+            await Model.SaveAsync();
         }
         #endregion
 
@@ -74,7 +74,7 @@ namespace TjMott.Writer.ViewModels
             if (result != null)
             {
                 Model.Name = result;
-                await Model.SaveAsync().ConfigureAwait(false);
+                await Model.SaveAsync();
             }
         }
 
@@ -84,7 +84,7 @@ namespace TjMott.Writer.ViewModels
             bool result = await dialog.ShowDialog<bool>(owner);
             if (result)
             {
-                await Model.DeleteAsync().ConfigureAwait(false);
+                await Model.DeleteAsync();
                 StoryVm.DeleteChapter(this);
             }
         }
@@ -101,7 +101,7 @@ namespace TjMott.Writer.ViewModels
                 doc.PlainText = "";
                 doc.Json = "";
                 doc.DocumentType = "Manuscript";
-                await doc.CreateAsync().ConfigureAwait(false);
+                await doc.CreateAsync();
 
                 Scene scene = new Scene(Model.Connection);
                 scene.ChapterId = Model.id;
@@ -111,7 +111,7 @@ namespace TjMott.Writer.ViewModels
                 else
                     scene.SortIndex = Scenes.Max(i => i.Model.SortIndex) + 1;
                 scene.DocumentId = doc.id;
-                await scene.CreateAsync().ConfigureAwait(false);
+                await scene.CreateAsync();
                 SceneViewModel sceneVm = new SceneViewModel(scene);
                 sceneVm.ChapterVm = this;
                 Scenes.Add(sceneVm);

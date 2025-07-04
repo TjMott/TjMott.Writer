@@ -25,7 +25,7 @@ namespace TjMott.Writer.ViewModels
         }
         public async Task SaveAsync()
         {
-            await Model.SaveAsync().ConfigureAwait(false);
+            await Model.SaveAsync();
         }
         #endregion
 
@@ -65,7 +65,7 @@ namespace TjMott.Writer.ViewModels
             if (result != null)
             {
                 Model.Name = result;
-                await Model.SaveAsync().ConfigureAwait(false);
+                await Model.SaveAsync();
             }
         }
 
@@ -75,7 +75,7 @@ namespace TjMott.Writer.ViewModels
             bool result = await dialog.ShowDialog<bool>(owner);
             if (result)
             {
-                await Model.DeleteAsync().ConfigureAwait(false);
+                await Model.DeleteAsync();
                 await UniverseVm.DeleteSubItem(this);
             }
         }

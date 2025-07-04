@@ -187,7 +187,7 @@ namespace TjMott.Writer.ViewModels
                 {
                     uni.SortIndex = Universes.Max(i => i.SortIndex) + 1;
                 }
-                await uni.CreateAsync().ConfigureAwait(false);
+                await uni.CreateAsync();
 
                 Universes.Add(uni);
 

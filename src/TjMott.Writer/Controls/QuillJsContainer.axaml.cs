@@ -258,12 +258,12 @@ namespace TjMott.Writer.Controls
                 Document.PlainText = _documentInterop.GetDocumentText();
                 Document.WordCount = GetWordCount();
             }
-            await Document.SaveAsync().ConfigureAwait(false);
+            await Document.SaveAsync();
         }
 
         public async void Revert()
         {
-            await Document.LoadAsync().ConfigureAwait(false);
+            await Document.LoadAsync();
             SetJsonText(Document.PublicJson);
         }
 

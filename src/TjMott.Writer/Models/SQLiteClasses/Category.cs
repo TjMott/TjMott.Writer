@@ -92,23 +92,23 @@ namespace TjMott.Writer.Models.SQLiteClasses
 
         public async Task CreateAsync()
         {
-            await _dbHelper.InsertAsync(this).ConfigureAwait(false);
+            await _dbHelper.InsertAsync(this);
             await LoadAsync();
         }
 
         public async Task DeleteAsync()
         {
-            await _dbHelper.DeleteAsync(this).ConfigureAwait(false);
+            await _dbHelper.DeleteAsync(this);
         }
 
         public async Task LoadAsync()
         {
-            await _dbHelper.LoadAsync(this).ConfigureAwait(false);
+            await _dbHelper.LoadAsync(this);
         }
 
         public async Task SaveAsync()
         {
-            await _dbHelper.UpdateAsync(this).ConfigureAwait(false);
+            await _dbHelper.UpdateAsync(this);
         }
 
         public static async Task<List<Category>> LoadAll(SqliteConnection connection)
@@ -117,12 +117,12 @@ namespace TjMott.Writer.Models.SQLiteClasses
                 _dbHelper = new DbHelper<Category>(connection);
 
             List<Category> retval = new List<Category>();
-            List<long> ids = await _dbHelper.GetAllIdsAsync().ConfigureAwait(false);
+            List<long> ids = await _dbHelper.GetAllIdsAsync();
             foreach (long id in ids)
             {
                 Category series = new Category(connection);
                 series.id = id;
-                await series.LoadAsync().ConfigureAwait(false);
+                await series.LoadAsync();
                 retval.Add(series);
             }
             return retval;
@@ -157,7 +157,7 @@ namespace TjMott.Writer.Models.SQLiteClasses
             {
                 Category category = new Category(connection);
                 category.id = id;
-                await category.LoadAsync().ConfigureAwait(false);
+                await category.LoadAsync();
                 retval.Add(category);
             }
             return retval;

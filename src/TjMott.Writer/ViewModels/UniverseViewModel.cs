@@ -47,10 +47,22 @@ namespace TjMott.Writer.ViewModels
                     if (_selectedCategoryOrStory != null && _selectedCategoryOrStory is StoryViewModel)
                     {
                         var newStory = _selectedCategoryOrStory as StoryViewModel;
+                        SelectedStoryName = "Story: " + newStory.Model.Name;
                         _ = newStory.LoadChapters();
+                    }
+                    else
+                    {
+                        SelectedStoryName = "No story selected";
                     }
                 }
             }
+        }
+
+        private string _selectedStoryName = "No story selected";
+        public string SelectedStoryName
+        {
+            get => _selectedStoryName;
+            private set => this.RaiseAndSetIfChanged(ref _selectedStoryName, value);
         }
 
         private SearchViewModel _searchViewModel;
@@ -143,7 +155,7 @@ namespace TjMott.Writer.ViewModels
             SubItems = new SortBySortIndexBindingList<IUniverseSubItem>();
 
             NotesTree = new NotesTree(this);
-            await NotesTree.LoadAsync().ConfigureAwait(false);
+            await NotesTree.LoadAsync();
 
             SearchViewModel = new SearchViewModel(this);
         }
@@ -159,7 +171,7 @@ namespace TjMott.Writer.ViewModels
                 category.Name = result;
                 if (SubItems.Count > 0)
                     category.SortIndex = SubItems.Max(i => i.SortIndex) + 1;
-                await category.CreateAsync().ConfigureAwait(false);
+                await category.CreateAsync();
 
                 CategoryViewModel catVm = new CategoryViewModel(category);
                 catVm.UniverseVm = this;
@@ -192,7 +204,7 @@ namespace TjMott.Writer.ViewModels
                     else
                         story.SortIndex = 0;
                 }
-                await story.CreateAsync().ConfigureAwait(false);
+                await story.CreateAsync();
                 StoryViewModel storyVm = new StoryViewModel(story);
                 storyVm.UniverseVm = this;
                 Stories.Add(storyVm);
@@ -248,7 +260,7 @@ namespace TjMott.Writer.ViewModels
                 {
                     story.Model.CategoryId = null;
                     story.SortIndex = SubItems.Max(i => i.SortIndex) + 1;
-                    await story.SaveAsync().ConfigureAwait(false);
+                    await story.SaveAsync();
                     SubItems.Add(story);
                 }
                 Categories.Remove(cat);
@@ -399,7 +411,7 @@ namespace TjMott.Writer.ViewModels
             if (result != null)
             {
                 Model.Name = result;
-                await Model.SaveAsync().ConfigureAwait(false);
+                await Model.SaveAsync();
             }
         }
 
