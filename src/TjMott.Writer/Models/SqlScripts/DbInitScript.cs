@@ -68,7 +68,7 @@ CREATE TABLE Story
 );
 
 -- Delete note Document after its Story is deleted.
-CREATE TRIGGER Story_NoteDoc_ad AFTER DELETE ON Story BEGIN
+CREATE TRIGGER Story_CopyrightPageDoc_ad AFTER DELETE ON Story BEGIN
   DELETE FROM Document WHERE id = (old.CopyrightPageId);
 END;
 
@@ -102,44 +102,6 @@ CREATE TABLE Scene
 CREATE TRIGGER Scene_Doc_ad AFTER DELETE ON Scene BEGIN
   DELETE FROM Document WHERE id = (old.NoteId);
 END;
-
-CREATE TABLE NoteDocument
-(
-    id INTEGER PRIMARY KEY,
-    UniverseId INTEGER NOT NULL,
-    DocumentId INTEGER NOT NULL,
-    Name TEXT DEFAULT 'New Note',
-
-    FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE,
-    FOREIGN KEY(DocumentId) REFERENCES Document(id) ON DELETE CASCADE
-);
-
--- Delete Document when NoteDocument is deleted.
-CREATE TRIGGER NoteDocument_ad AFTER DELETE ON NoteDocument BEGIN
-  DELETE FROM NoteDocument WHERE id = (old.DocumentId);
-END;
-
-CREATE TABLE NoteCategory
-(
-    id INTEGER PRIMARY KEY,
-    UniverseId INTEGER NOT NULL,
-    ParentId INTEGER DEFAULT NULL,
-    Name TEXT DEFAULT 'New Category',
-
-    FOREIGN KEY(UniverseId) REFERENCES Universe(id) ON DELETE CASCADE,
-    FOREIGN KEY(ParentId) REFERENCES NoteCategory(id) ON DELETE SET NULL
-);
-
-CREATE TABLE NoteCategoryDocument
-(
-    id INTEGER PRIMARY KEY,
-    NoteDocumentId INTEGER NOT NULL,
-    NoteCategoryId INTEGER NOT NULL,
-
-    FOREIGN KEY(NoteDocumentId) REFERENCES NoteDocument(id) ON DELETE CASCADE,
-    FOREIGN KEY(NoteCategoryId) REFERENCES NoteCategory(id) ON DELETE SET NULL
-);
-
 
 -- Full-Text Search Stuff
 CREATE VIRTUAL TABLE Scene_fts USING fts5(Name, content=Scene, content_rowid=id);
@@ -201,21 +163,6 @@ END;
 CREATE TRIGGER Document_au AFTER UPDATE ON Document BEGIN
   INSERT INTO Document_fts(Document_fts, rowid, PlainText) VALUES ('delete', old.id, old.PlainText);
   INSERT INTO Document_fts(rowid, PlainText) VALUES (new.id, new.PlainText);
-END;
-
-CREATE VIRTUAL TABLE NoteDocument_fts USING fts5(Name, Content=NoteDocument, content_rowid=id);
--- Table rebuild, just here for reference
--- INSERT INTO NoteDocument_fts(NoteDocument_fts) VALUES ('rebuild');
--- Triggers to keep NoteDocument_fts up-to-date
-CREATE TRIGGER NoteDocument_ai_fts AFTER INSERT ON NoteDocument BEGIN
-  INSERT INTO NoteDocument_fts(rowid, Name) VALUES (new.id, new.Name);
-END;
-CREATE TRIGGER NoteDocument_ad_fts AFTER DELETE ON NoteDocument BEGIN
-  INSERT INTO NoteDocument_fts(NoteDocument_fts, rowid, Name) VALUES ('delete', old.id, old.Name);
-END;
-CREATE TRIGGER NoteDocument_au_fts AFTER UPDATE ON NoteDocument BEGIN
-  INSERT INTO NoteDocument_fts(NoteDocument_fts, rowid, Name) VALUES ('delete', old.id, old.Name);
-  INSERT INTO NoteDocument_fts(rowid, Name) VALUES (new.id, new.Name);
 END;
 
 ";

@@ -114,6 +114,10 @@ namespace TjMott.Writer.ViewModels
 
         public async Task LoadAsync()
         {
+            // Default SQLite behavior is one transaction per query. Each transaction creates a temp file. This means
+            // performing a ton of queries will be slowed down by filesystem access. So try to wrap the database's
+            // entire session in a transaction to reduce this overhead.
+            await startTransaction();
             Universes.Clear();
 
             // Load universes.
@@ -159,11 +163,17 @@ namespace TjMott.Writer.ViewModels
             
         }
 
-        public void Close()
+        public async Task Close()
         {
+
             if (Connection != null)
             {
-                Vacuum();
+                await commitTransaction();
+            }
+
+            if (Connection != null)
+            {
+                await Vacuum();
             }
 
             _connection.Close();
@@ -233,14 +243,14 @@ namespace TjMott.Writer.ViewModels
             IsInTransaction = false;
         }
 
-        public void Vacuum()
+        public async Task Vacuum()
         {
             if (Connection != null)
             {
                 // Compact the database.
                 using (SqliteCommand cmd = new SqliteCommand("VACUUM;", Connection))
                 {
-                    cmd.ExecuteNonQuery();
+                    await cmd.ExecuteNonQueryAsync();
                 }
             }
         }

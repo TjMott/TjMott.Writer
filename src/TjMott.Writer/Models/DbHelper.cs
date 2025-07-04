@@ -138,9 +138,9 @@ namespace TjMott.Writer.Models
         public async Task<List<long>> GetAllIdsAsync()
         {
             List<long> retval = new List<long>();
-            using (SqliteDataReader reader = await _selectAllIdsCommand.ExecuteReaderAsync().ConfigureAwait(false))
+            using (SqliteDataReader reader = await _selectAllIdsCommand.ExecuteReaderAsync())
             {
-                while (await reader.ReadAsync().ConfigureAwait(false))
+                while (await reader.ReadAsync())
                 {
                     long id = reader.GetInt64(0);
                     retval.Add(id);
@@ -167,10 +167,10 @@ namespace TjMott.Writer.Models
                     _insertCommand.Parameters["@" + _subsetProperties[i].Name].Value = _subsetProperties[i].GetValue(item);
                 }
             }
-            await _insertCommand.Command.ExecuteNonQueryAsync().ConfigureAwait(false);
+            await _insertCommand.Command.ExecuteNonQueryAsync();
 
             // Get new object's id.
-            long id = (long)await _getIdCommand.ExecuteScalarAsync().ConfigureAwait(false);
+            long id = (long)await _getIdCommand.ExecuteScalarAsync();
             item.id = id;
         }
 
@@ -182,7 +182,7 @@ namespace TjMott.Writer.Models
         public async Task LoadAsync(T item)
         {
             _selectCommand.Parameters["@id"].Value = item.id;
-            using (SqliteDataReader reader = await _selectCommand.Command.ExecuteReaderAsync().ConfigureAwait(false))
+            using (SqliteDataReader reader = await _selectCommand.Command.ExecuteReaderAsync())
             {
                 if (await reader.ReadAsync())
                 {
@@ -224,7 +224,7 @@ namespace TjMott.Writer.Models
         public async Task DeleteAsync(T item)
         {
             _deleteCommand.Parameters["@id"].Value = item.id;
-            await _deleteCommand.Command.ExecuteNonQueryAsync().ConfigureAwait(false);
+            await _deleteCommand.Command.ExecuteNonQueryAsync();
         }
 
         public void Update(T item, IEnumerable<string> propsToSave = null)
@@ -249,7 +249,7 @@ namespace TjMott.Writer.Models
                     }
                 }
             }
-            int affected = await _updateCommand.Command.ExecuteNonQueryAsync().ConfigureAwait(false);
+            int affected = await _updateCommand.Command.ExecuteNonQueryAsync();
         }
     }
 }

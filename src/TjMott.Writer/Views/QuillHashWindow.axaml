@@ -12,12 +12,12 @@
 		<DataGrid x:Name="hashesDataGrid" Grid.Row="1" IsReadOnly="True" Margin="0,5,0,0">
 			<DataGrid.Columns>
 				<DataGridTextColumn Header="File" Binding="{Binding FileName}" />
-				<DataGridTemplateColumn Header="SHA256 Hash">
+				<DataGridTemplateColumn Header="Actual SHA256 Hash">
 					<DataTemplate>
 						<TextBox IsReadOnly="True" Text="{Binding ActualHash}" />
 					</DataTemplate>
 				</DataGridTemplateColumn>
-				<DataGridTextColumn Header="Expected Hash" Binding="{Binding ExpectedHash}" />
+				<DataGridTextColumn Header="Expected SHA256 Hash" Binding="{Binding ExpectedHash}" />
 			</DataGrid.Columns>
 		</DataGrid>
 	</Grid>

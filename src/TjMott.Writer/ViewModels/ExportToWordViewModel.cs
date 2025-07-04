@@ -5,8 +5,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reactive;
-using System.Security.Authentication.ExtendedProtection;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Controls;
@@ -22,21 +20,21 @@ namespace TjMott.Writer.ViewModels
         private bool _configViewVisible = true;
         public bool ConfigViewVisible
         {
-            get { return _configViewVisible; }
-            private set { this.RaiseAndSetIfChanged(ref _configViewVisible, value); }
+            get => _configViewVisible;
+            private set => this.RaiseAndSetIfChanged(ref _configViewVisible, value);
         }
 
         private bool _progressViewVisible = false;
         public bool ProgressViewVisible
         {
-            get { return _progressViewVisible; }
-            private set { this.RaiseAndSetIfChanged(ref _progressViewVisible, value); }
+            get => _progressViewVisible;
+            private set => this.RaiseAndSetIfChanged(ref _progressViewVisible, value);
         }
 
         private string _wordTemplateFile;
         public string WordTemplateFile
         {
-            get { return _wordTemplateFile; }
+            get => _wordTemplateFile;
             set 
             { 
                 this.RaiseAndSetIfChanged(ref _wordTemplateFile, value);
@@ -48,21 +46,21 @@ namespace TjMott.Writer.ViewModels
         private string _outputFile;
         public string OutputFile
         {
-            get { return _outputFile; }
-            set { this.RaiseAndSetIfChanged(ref _outputFile, value); }
+            get => _outputFile;
+            set => this.RaiseAndSetIfChanged(ref _outputFile, value);
         }
 
         private bool _exportEncryptedItems = false;
         public bool ExportEncryptedItems
         {
-            get { return _exportEncryptedItems; }
-            set { this.RaiseAndSetIfChanged(ref _exportEncryptedItems, value); }
+            get => _exportEncryptedItems;
+            set => this.RaiseAndSetIfChanged(ref _exportEncryptedItems, value);
         }
 
         private string _selectedFont;
         public string SelectedFont
         {
-            get { return _selectedFont; }
+            get => _selectedFont;
             set 
             { 
                 this.RaiseAndSetIfChanged(ref _selectedFont, value);
@@ -74,7 +72,7 @@ namespace TjMott.Writer.ViewModels
         private int _defaultFontSize;
         public int DefaultFontSize
         {
-            get { return _defaultFontSize; }
+            get =>_defaultFontSize;
             set 
             {
                 if (value > 4 && value < 512)
@@ -89,31 +87,37 @@ namespace TjMott.Writer.ViewModels
         private string _selectedParagraphAlignment = "Left";
         public string SelectedParagraphAlignment
         {
-            get { return _selectedParagraphAlignment; }
-            set { this.RaiseAndSetIfChanged(ref _selectedParagraphAlignment, value); }
+            get => _selectedParagraphAlignment;
+            set => this.RaiseAndSetIfChanged(ref _selectedParagraphAlignment, value);
         }
 
         private double _progress = 0;
         public double Progress
         {
-            get { return _progress; }
-            private set { this.RaiseAndSetIfChanged(ref _progress, value); }
+            get => _progress;
+            private set => this.RaiseAndSetIfChanged(ref _progress, value);
         }
 
         private string _status;
         public string Status
         {
-            get { return _status; }
-            set { this.RaiseAndSetIfChanged(ref _status, value); }
+            get => _status;
+            set => this.RaiseAndSetIfChanged(ref _status, value);
         }
 
         public ObservableCollection<string> FontFamilies { get; private set; }
         public ObservableCollection<string> ParagraphAlignments { get; private set; }
 
         private IExportToWordDocument _toExport;
-        public IExportToWordDocument ItemToExport { get => _toExport; private set => this.RaiseAndSetIfChanged(ref _toExport, value); }
+        public IExportToWordDocument ItemToExport 
+        {
+            get => _toExport;
+            private set => this.RaiseAndSetIfChanged(ref _toExport, value);
+        }
 
         public ReactiveCommand<Window, Unit> ExportCommand { get; private set; }
+        public ReactiveCommand<Window, Unit> BrowseOutputFileCommand { get; private set; }
+        public ReactiveCommand<Window, Unit> BrowseTemplateFileCommand { get; private set; }
 
 
         private CancellationTokenSource _cancelToken;
@@ -122,7 +126,9 @@ namespace TjMott.Writer.ViewModels
         {
             ItemToExport = toExport;
 
-            ExportCommand = ReactiveCommand.CreateFromTask<Window>(ExportAsync, this.WhenAnyValue(i => i.OutputFile, i => !string.IsNullOrWhiteSpace(i)));
+            ExportCommand = ReactiveCommand.CreateFromTask<Window>(exportAsync, this.WhenAnyValue(i => i.OutputFile, i => !string.IsNullOrWhiteSpace(i)));
+            BrowseOutputFileCommand = ReactiveCommand.CreateFromTask<Window>(browseOutputFileAsync);
+            BrowseTemplateFileCommand = ReactiveCommand.CreateFromTask<Window>(browseTemplateFileAsync);
 
             loadFonts();
             loadAlignments();
@@ -156,7 +162,7 @@ namespace TjMott.Writer.ViewModels
             SelectedParagraphAlignment = "Left";
         }
 
-        public async Task ExportAsync(Window dialogOwner)
+        private async Task exportAsync(Window dialogOwner)
         {
             ConfigViewVisible = false;
             ProgressViewVisible = true;
@@ -244,7 +250,7 @@ namespace TjMott.Writer.ViewModels
             dialogOwner.Close();
         }
 
-        public async Task BrowseTemplateFile(Window dialogOwner)
+        private async Task browseTemplateFileAsync(Window dialogOwner)
         {
 #pragma warning disable CS0618 // Type or member is obsolete
             OpenFileDialog selectTemplateDialog = new OpenFileDialog();
@@ -259,7 +265,7 @@ namespace TjMott.Writer.ViewModels
                 WordTemplateFile = files[0];
         }
 
-        public async Task BrowseOutputFile(Window dialogOwner)
+        private async Task browseOutputFileAsync(Window dialogOwner)
         {
 #pragma warning disable CS0618 // Type or member is obsolete
             SaveFileDialog saveFileDialog = new SaveFileDialog();

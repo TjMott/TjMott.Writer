@@ -134,6 +134,7 @@ namespace TjMott.Writer.ViewModels.Search
         {
             // This function can be re-entered if the user types faster than the search occurs.
             // Keep track of all runs and cancel them all.
+            // TODO: Is this still true?
             if (_searchCancellationTokens.Count > 0)
             {
                 foreach (var token in _searchCancellationTokens)
@@ -149,30 +150,30 @@ namespace TjMott.Writer.ViewModels.Search
                 SearchResults.Clear();
                 List<SearchResult> results = new List<SearchResult>();
 
+                // Load the universe, otherwise the owner mapping can't be created.
+                foreach (var storyVm in _universe.Stories)
+                {
+                    if (storyVm.Chapters.Count == 0)
+                        await storyVm.LoadChapters();
+                }
+
                 if (!string.IsNullOrWhiteSpace(SearchTerm))
                 {
                     string searchTerm = sqlSearchTerm;
 
-                    // Kick off search tasks.
-                    List<Task<List<SearchResult>>> searchTasks = new List<Task<List<SearchResult>>>();
-                    searchTasks.Add(Task.Run(() => doDocumentSearchAsync(searchTerm, cancelToken.Token)));
-                    searchTasks.Add(Task.Run(() => doSceneTitleSearchAsync(searchTerm, cancelToken.Token)));
-                    searchTasks.Add(Task.Run(() => doChapterTitleSearchAsync(searchTerm, cancelToken.Token)));
-                    searchTasks.Add(Task.Run(() => doStoryTitleSearchAsync(searchTerm, cancelToken.Token)));
-                    searchTasks.Add(Task.Run(() => doNoteTitleSearchAsync(searchTerm, cancelToken.Token)));
-                    await Task.WhenAll(searchTasks);
-
-                    // Combine search results and sort by search ranking.
-                    await Task.Run(() =>
+                    // Kick off search tasks on background thread.
+                    await Task.Run(async () =>
                     {
-                        foreach (var task in searchTasks)
-                        {
-                            results.AddRange(task.Result);
-                        }
+                        results.AddRange(await doDocumentSearchAsync(searchTerm, cancelToken.Token));
+                        results.AddRange(await doSceneTitleSearchAsync(searchTerm, cancelToken.Token));
+                        results.AddRange(await doChapterTitleSearchAsync(searchTerm, cancelToken.Token));
+                        results.AddRange(await doStoryTitleSearchAsync(searchTerm, cancelToken.Token));
 
+                        // Sort by search ranking.
                         results = results.OrderBy(i => i.Rank).ToList();
                     });
 
+                    // Add to UI-bound collection.
                     foreach (var r in results)
                     {
                         SearchResults.Add(r);
@@ -217,13 +218,6 @@ namespace TjMott.Writer.ViewModels.Search
                     if (scene != null)
                         result.Owner = scene;
 
-                    if (result.Owner == null)
-                    {
-                        cancelToken.ThrowIfCancellationRequested();
-                        NoteDocumentViewModel note = _universe.NotesTree.Notes.SingleOrDefault(i => i.Model.DocumentId == result.rowid);
-                        if (note != null)
-                            result.Owner = note;
-                    }
 
                     if (result.Owner == null)
                     {
@@ -331,33 +325,5 @@ namespace TjMott.Writer.ViewModels.Search
             return results;
         }
 
-        private async Task<List<SearchResult>> doNoteTitleSearchAsync(string searchTerm, CancellationToken cancelToken)
-        {
-            List<SearchResult> results = new List<SearchResult>();
-
-            _cmdSearchNoteNames.Parameters["@searchTerm"].Value = searchTerm;
-
-            using (SqliteDataReader reader = await _cmdSearchNoteNames.Command.ExecuteReaderAsync(cancelToken))
-            {
-                while (await reader.ReadAsync(cancelToken))
-                {
-                    NoteTitleSearchResult result = new NoteTitleSearchResult(reader);
-
-                    // Search for owner.
-                    NoteDocumentViewModel note = _universe.NotesTree.Notes.SingleOrDefault(i => i.Model.id == result.rowid);
-                    if (note != null)
-                    {
-                        result.Owner = note;
-                    }
-
-                    if (result.Owner != null)
-                    {
-                        results.Add(result);
-                    }
-                }
-            }
-
-            return results;
-        }
     }
 }

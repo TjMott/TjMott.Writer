@@ -1,8 +1,10 @@
 #!/bin/sh
 
-cd ..
+cd ../TjMott.Writer
 
-dotnet publish --configuration Release --os linux --output ../linux64
+dotnet publish --configuration Release --os linux --output ../../linux64
+
+cd ..
 
 cp ../LICENSE ../linux64/LICENSE
 cp ../README.md ../linux64/README.md

@@ -54,7 +54,9 @@ TJ Mott's Writer will automatically upgrade your .wdb files if the file format c
 
 If you are upgrading from the old Windows-only version (<= 0.4.0), please be aware that some features went away! The file repository, ticket tracker, and internal spellcheck dictionaries no longer exist, and all data associated with them will be deleted! In addition, you may encounter formatting issues with documents and especially with notes as they are updated to the new format.
 
-Finally, if you're updating from <= 0.4.0, you may see some corruption with notes. Specifically, note titles get shuffled around and don't match the note contents--there's no data loss, the titles just aren't right. This appears to be a latent SQL trigger bug in an older version of the software. You'll have to correct these on your own after the upgrade, but they should not occur again.
+If you're updating from <= 0.4.0, you may see some corruption with notes. Specifically, note titles get shuffled around and don't match the note contents--there's no data loss, the titles just aren't right. This appears to be a latent SQL trigger bug in an older version of the software. You'll have to correct these on your own after the upgrade, but they should not occur again.
+
+Finally, release 1.0.0 deprecates the old concept of notes. Note documents will be consolidated into a "Notes" category in the main view, so you won't lose any notes, they'll just be elsewhere and will no longer be a separate feature.
 
 ## Basic Concepts
 
@@ -200,10 +202,22 @@ A previous implementation using CefNet provided a lot of switches for my app to 
 
 ### General Updates
 
-* Upgraded to modern AvaloniaUI (version 11+)
-* Migrated from CefNet to CefGlue due to lack of Avalonia 11 support from CefNet
+* Upgraded to modern AvaloniaUI (version 11.3.2, was on old beta 0.10.X release).
+* Migrated from CefNet to CefGlue due to lack of Avalonia 11 support from CefNet.
 * Lots of performance updates and improved features due to Avalonia framework updates, e.g. proper light/dark theme support.
-* Updated to .NET 8.0
+* Updated to .NET 8.0.
+* Main view reworked to improve loading speed when using a large works database.
+* Greatly improved SQLite performance.
+* Document encryption now follows the standard practice of random data encryption keys for each item, which are encrypted with a password-derived key encryption key.
+* Removed "Notes" feature to reduce maintenance footprint. Existing notes will be consolidated into a category in the main documents view.
+
+#### Known Issues
+
+* Editor autoreplace for smart quotes, ellipses, and em dashes may jump cursor position ahead if your cursor is not at the end of a line when the autoreplace happens. Potentially a QuillJS bug -- quill.setSelection is unpredictable after calling quill.clipboard.dangerouslyPasteHTML.
+* Editor autoreplace may not work as expected if you paste in a chunk of text containing autoreplaceable characters.
+* The in-app Readme does not work (normally shows this document). This is due to a broken package dependency that really needs to update for the latest Avalonia.
+* Export to Word does not generate Table of Contents correctly.
+* Linux console is pretty spammy about gpu_process issues. Something from CefGlue, but doesn't seem to harm this application.
 
 ### Version 0.5.2
 

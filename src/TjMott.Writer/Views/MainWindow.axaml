@@ -22,7 +22,7 @@
 				<MenuItem Header="New Database" Command="{Binding NewFileCommand}" CommandParameter="{Binding $parent[Window]}"  />
 				<MenuItem Header="Open Database" Command="{Binding OpenFileCommand}" CommandParameter="{Binding $parent[Window]}" />
 				<Separator />
-				<MenuItem Header="View Word Templates" Command="{Binding ShowWordTemplates}" />
+				<MenuItem Header="View Word Templates" Command="{Binding ShowWordTemplatesCommand}" />
 				<Separator />
 				<MenuItem Header="Quit" Command="{Binding QuitCommand}" CommandParameter="{Binding $parent[Window]}" />
 			</MenuItem>
@@ -48,9 +48,6 @@
 				<MenuItem Header="Create New Category" Command="{Binding Database.SelectedUniverseViewModel.CreateCategoryCommand}" CommandParameter="{Binding $parent[Window]}" />
 				<MenuItem Header="Create New Story" Command="{Binding Database.SelectedUniverseViewModel.CreateStoryCommand}" CommandParameter="{Binding $parent[Window]}" />
 				<Separator />
-				<MenuItem Header="Create New Notes Category" Command="{Binding Database.SelectedUniverseViewModel.NotesTree.CreateNewNoteCategory}" CommandParameter="{Binding $parent[Window]}" />
-				<MenuItem Header="Create New Note Document" Command="{Binding Database.SelectedUniverseViewModel.NotesTree.CreateNewNoteDocument}" CommandParameter="{Binding $parent[Window]}" />
-				<Separator />
 				<MenuItem Header="Spellcheck Dictionary" />
 			</MenuItem>
 			<MenuItem x:Name="windowsMenu" Header="Windows" ItemsSource="{Binding OpenWindowsViewModel.AllWindows}">
@@ -67,11 +64,14 @@
 				<CheckBox IsChecked="{Binding UseDarkTheme}" Content="Dark" />
 			</MenuItem>
 			<MenuItem Header="Help">
-				<MenuItem Header="Readme" Command="{Binding ShowReadmeWindow}" />
-				<MenuItem Header="About" Command="{Binding AboutCommand}" CommandParameter="{Binding $parent[Window]}" />
+				<!-- Markdown.Avalonia package is currently broken, so hide the readme. Sigh. -->
+				<MenuItem Header="Readme" Command="{Binding ShowReadmeCommand}" IsVisible="false" />
+				<MenuItem Header="About" Command="{Binding ShowAboutCommand}" 
+						  CommandParameter="{Binding $parent[Window]}" />
 			</MenuItem>
 			<MenuItem Header="Debug" IsVisible="{Binding IsDebugMode}">
-				<MenuItem Header="Show Quill Hashes" Command="{Binding ShowQuillHashes}" CommandParameter="{Binding $parent[Window]}" />
+				<MenuItem Header="Show Quill Hashes" Command="{Binding ShowQuillHashesCommand}" 
+						  CommandParameter="{Binding $parent[Window]}" />
 				<MenuItem Header="Database">
 					<MenuItem Header="Reload" Command="{Binding Database.LoadAsync}" />
 					<MenuItem Header="Vacuum" Command="{Binding Database.Vacuum}" />
@@ -86,9 +86,6 @@
 		<TabControl Grid.Row="1">
 			<TabItem Header="Stories">
 				<views:StoriesView DataContext="{Binding Database.SelectedUniverseViewModel}" />
-			</TabItem>
-			<TabItem Header="Notes">
-				<views:NotesView DataContext="{Binding Database.SelectedUniverseViewModel.NotesTree}" />
 			</TabItem>
 			<TabItem Header="Search">
 				<views:SearchView DataContext="{Binding Database.SelectedUniverseViewModel.SearchViewModel}" />

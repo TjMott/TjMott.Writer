@@ -3,10 +3,8 @@ using Newtonsoft.Json.Linq;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
-using Xceed.Document.NET;
 using Xceed.Words.NET;
 
 namespace TjMott.Writer.ViewModels

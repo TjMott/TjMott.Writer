@@ -1,6 +1,5 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 using TjMott.Writer.Controls;
 
 namespace TjMott.Writer.Views
@@ -17,8 +16,7 @@ namespace TjMott.Writer.Views
         {
             Activated -= QuillHashWindow_Activated;
 
-            DataGrid dg = this.FindControl<DataGrid>("hashesDataGrid");
-            dg.ItemsSource = QuillJsEditor.AssetHashes;
+            hashesDataGrid.ItemsSource = QuillJsEditor.AssetHashes;
         }
     }
 }

@@ -19,14 +19,11 @@
 				<TreeView.Resources>
 					<ContextMenu x:Key="categoryContextMenu">
 						<MenuItem Header="Rename Category" Command="{Binding RenameCommand}" CommandParameter="{Binding $parent[Window]}" />
-						<MenuItem Header="Show Word Count" Command="{Binding ShowCategoryOrStoryWordCountCommand}" CommandParameter="{Binding $parent[Window]}" />
 						<MenuItem Header="Delete Category" Command="{Binding DeleteCommand}" CommandParameter="{Binding $parent[Window]}" />
 					</ContextMenu>
 					<ContextMenu x:Key="storyContextMenu">
 						<MenuItem Header="Add New Chapter" Command="{Binding CreateChapterCommand}" CommandParameter="{Binding $parent[Window]}" />
 						<MenuItem Header="Show Pacing" Command="{Binding ShowPacingCommand}" />
-						<MenuItem Header="Show Word Count" Command="{Binding ShowCategoryOrStoryWordCountCommand}" CommandParameter="{Binding $parent[Window]}" />
-						<MenuItem Header="Export to Docx" Command="{Binding ExportStoryToWordCommand}" />
 						<MenuItem Header="Edit Story Properties" Command="{Binding EditPropertiesCommand}" CommandParameter="{Binding $parent[Window]}" />
 						<MenuItem Header="Edit Copyright Page" Command="{Binding EditCopyrightPageCommand}" CommandParameter="{Binding $parent[Window]}" />
 						<MenuItem Header="Delete Story" Command="{Binding DeleteCommand}" CommandParameter="{Binding $parent[Window]}" />
@@ -42,7 +39,6 @@
 					</TreeDataTemplate>
 					<TreeDataTemplate DataType="{x:Type viewModels:StoryViewModel}">
 						<StackPanel Orientation="Horizontal" ContextMenu="{StaticResource storyContextMenu}">
-							<TextBlock Text="Story: " Classes="treeLabel" />
 							<TextBlock Text="{Binding Model.Name}" />
 						</StackPanel>
 					</TreeDataTemplate>
@@ -81,15 +77,11 @@
 					<ContextMenu x:Key="chapterContextMenu">
 						<MenuItem Header="Add New Scene" Command="{Binding CreateSceneCommand}" CommandParameter="{Binding $parent[Window]}" />
 						<MenuItem Header="Show Pacing" Command="{Binding ShowPacingCommand}" />
-						<MenuItem Header="Show Word Count" Command="{Binding ShowWordCountCommand}" CommandParameter="{Binding $parent[Window]}" />
-						<MenuItem Header="Export to Docx" Command="{Binding ExportToWordCommand}" />
 						<MenuItem Header="Rename Chapter" Command="{Binding RenameCommand}" CommandParameter="{Binding $parent[Window]}"  />
 						<MenuItem Header="Delete Chapter" Command="{Binding DeleteCommand}" CommandParameter="{Binding $parent[Window]}" />
 					</ContextMenu>
 					<ContextMenu x:Key="sceneContextMenu">
 						<MenuItem Header="Move to Chapter" Command="{Binding MoveToChapterCommand}" CommandParameter="{Binding $parent[Window]}" />
-						<MenuItem Header="Show Word Count" Command="{Binding ShowWordCountCommand}" CommandParameter="{Binding $parent[Window]}" />
-						<MenuItem Header="Export to Docx" Command="{Binding ExportToWordCommand}" />
 						<MenuItem Header="Rename Scene" Command="{Binding RenameCommand}" CommandParameter="{Binding $parent[Window]}" />
 						<MenuItem Header="Show JSON" Command="{Binding ShowJson}" IsVisible="{Binding IsDebugMode}" />
 						<MenuItem Header="Color">

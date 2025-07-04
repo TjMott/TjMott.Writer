@@ -28,13 +28,6 @@ namespace TjMott.Writer.ViewModels.Search
                     Context += scene.ChapterVm.Model.Name + " -> ";
                     Context += scene.Model.Name;
                 }
-                else if (_owner is NoteDocumentViewModel)
-                {
-                    NoteDocumentViewModel noteDocument = (NoteDocumentViewModel)_owner;
-                    Name = noteDocument.Model.Name;
-                    ResultType = "Note Text";
-                    Context = "";
-                }
                 else if (_owner is StoryViewModel)
                 {
                     StoryViewModel story = (StoryViewModel)_owner;
@@ -76,11 +69,6 @@ namespace TjMott.Writer.ViewModels.Search
                 SceneViewModel vm = Owner as SceneViewModel;
                 // TODO: Pass in SnippetResult to search for in Quill...?
                 SceneEditorWindow.ShowEditorWindow(vm);
-            }
-            else if (Owner is NoteDocumentViewModel)
-            {
-                NoteDocumentViewModel vm = Owner as NoteDocumentViewModel;
-                NoteWindow.ShowEditorWindow(vm);
             }
             else if (Owner is StoryViewModel)
             {

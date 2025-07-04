@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
+using TjMott.Writer.Controls;
 using TjMott.Writer.Models.SQLiteClasses;
 using TjMott.Writer.Views;
 
@@ -21,12 +22,16 @@ namespace TjMott.Writer.ViewModels
         public ReactiveCommand<Window, Unit> NewFileCommand { get; }
         public ReactiveCommand<Window, Unit> OpenFileCommand { get; }
         public ReactiveCommand<Window, Unit> QuitCommand { get; }
-        public ReactiveCommand<Window, Unit> AboutCommand { get; }
+        public ReactiveCommand<Window, Unit> ShowAboutCommand { get; }
+        public ReactiveCommand<Window, Unit> ShowQuillHashesCommand { get; }
+        public ReactiveCommand<Unit, Unit> ShowReadmeCommand { get; }
+        public ReactiveCommand<Unit, Unit> ShowWordTemplatesCommand { get; }
         #endregion
 
         private Database _database;
         public Database Database { get => _database; set => this.RaiseAndSetIfChanged(ref _database, value); }
 
+        #region Theme selection
         public bool UseDefaultTheme
         {
             get => Application.Current.RequestedThemeVariant == Avalonia.Styling.ThemeVariant.Default;
@@ -68,6 +73,7 @@ namespace TjMott.Writer.ViewModels
                 this.RaisePropertyChanged(nameof(UseDarkTheme));
             }
         }
+        #endregion
 
         public class UniverseMenuItem : ReactiveObject
         {
@@ -84,10 +90,13 @@ namespace TjMott.Writer.ViewModels
         {
             UniverseMenuItems = new ObservableCollection<UniverseMenuItem>();
             OpenWindowsViewModel = new OpenWindowsViewModel(owner);
-            NewFileCommand = ReactiveCommand.Create<Window>(NewFile);
-            OpenFileCommand = ReactiveCommand.Create<Window>(OpenFile);
-            QuitCommand = ReactiveCommand.Create<Window>(Quit);
-            AboutCommand = ReactiveCommand.Create<Window>(ShowAbout);
+            NewFileCommand = ReactiveCommand.CreateFromTask<Window>(newFileAsync);
+            OpenFileCommand = ReactiveCommand.CreateFromTask<Window>(openFileAsync);
+            QuitCommand = ReactiveCommand.CreateFromTask<Window>(quitAsync);
+            ShowAboutCommand = ReactiveCommand.CreateFromTask<Window>(showAboutAsync);
+            ShowReadmeCommand = ReactiveCommand.Create(showReadmeWindow);
+            ShowWordTemplatesCommand = ReactiveCommand.Create(showWordTemplates);
+            ShowQuillHashesCommand = ReactiveCommand.CreateFromTask<Window>(showQuillHashesAsync);
             initialize(owner);
         }
 
@@ -99,34 +108,34 @@ namespace TjMott.Writer.ViewModels
                 await Task.Delay(100);
 
             // Check QuillJS hashes.
+            bool quillVerified = await QuillJsEditor.VerifyHashes();
             // Was nice in theory, but somehow the hashing algorithm is sensitive to newline differences between Windows and Linux even though it operates in byte mode.
             // Disable for now.
-            /*bool quillVerified = await QuillJsEditor.VerifyHashes();
             if (!quillVerified)
             {
-                var msgbox = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Editor Initialization Error",
+                var msgbox = MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard("Editor Initialization Error",
                        "Editor assets failed SHA256 hash verification. Your installation" + Environment.NewLine +
                        "may have been corrupted by malware. You can continue to use the" + Environment.NewLine + 
                        "application, but you may face data corruption or malware issues." + Environment.NewLine +
                        "It is recommended you reinstall first.",
-                    MessageBox.Avalonia.Enums.ButtonEnum.OkAbort,
-                    MessageBox.Avalonia.Enums.Icon.Warning,
+                    MsBox.Avalonia.Enums.ButtonEnum.OkAbort,
+                    MsBox.Avalonia.Enums.Icon.Warning,
                     WindowStartupLocation.CenterOwner);
-                var result = await msgbox.ShowDialog(owner);
-                if (result == MessageBox.Avalonia.Enums.ButtonResult.Abort)
+                var result = await msgbox.ShowWindowDialogAsync(dialogOwner);
+                if (result == MsBox.Avalonia.Enums.ButtonResult.Abort)
                 {
                     (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime).Shutdown(1);
                     return;
                 }
-            }*/
+            }
 
             if (!string.IsNullOrWhiteSpace(AppSettings.Default.lastFile) && File.Exists(AppSettings.Default.lastFile))
             {
-                OpenDatabase(AppSettings.Default.lastFile, dialogOwner);
+                await openDatabaseAsync(AppSettings.Default.lastFile, dialogOwner);
             }
         }
 
-        public async void NewFile(Window owner)
+        private async Task newFileAsync(Window owner)
         {
 #pragma warning disable CS0618 // Type or member is obsolete
             SaveFileDialog dialog = new SaveFileDialog();
@@ -143,7 +152,7 @@ namespace TjMott.Writer.ViewModels
             }
         }
 
-        public async void OpenFile(Window owner)
+        private async Task openFileAsync(Window owner)
         {
 #pragma warning disable CS0618 // Type or member is obsolete
             OpenFileDialog dialog = new OpenFileDialog();
@@ -155,11 +164,11 @@ namespace TjMott.Writer.ViewModels
 
             if (paths != null && paths.Length == 1 && File.Exists(paths[0]))
             {
-                OpenDatabase(paths[0], owner);
+                await openDatabaseAsync(paths[0], owner);
             }
         }
 
-        public async void OpenDatabase(string filename, Window dialogOwner)
+        private async Task openDatabaseAsync(string filename, Window dialogOwner)
         {
             Database = new Database(filename);
 
@@ -171,7 +180,7 @@ namespace TjMott.Writer.ViewModels
                     MsBox.Avalonia.Enums.Icon.Error,
                     WindowStartupLocation.CenterOwner);
                 await msgBox.ShowWindowDialogAsync(dialogOwner);
-                Database.Close();
+                await Database.Close();
                 Database = null;
                 return;
             }
@@ -199,12 +208,12 @@ namespace TjMott.Writer.ViewModels
             Database.Universes.CollectionChanged += (o, e) => loadUniversesMenu();
         }
 
-        public async void ShowAbout(Window owner)
+        private async Task showAboutAsync(Window owner)
         {
             await new AboutWindow().ShowDialog(owner);
         }
 
-        public async void Quit(Window dialogOwner)
+        private async Task quitAsync(Window dialogOwner)
         {
             if (OpenWindowsViewModel.AllWindows.Count() > 1)
             {
@@ -216,21 +225,21 @@ namespace TjMott.Writer.ViewModels
                 return;
             }
             if (Database != null)
-                Database.Close();
+                await Database.Close();
             (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime).Shutdown();
         }
 
-        public async void ShowQuillHashes(Window owner)
+        private async Task showQuillHashesAsync(Window owner)
         {
             await new QuillHashWindow().ShowDialog(owner);
         }
 
-        public void ShowReadmeWindow()
+        private void showReadmeWindow()
         {
             ReadmeWindow.ShowReadmeWindow();
         }
 
-        public void ShowWordTemplates()
+        private void showWordTemplates()
         {
             ProcessStartInfo psi = new ProcessStartInfo();
             psi.UseShellExecute = true;
@@ -238,13 +247,13 @@ namespace TjMott.Writer.ViewModels
             Process.Start(psi);
         }
 
-        public void SelectUniverse(Universe u)
+        private async Task selectUniverseAsync(Universe u)
         {
             foreach (var item in UniverseMenuItems)
             {
                 item.IsChecked = item.Universe == u;
             }
-            _ = Database.SelectUniverse(u);
+            await Database.SelectUniverse(u);
         }
 
         private void loadUniversesMenu()
@@ -257,7 +266,7 @@ namespace TjMott.Writer.ViewModels
                     UniverseMenuItem menuItem = new UniverseMenuItem();
                     menuItem.Universe = u;
                     menuItem.IsChecked = Database.SelectedUniverse == u;
-                    menuItem.Command = ReactiveCommand.Create<Universe>(SelectUniverse);
+                    menuItem.Command = ReactiveCommand.CreateFromTask<Universe>(selectUniverseAsync);
                     UniverseMenuItems.Add(menuItem);
                 }
             }

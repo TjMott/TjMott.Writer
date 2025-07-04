@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace TjMott.Writer.Models
 {
-    public class DbCommandHelper
+    public class DbCommandHelper : IDisposable
     {
         private static Regex _paramRegex = new Regex("(@[\\w]+)", RegexOptions.Compiled);
         public SqliteConnection Connection { get; private set; }
@@ -34,6 +34,16 @@ namespace TjMott.Writer.Models
             foreach (Match match in matches)
             {
                 AddParameter(match.Value);
+            }
+        }
+
+        public void Dispose()
+        {
+            Parameters.Clear();
+            if (Command != null)
+            {
+                Command.Dispose();
+                Command = null;
             }
         }
     }

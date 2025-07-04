@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+using Avalonia.Styling;
 using System.Collections.Generic;
 using TjMott.Writer.ViewModels;
 
@@ -84,6 +85,17 @@ namespace TjMott.Writer.Views
             int gridCol = 0;
             double totalWordCount = 0;
 
+            SolidColorBrush borderBrush;
+            if (Application.Current.ActualThemeVariant == ThemeVariant.Light)
+            {
+                borderBrush = new SolidColorBrush(Colors.Black);
+            }
+            else
+            {
+                borderBrush = new SolidColorBrush(Colors.White);
+
+            }
+
             foreach (var chap in _chapters)
             {
                 totalWordCount += await chap.GetWordCountAsync();
@@ -98,7 +110,7 @@ namespace TjMott.Writer.Views
                 Border b = new Border();
                 grid.Children.Add(b);
                 Grid.SetColumn(b, gridCol);
-                b.BorderBrush = new SolidColorBrush(Colors.Black);
+                b.BorderBrush = borderBrush;
                 b.BorderThickness = new Thickness(2);
 
                 Grid g = new Grid();

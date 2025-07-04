@@ -30,6 +30,15 @@
     <AvaloniaResource Remove="Assets\quilljs\quill.min.js.map" />
     <AvaloniaResource Remove="Assets\quilljs\quill.snow.css" />
     <AvaloniaResource Remove="Assets\quilljs\quill.snow.dark.css" />
+    <AvaloniaXaml Remove="Views\EditNoteDocumentCategoriesWindow.axaml" />
+    <AvaloniaXaml Remove="Views\NoteWindow.axaml" />
+    <Compile Remove="Models\SQLiteClasses\NoteCategory.cs" />
+    <Compile Remove="ViewModels\NoteCategoryViewModel.cs" />
+    <Compile Remove="ViewModels\NoteDocumentViewModel.cs" />
+    <Compile Remove="ViewModels\NotesTree.cs" />
+    <Compile Remove="ViewModels\Search\NoteTitleSearchResult.cs" />
+    <Compile Remove="Views\EditNoteDocumentCategoriesWindow.axaml.cs" />
+    <Compile Remove="Views\NoteWindow.axaml.cs" />
     <None Remove=".gitignore" />
     <None Remove="Assets\editor.html" />
     <None Remove="Assets\icons8-abacus-40.png" />

@@ -76,17 +76,6 @@ namespace TjMott.Writer.ViewModels
             }
         }
 
-        private NotesTree _notesTree;
-        public NotesTree NotesTree
-        {
-            get { return _notesTree; }
-            set
-            {
-                _notesTree = value;
-                OnPropertyChanged("NotesTree");
-            }
-        }
-
         #endregion
 
         #region ISortable implementation - pass through to model
@@ -145,17 +134,9 @@ namespace TjMott.Writer.ViewModels
             ShowCategoryOrStoryWordCountCommand = ReactiveCommand.CreateFromTask<Window>(ShowStoryOrCategoryWordCount);
             RenameCommand = ReactiveCommand.CreateFromTask<Window>(Rename);
 
-            _ = initializeAsync();
-        }
-
-        private async Task initializeAsync()
-        {
             Categories = new BindingList<CategoryViewModel>();
             Stories = new BindingList<StoryViewModel>();
             SubItems = new SortBySortIndexBindingList<IUniverseSubItem>();
-
-            NotesTree = new NotesTree(this);
-            await NotesTree.LoadAsync();
 
             SearchViewModel = new SearchViewModel(this);
         }

@@ -13,12 +13,30 @@ using TjMott.Writer.Views;
 namespace TjMott.Writer.Models.SqlScripts
 {
     /// <summary>
-    /// The database schema didn't change here, but the document encryption schem
-    /// was improved. So this updater re-encrypts any encrypted documents.
+    /// This updater does the following changes:
+    ///   1. Improves the document encryption scheme to use random data encryption keys which
+    ///      are protected by a password-derived key encryption key.
+    ///   2. Deprecates the notes feature, and migrates all old notes to be scenes.
     /// </summary>
     public class Update4to5 : DbUpgrader
     {
         private static string _script4to5 = @"
+
+    DROP TRIGGER NoteDocument_ad;
+    DROP TRIGGER NoteDocument_ai_fts;
+    DROP TRIGGER NoteDocument_ad_fts;
+    DROP TRIGGER NoteDocument_au_fts;
+
+    DROP TABLE NoteDocument_fts;
+    DROP TABLE NoteCategoryDocument;
+    DROP TABLE NoteCategory;
+    DROP TABLE NoteDocument;
+
+    DROP TRIGGER Story_NoteDoc_ad; -- Wasn't named appropriately.
+    CREATE TRIGGER Story_CopyrightPageDoc_ad AFTER DELETE ON Story BEGIN
+      DELETE FROM Document WHERE id = (old.CopyrightPageId);
+    END;
+
     UPDATE Metadata SET Value = 5 WHERE Key = 'DbVersion';
 ";
 
@@ -36,22 +54,87 @@ namespace TjMott.Writer.Models.SqlScripts
             _connection = connection;
             _dialogOwner = dialogOwner;
 
-            bool result = await upgradeDocumentEncryption();
+            bool result = await migrateNoteDocuments();
+            if (!result) return result;
+
+            result = await upgradeDocumentEncryption();
+            if (!result) return result;
 
             result = await runScriptWithVersionCheckAsync(_connection, _script4to5, 4, 5);
             return result;
         }
 
+        private async Task<bool> migrateNoteDocuments()
+        {
+            using var getNewIdCmd = new SqliteCommand("select last_insert_rowid()", _connection);
+            using var getCmd = new SqliteCommand("SELECT id, UniverseId, DocumentId, Name FROM NoteDocument", _connection);
+
+            using var createStoryCmd = new DbCommandHelper(_connection);
+            createStoryCmd.Command.CommandText = "INSERT INTO Story (UniverseId, Name) VALUES (@universeId, 'Migrated Notes');";
+            createStoryCmd.AddParameter("@universeId");
+
+            using var createChapterCmd = new DbCommandHelper(_connection);
+            createChapterCmd.Command.CommandText = "INSERT INTO Chapter (StoryId, Name) VALUES (@storyId, 'Migrated Notes');";
+            createChapterCmd.AddParameter("@storyId");
+
+            using var createSceneCmd = new DbCommandHelper(_connection);
+            createSceneCmd.Command.CommandText = "INSERT INTO Scene (ChapterId, Name, DocumentId) VALUES (@chapterId, @name, @documentId);";
+            createSceneCmd.AddParameter("@chapterId");
+            createSceneCmd.AddParameter("@name");
+            createSceneCmd.AddParameter("@documentId");
+
+            Dictionary<long, long> universeToNoteStoryMapping = new Dictionary<long, long>();
+            Dictionary<long, long> universeToNoteChapterMapping = new Dictionary<long, long>();
+
+            // Enumerate all note documents.
+            using (var noteReader = await getCmd.ExecuteReaderAsync())
+            {
+                while (await noteReader.ReadAsync())
+                {
+                    long noteId = noteReader.GetInt64(0);
+                    long universeId = noteReader.GetInt64(1);
+                    long documentId = noteReader.GetInt64(2);
+                    string noteName = noteReader.GetString(3);
+
+                    // If we don't have a migrated notes story/chapter for this universe, create it.
+                    if (!universeToNoteStoryMapping.ContainsKey(universeId))
+                    {
+                        createStoryCmd.Parameters["@universeId"].Value = universeId;
+                        if (await createStoryCmd.Command.ExecuteNonQueryAsync() == 0)
+                            return false;
+
+                        long storyId = (long)await getNewIdCmd.ExecuteScalarAsync();
+                        universeToNoteStoryMapping[universeId] = storyId;
+
+                        createChapterCmd.Parameters["@storyId"].Value = storyId;
+                        if (await createChapterCmd.Command.ExecuteNonQueryAsync() == 0)
+                            return false;
+
+                        long chapterId = (long)await getNewIdCmd.ExecuteScalarAsync();
+                        universeToNoteChapterMapping[universeId] = chapterId;
+                    }
+
+                    // Create a new scene for this note.
+                    createSceneCmd.Parameters["@chapterId"].Value = universeToNoteChapterMapping[universeId];
+                    createSceneCmd.Parameters["@name"].Value = noteName;
+                    createSceneCmd.Parameters["@documentId"].Value = documentId;
+
+                    if (await createSceneCmd.Command.ExecuteNonQueryAsync() == 0)
+                        return false;
+                }
+            }
+
+            return true;
+        }
+
         private async Task<bool> upgradeDocumentEncryption()
         {
             using var getCommand = new SqliteCommand("SELECT id, Json FROM Document WHERE IsEncrypted = 1", _connection);
-            using var updateCommand = new SqliteCommand("UPDATE Document SET Json = @json WHERE id = @id", _connection);
-            SqliteParameter jsonParameter = new SqliteParameter();
-            jsonParameter.ParameterName = "@json";
-            updateCommand.Parameters.Add(jsonParameter);
-            SqliteParameter idParameter = new SqliteParameter();
-            idParameter.ParameterName = "@id";
-            updateCommand.Parameters.Add(idParameter);
+
+            using var updateCommand = new DbCommandHelper(_connection);
+            updateCommand.Command.CommandText = "UPDATE Document SET Json = @json WHERE id = @id";
+            updateCommand.AddParameter("@json");
+            updateCommand.AddParameter("@id");
 
             List<string> aesPasswords = new List<string>();
 
@@ -103,13 +186,15 @@ namespace TjMott.Writer.Models.SqlScripts
                     string encrypted = AESHelperV2.AesEncrypt(decryptedJson, itemPassword);
 
                     // Save back to database.
-                    idParameter.Value = id;
-                    jsonParameter.Value = encrypted;
-                    int updateResult = await updateCommand.ExecuteNonQueryAsync();
+                    updateCommand.Parameters["@id"].Value = id;
+                    updateCommand.Parameters["@json"].Value = encrypted;
+                    int updateResult = await updateCommand.Command.ExecuteNonQueryAsync();
+                    if (updateResult == 0)
+                        return false;
                 }
             }
 
-            return false;
+            return true;
         }
 
         private async Task<string> promptForPassword()
