@@ -1,7 +1,5 @@
 ﻿using Avalonia.Controls;
 using Microsoft.Data.Sqlite;
-using MsBox.Avalonia;
-using MsBox.Avalonia.Dto;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -9,9 +7,14 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Xml;
 using TjMott.Writer.ViewModels;
+using TjMott.Writer.Views;
 
 namespace TjMott.Writer.Models.SqlScripts
 {
+    /// <summary>
+    /// This updater is responsible for the major changes that happened when migrating from WPF and FlowDocument
+    /// to AvaloniaUI and QuillJS.
+    /// </summary>
     public class Update3to4 : DbUpgrader
     {
         private static List<string> _aesPasswords = new List<string>();
@@ -471,25 +474,27 @@ namespace TjMott.Writer.Models.SqlScripts
                     decrypted = false;
                     if (_aesPasswords.Count == 0)
                     {
-                        /*MessageBoxCustomParams mbp = new MessageBoxCustomParams();
-                        mbp.IsPassword = true;
-                        mbp.ContentTitle = "FlowDocument is encrypted";
-                        mbp.ContentMessage = "Enter your AES password.";
-                        mbp.Icon = MessageBox.Avalonia.Enums.Icon.Question;
-                        mbp.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                        var msgbox = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxInputWindow(mbp);
-                        var msgboxResult = await msgbox.ShowDialog(_dialogOwner);
-                        if (msgboxResult.Button == "Confirm")
+                        PasswordInputViewModel passwordInputViewModel = new PasswordInputViewModel();
+                        PasswordInputView passwordInputView = new PasswordInputView()
                         {
-                            _aesPasswords.Add(msgboxResult.Message);
-                        }*/
+                            DataContext = passwordInputViewModel
+                        };
+
+                        passwordInputViewModel.Prompt = "A password is required to unlock a FlowDocument.";
+                        await passwordInputView.ShowDialog(_dialogOwner);
+                        if (passwordInputViewModel.DialogAccepted)
+                        {
+                            _aesPasswords.Add(passwordInputViewModel.Password);
+                        }
                     }
                     for (int i = 0; i < _aesPasswords.Count; i++)
                     {
-                        /*string tmpPass = _aesPasswords[i];
+                        string tmpPass = _aesPasswords[i];
                         try
                         {
+#pragma warning disable CS0612 // Type or member is obsolete
                             xml = AESHelper.AesDecrypt(xml, tmpPass);
+#pragma warning restore CS0612 // Type or member is obsolete
                             aesKey = tmpPass;
                             decrypted = true;
                             break;
@@ -498,20 +503,20 @@ namespace TjMott.Writer.Models.SqlScripts
                         {
                             if (i == _aesPasswords.Count - 1)
                             {
-                                MessageBoxInputParams mbp = new MessageBoxInputParams();
-                                mbp.IsPassword = true;
-                                mbp.ContentTitle = "FlowDocument is encrypted";
-                                mbp.ContentMessage = "Enter your AES password.";
-                                mbp.Icon = MessageBox.Avalonia.Enums.Icon.Question;
-                                mbp.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                                var msgbox = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxInputWindow(mbp);
-                                var msgboxResult = await msgbox.ShowDialog(_dialogOwner);
-                                if (msgboxResult.Button == "Confirm")
+                                PasswordInputViewModel passwordInputViewModel = new PasswordInputViewModel();
+                                PasswordInputView passwordInputView = new PasswordInputView()
                                 {
-                                    _aesPasswords.Add(msgboxResult.Message);
+                                    DataContext = passwordInputViewModel
+                                };
+
+                                passwordInputViewModel.Prompt = "A password is required to unlock a FlowDocument.";
+                                await passwordInputView.ShowDialog(_dialogOwner);
+                                if (passwordInputViewModel.DialogAccepted)
+                                {
+                                    _aesPasswords.Add(passwordInputViewModel.Password);
                                 }
                             }
-                        }*/
+                        }
                     }
                 }
                 if (decrypted)
@@ -522,7 +527,9 @@ namespace TjMott.Writer.Models.SqlScripts
 
                 if (isEncrypted)
                 {
+#pragma warning disable CS0612 // Type or member is obsolete
                     json = AESHelper.AesEncrypt(json, aesKey);
+#pragma warning restore CS0612 // Type or member is obsolete
                 }
 
                 // Insert Document into database.

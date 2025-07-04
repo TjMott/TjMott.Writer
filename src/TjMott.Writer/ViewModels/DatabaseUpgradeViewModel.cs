@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reactive;
-using System.Text;
-using System.Threading.Tasks;
 using Avalonia.Controls;
 using Microsoft.Data.Sqlite;
 using ReactiveUI;
@@ -97,6 +93,9 @@ namespace TjMott.Writer.ViewModels
                             break;
                         case 3:
                             upgrader = new Update3to4();
+                            break;
+                        case 4:
+                            upgrader = new Update4to5();
                             break;
                     }
 

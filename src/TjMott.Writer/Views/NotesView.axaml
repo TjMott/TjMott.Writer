@@ -34,8 +34,9 @@
 		</Border>
 		
 		<GridSplitter Grid.Column="1" Grid.RowSpan="2" Width="3" VerticalAlignment="Stretch" Cursor="SizeWestEast"
-					  ResizeDirection="Columns" ResizeBehavior="PreviousAndNext" Background="LightGray" />
+					  ResizeDirection="Columns" ResizeBehavior="PreviousAndNext" />
 
-		<controls:QuillJsContainer x:Name="notePreviewContainer" Grid.Column="2" Grid.Row="1" Margin="5" AllowUserEditing="False" Document="{Binding SelectedNote.Document}" />
+		<controls:QuillJsContainer x:Name="notePreviewContainer" Grid.Column="2" Grid.Row="1" Margin="5"
+								   AllowUserEditing="False" Document="{Binding SelectedNote.Document}" />
 	</Grid>
 </UserControl>

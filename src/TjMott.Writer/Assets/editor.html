@@ -21,6 +21,10 @@
         }
 
         @media screen {
+            body {
+                overflow: hidden; /* Hide scrollbars */
+            }
+
             .html-container {
                 position: absolute;
                 top: 0;
@@ -239,11 +243,11 @@
         function showToolbar(visible) {
             if (visible)
             {
-                document.getElementsByClassName("ql-toolbar")[0].style.visibility = 'visible';
+                document.getElementsByClassName("ql-toolbar")[0].style.display = 'block';
             }
             else
             {
-                document.getElementsByClassName("ql-toolbar")[0].style.visibility = 'hidden';
+                document.getElementsByClassName("ql-toolbar")[0].style.display = 'none';
             }
         }
 

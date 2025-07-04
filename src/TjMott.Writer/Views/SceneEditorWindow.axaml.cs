@@ -90,7 +90,6 @@ namespace TjMott.Writer.Views
 
         private async void SceneEditorWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            await Task.Yield(); // Shut up compiler warning for now.
             e.Cancel = true;
             if (manuscriptEditor.HasUnsavedEdits())
             {

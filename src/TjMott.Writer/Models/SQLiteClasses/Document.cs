@@ -154,7 +154,7 @@ namespace TjMott.Writer.Models.SQLiteClasses
             {
                 if (IsUnlocked && _cachedPassword != null)
                 {
-                    Json = AESHelper.AesEncrypt(_decryptedJson, _cachedPassword);
+                    Json = AESHelperV2.AesEncrypt(_decryptedJson, _cachedPassword);
                 }
                 else
                 {
@@ -185,7 +185,7 @@ namespace TjMott.Writer.Models.SQLiteClasses
         {
             if (!IsEncrypted) return;
             if (IsUnlocked) return;
-            string decrypted = AESHelper.AesDecrypt(_json, password);
+            string decrypted = AESHelperV2.AesDecrypt(_json, password);
             _cachedPassword = password;
             IsUnlocked = true;
             PublicJson = decrypted;
@@ -203,7 +203,7 @@ namespace TjMott.Writer.Models.SQLiteClasses
         public async Task Encrypt(string password)
         {
             if (IsEncrypted) return;
-            string encrypted = AESHelper.AesEncrypt(PublicJson, password);
+            string encrypted = AESHelperV2.AesEncrypt(PublicJson, password);
             _decryptedJson = PublicJson;
             _cachedPassword = password;
             _json = encrypted;
@@ -214,7 +214,7 @@ namespace TjMott.Writer.Models.SQLiteClasses
         public async Task Decrypt(string password)
         {
             if (!IsEncrypted) return;
-            string decrypted = AESHelper.AesDecrypt(_json, password);
+            string decrypted = AESHelperV2.AesDecrypt(_json, password);
             IsEncrypted = false;
             IsUnlocked = true;
             PublicJson = decrypted;

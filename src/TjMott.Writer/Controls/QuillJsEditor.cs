@@ -7,6 +7,9 @@ using Xilium.CefGlue.Avalonia;
 
 namespace TjMott.Writer.Controls
 {
+    /// <summary>
+    /// Extends AvaloniaCefBrowser from the CefGlue project.
+    /// </summary>
     public class QuillJsEditor : AvaloniaCefBrowser
     {
         public class AssetHash

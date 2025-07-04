@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.Data.Sqlite;
-using System.Text;
 
 namespace TjMott.Writer.Models.SQLiteClasses
 {
@@ -17,7 +15,7 @@ namespace TjMott.Writer.Models.SQLiteClasses
     public class Metadata
     {
 
-        public const int ExpectedVersion = 4;
+        public const int ExpectedVersion = 5;
 
         private SqliteConnection _connection;
 

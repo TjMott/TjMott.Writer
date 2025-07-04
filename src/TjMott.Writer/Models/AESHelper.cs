@@ -5,6 +5,7 @@ using System.Text;
 
 namespace TjMott.Writer.Models
 {
+    [Obsolete]
     static class AESHelper
     {
         private const int aesBlockByteSize = 128 / 8;

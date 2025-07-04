@@ -13,7 +13,7 @@ CREATE TABLE Metadata
     Value TEXT NOT NULL
 );
 
-INSERT INTO Metadata(Key, Value) VALUES ('DbVersion', 4);
+INSERT INTO Metadata(Key, Value) VALUES ('DbVersion', 5);
 INSERT INTO Metadata(Key, Value) VALUES ('DefaultUniverse', 0);
 
 CREATE TABLE Universe
