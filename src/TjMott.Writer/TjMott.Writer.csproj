@@ -21,14 +21,24 @@
   </PropertyGroup>
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
+    <AvaloniaResource Remove="Assets\quilljs2\**" />
+    <AvaloniaXaml Remove="Assets\quilljs2\**" />
+    <Compile Remove="Assets\quilljs2\**" />
+    <EmbeddedResource Remove="Assets\quilljs2\**" />
+    <None Remove="Assets\quilljs2\**" />
     <AvaloniaResource Remove="Assets\editor.html" />
     <AvaloniaResource Remove="Assets\quilljs\quill.bubble.css" />
+    <AvaloniaResource Remove="Assets\quilljs\quill.bubble.css.map" />
     <AvaloniaResource Remove="Assets\quilljs\quill.core.css" />
+    <AvaloniaResource Remove="Assets\quilljs\quill.core.css.map" />
     <AvaloniaResource Remove="Assets\quilljs\quill.core.js" />
+    <AvaloniaResource Remove="Assets\quilljs\quill.core.js.map" />
     <AvaloniaResource Remove="Assets\quilljs\quill.js" />
+    <AvaloniaResource Remove="Assets\quilljs\quill.js.map" />
     <AvaloniaResource Remove="Assets\quilljs\quill.min.js" />
     <AvaloniaResource Remove="Assets\quilljs\quill.min.js.map" />
     <AvaloniaResource Remove="Assets\quilljs\quill.snow.css" />
+    <AvaloniaResource Remove="Assets\quilljs\quill.snow.css.map" />
     <AvaloniaResource Remove="Assets\quilljs\quill.snow.dark.css" />
     <AvaloniaXaml Remove="Views\EditNoteDocumentCategoriesWindow.axaml" />
     <AvaloniaXaml Remove="Views\NoteWindow.axaml" />
@@ -100,6 +110,21 @@
     </AvaloniaResource>
   </ItemGroup>
   <ItemGroup>
+	  <Content Include="Assets\quilljs\quill.bubble.css.map">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Assets\quilljs\quill.core.css.map">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Assets\quilljs\quill.core.js.map">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Assets\quilljs\quill.js.map">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Assets\quilljs\quill.snow.css.map">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
 	  <Content Include="Assets\quilljs\quill.snow.dark.css">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
@@ -120,12 +145,6 @@
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
 	  <Content Include="Assets\quilljs\quill.js">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </Content>
-	  <Content Include="Assets\quilljs\quill.min.js">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </Content>
-	  <Content Include="Assets\quilljs\quill.min.js.map">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
 	  <Content Include="Assets\quilljs\quill.snow.css">

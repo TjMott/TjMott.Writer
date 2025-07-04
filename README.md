@@ -203,6 +203,7 @@ A previous implementation using CefNet provided a lot of switches for my app to 
 ### General Updates
 
 * Upgraded to modern AvaloniaUI (version 11.3.2, was on old beta 0.10.X release).
+* Updated Quill editor from 1.3.7 to 2.0.3.
 * Migrated from CefNet to CefGlue due to lack of Avalonia 11 support from CefNet.
 * Lots of performance updates and improved features due to Avalonia framework updates, e.g. proper light/dark theme support.
 * Updated to .NET 8.0.
