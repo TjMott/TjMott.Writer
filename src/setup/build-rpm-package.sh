@@ -1,43 +1,25 @@
 #!/bin/sh
 
 export SETUP_DIR=$(pwd)
+echo "SETUP_DIR: $SETUP_DIR"
 
 cd ../..
 
 export REPO_ROOT=$(pwd)
+echo "REPO_ROOT: $REPO_ROOT"
+
+export PUBLISH_ROOT="${REPO_ROOT}/linux64"
 
 export VERSION_MAJOR="1"
 export VERSION_MINOR="0"
 export VERSION_REVISION="0"
 
-export RPM_BUILD_ROOT=~/rpmbuild
-export RPM_TMP=${RPM_BUILD_ROOT}/BUILDROOT/tjm-writer-${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_REVISION}-1.x86_64
+echo "Using version $VERSION_MAJOR.$VERSION_MINOR.$VERSION_REVISION"
 
-if [ -d ${RPM_BUILD_ROOT} ]; then rm -rf ${RPM_BUILD_ROOT}; fi
-
-mkdir ${RPM_BUILD_ROOT}
-mkdir ${RPM_BUILD_ROOT}/RPMS
-mkdir ${RPM_BUILD_ROOT}/RPMS/x86_64
-mkdir ${RPM_BUILD_ROOT}/SRPMS
-mkdir ${RPM_BUILD_ROOT}/BUILD
-mkdir ${RPM_BUILD_ROOT}/SOURCES
-mkdir ${RPM_BUILD_ROOT}/SPECS
-
-mkdir -p ${RPM_TMP}
-
-# Copy program files
-mkdir -p ${RPM_TMP}/opt/TjMott.Writer
-cp -r linux64/* ${RPM_TMP}/opt/TjMott.Writer/
-
-# Copy program launcher and MIME type
-mkdir -p ${RPM_TMP}/usr/share/applications
-mkdir -p ${RPM_TMP}/usr/share/mime/packages
-cp ${SETUP_DIR}/tjm-writer.desktop ${RPM_TMP}/usr/share/applications/
-cp ${SETUP_DIR}/application-tjm-writer.xml ${RPM_TMP}/usr/share/mime/packages/
-
+echo "Building RPM specfile at ${SETUP_DIR}/tjm-writer.spec..."
 # Build RPM spec file
-cat <<EOF > ${RPM_BUILD_ROOT}/SPECS/tjm-writer.spec
-Summary: A cross-platform, open source word processor with useful features for authors
+cat <<EOF > ${SETUP_DIR}/tjm-writer.spec
+Summary: An open source word processor with useful features for authors
 Name: tjm-writer
 Version: ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_REVISION}
 Release: 1
@@ -45,10 +27,19 @@ License: BSD 3-Clause
 Requires: dotnet-sdk-8.0
 Group: Office
 URL: https://www.tjmott.com
-BuildRoot: ${RPM_TMP}
+AutoReqProv: no
 
 %description
 %{summary}
+
+%prep
+mkdir -p %{buildroot}/usr/share/applications/
+mkdir -p %{buildroot}/usr/share/mime/packages/
+mkdir -p %{buildroot}/opt/TjMott.Writer/
+
+rsync -av --exclude='*.pdb' ${PUBLISH_ROOT}/ %{buildroot}/opt/TjMott.Writer/
+cp ${SETUP_DIR}/tjm-writer.desktop %{buildroot}/usr/share/applications/
+cp ${SETUP_DIR}/application-tjm-writer.xml %{buildroot}/usr/share/mime/packages/
 
 %files
 %attr(0755, root, root) /opt/TjMott.Writer/TjMott.Writer
@@ -58,8 +49,18 @@ BuildRoot: ${RPM_TMP}
 %attr(0644, root, root) /opt/TjMott.Writer/*.json
 %attr(0644, root, root) /opt/TjMott.Writer/LICENSE
 %attr(0644, root, root) /opt/TjMott.Writer/README.md
-%attr(0644, root, root) /opt/TjMott.Writer/Assets/*
+%attr(0644, root, root) /opt/TjMott.Writer/Assets/editor.html
+%attr(0644, root, root) /opt/TjMott.Writer/Assets/quilljs/*
 %attr(0644, root, root) /opt/TjMott.Writer/WordTemplates/*
+%attr(0755, root, root) /opt/TjMott.Writer/CefGlueBrowserProcess/Xilium.CefGlue.BrowserProcess
+%attr(0755, root, root) /opt/TjMott.Writer/CefGlueBrowserProcess/createdump
+%attr(0644, root, root) /opt/TjMott.Writer/CefGlueBrowserProcess/*.dll
+%attr(0644, root, root) /opt/TjMott.Writer/CefGlueBrowserProcess/*.so*
+%attr(0644, root, root) /opt/TjMott.Writer/CefGlueBrowserProcess/*.json
+%attr(0644, root, root) /opt/TjMott.Writer/CefGlueBrowserProcess/*.pak
+%attr(0644, root, root) /opt/TjMott.Writer/CefGlueBrowserProcess/*.dat
+%attr(0644, root, root) /opt/TjMott.Writer/CefGlueBrowserProcess/*.bin
+%attr(0644, root, root) /opt/TjMott.Writer/CefGlueBrowserProcess/locales/*.pak
 %attr(0644, root, root) /usr/share/applications/tjm-writer.desktop
 %attr(0644, root, root) /usr/share/mime/packages/application-tjm-writer.xml
 
@@ -73,20 +74,28 @@ exit
 # Clean up MIME types and application
 update-mime-database /usr/share/mime
 update-desktop-database /usr/share/applications
+# I wouldn't expect this to be necessary, but some junk remains...
+rm -rf /opt/TjMott.Writer
 exit
 
 %clean
-rm -rf ${RPM_BUILD_ROOT}/opt
-rm -rf ${RPM_BUILD_ROOT}/usr
+rm -rf %{buildroot}
 
 EOF
 # End of spec file
 
+echo "RPM specfile written. Contents:"
+cat ${SETUP_DIR}/tjm-writer.spec
+
+if [ -d ~/rpmbuild ]; then rm -rf ~/rpmbuild; fi
+
+echo "Calling rpmbuild..."
 # Now build actual RPM
-cd ${RPM_BUILD_ROOT}/SPECS
+cd ${SETUP_DIR}
 rpmbuild --target x86_64 -bb tjm-writer.spec
 
 # Copy RPM to repository root, and do cleanup.
-cp ${RPM_BUILD_ROOT}/RPMS/x86_64/*.rpm ${REPO_ROOT}/
+cp ~/rpmbuild/RPMS/x86_64/*.rpm ${REPO_ROOT}/
 
-if [ -d ${RPM_BUILD_ROOT} ]; then rm -rf ${RPM_BUILD_ROOT}; fi
+if [ -d ~/rpmbuild ]; then rm -rf ~/rpmbuild; fi
+rm ${SETUP_DIR}/tjm-writer.spec
