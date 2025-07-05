@@ -31,13 +31,12 @@ echo "#!/bin/sh" >> ${PACKAGE}/DEBIAN/postinst
 echo "update-mime-database /usr/share/mime" >> ${PACKAGE}/DEBIAN/postinst
 echo "update-desktop-database /usr/share/applications" >> ${PACKAGE}/DEBIAN/postinst
 
-# Create uninstall pre-removal file
+# Create uninstall pre-removal file (unused right now)
 touch ${PACKAGE}/DEBIAN/prerm
 chmod 0775 ${PACKAGE}/DEBIAN/prerm
 
 echo "#!/bin/sh" >> ${PACKAGE}/DEBIAN/prerm
-echo "rm -rf /opt/TjMott.Writer/Assets" >> ${PACKAGE}/DEBIAN/prerm
-echo "rm -rf /opt/TjMott.Writer/GPUCache" >> ${PACKAGE}/DEBIAN/prerm
+echo " " >> ${PACKAGE}/DEBIAN/prerm
 
 # Create uninstall post-removal file to update MIME types
 touch ${PACKAGE}/DEBIAN/postrm
@@ -49,6 +48,10 @@ echo "update-desktop-database /usr/share/applications" >> ${PACKAGE}/DEBIAN/post
 # Copy program files
 mkdir -p ${PACKAGE}/opt/TjMott.Writer
 cp -r linux64/* ${PACKAGE}/opt/TjMott.Writer/
+
+# Make sure Cef is executable.
+chmod +x ${PACKAGE}/opt/TjMott.Writer/CefGlueBrowserProcess/Xilium.CefGlue.BrowserProcess
+chmod +x ${PACKAGE}/opt/TjMott.Writer/TjMott.Writer
 
 # Copy program launcher
 mkdir -p ${PACKAGE}/usr/share/applications

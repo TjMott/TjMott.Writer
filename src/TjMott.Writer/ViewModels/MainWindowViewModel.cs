@@ -129,7 +129,11 @@ namespace TjMott.Writer.ViewModels
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(AppSettings.Default.lastFile) && File.Exists(AppSettings.Default.lastFile))
+            if (!string.IsNullOrEmpty(Program.DoubleClickedDatabaseFile) && File.Exists(Program.DoubleClickedDatabaseFile))
+            {
+                await openDatabaseAsync(Program.DoubleClickedDatabaseFile, dialogOwner);
+            }
+            else if (!string.IsNullOrWhiteSpace(AppSettings.Default.lastFile) && File.Exists(AppSettings.Default.lastFile))
             {
                 await openDatabaseAsync(AppSettings.Default.lastFile, dialogOwner);
             }

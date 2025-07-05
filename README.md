@@ -200,7 +200,7 @@ A previous implementation using CefNet provided a lot of switches for my app to 
 
 ###Version 1.0.0
 
-### General Updates
+### Changes
 
 * Upgraded to modern AvaloniaUI (version 11.3.2, was on old beta 0.10.X release).
 * Updated Quill editor from 1.3.7 to 2.0.3.

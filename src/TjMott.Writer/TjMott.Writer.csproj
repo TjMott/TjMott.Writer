@@ -18,6 +18,7 @@
 	<TrimMode>copyused</TrimMode>
 	<PublishTrimmed>false</PublishTrimmed>
 	<PublishSingleFile>false</PublishSingleFile>
+	<ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />

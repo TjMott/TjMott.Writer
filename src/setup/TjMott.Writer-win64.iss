@@ -14,30 +14,20 @@ AppContact="TJ Mott (tj@tjmott.com)"
 AppPublisher="TJ Mott"
 AppPublisherURL="https://www.tjmott.com/"
 LicenseFile="..\..\LICENSE"
-ArchitecturesInstallIn64BitMode=x64
-ArchitecturesAllowed=x64
+ArchitecturesInstallIn64BitMode=x64compatible
+ArchitecturesAllowed=x64compatible
 SetupIconFile="..\..\win64\TjMott.Writer.ico"
 
 [Registry]
-Root: HKCR; Subkey: ".wdb";                                            ValueType: string; ValueData: "TjMottsWriter.WriterDatabase"; Flags: uninsdeletekey;
-Root: HKCR; Subkey: "TjMottsWriter.WriterDatabase";                    ValueType: string; ValueData: "TJ Mott's Writer Database"; Flags: uninsdeletekey;
-Root: HKCR; Subkey: "TjMottsWriter.WriterDatabase\Shell\Open\Command"; ValueType: string; ValueData: """{app}\TjMott.Writer.exe"" ""%1"""; Flags: uninsdeletekey;
-Root: HKCR; Subkey: "TjMottsWriter.WriterDatabase\DefaultIcon";        ValueType: string; ValueData: "{app}\TjMott.Writer.ico"; Flags: uninsdeletekey;
+Root: HKA; Subkey: "Software\Classes\.wdb";                                            ValueType: string; ValueData: "TjMottsWriter.WriterDatabase";          Flags: uninsdeletekey;
+Root: HKA; Subkey: "Software\Classes\TjMottsWriter.WriterDatabase";                    ValueType: string; ValueData: "TJ Mott's Writer Database";             Flags: uninsdeletekey;
+Root: HKA; Subkey: "Software\Classes\TjMottsWriter.WriterDatabase\Shell\Open\Command"; ValueType: string; ValueData: """{app}\TjMott.Writer.exe"" ""%1""";    Flags: uninsdeletekey;
+Root: HKA; Subkey: "Software\Classes\TjMottsWriter.WriterDatabase\DefaultIcon";        ValueType: string; ValueData: "{app}\TjMott.Writer.ico";               Flags: uninsdeletekey;
 
 [Files]
-Source: "..\..\win64\*.dll";                  DestDir: "{app}";
-Source: "..\..\win64\*.exe";                  DestDir: "{app}";
-Source: "..\..\win64\*.deps.json";            DestDir: "{app}";
-Source: "..\..\win64\*.runtimeconfig.json";   DestDir: "{app}";
-Source: "..\..\win64\Assets\editor.html";     DestDir: "{app}\Assets";
-Source: "..\..\win64\Assets\quilljs\*.css";   DestDir: "{app}\Assets\quilljs";
-Source: "..\..\win64\Assets\quilljs\*.js";    DestDir: "{app}\Assets\quilljs";
-Source: "..\..\win64\Assets\quilljs\*.map";   DestDir: "{app}\Assets\quilljs";
-Source: "..\..\win64\WordTemplates\*.dotx";   DestDir: "{app}\WordTemplates";
-Source: "..\..\win64\README.md";              DestDir: "{app}";
-Source: "..\..\win64\LICENSE";                DestDir: "{app}";                
-Source: "..\..\win64\*.ico";                  DestDir: "{app}";                
+Source: "..\..\win64\*";   DestDir: "{app}";  Flags: recursesubdirs;   Excludes: "*.pdb";
 
+; Icons section isn't too useful anymore in Win11's turd of a Start Menu, unfortunately.
 [Icons]
 Name: "{group}\Launch TJ Mott's Writer";      Filename: "{app}\TjMott.Writer.exe";      IconFilename: "{app}\TjMott.Writer.ico";
 Name: "{group}\Uninstall TJ Mott's Writer";   Filename: "{uninstallexe}";
