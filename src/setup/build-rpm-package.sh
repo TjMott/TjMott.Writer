@@ -6,9 +6,9 @@ cd ../..
 
 export REPO_ROOT=$(pwd)
 
-export VERSION_MAJOR="0"
-export VERSION_MINOR="5"
-export VERSION_REVISION="3"
+export VERSION_MAJOR="1"
+export VERSION_MINOR="0"
+export VERSION_REVISION="0"
 
 export RPM_BUILD_ROOT=~/rpmbuild
 export RPM_TMP=${RPM_BUILD_ROOT}/BUILDROOT/tjm-writer-${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_REVISION}-1.x86_64
@@ -28,7 +28,6 @@ mkdir -p ${RPM_TMP}
 # Copy program files
 mkdir -p ${RPM_TMP}/opt/TjMott.Writer
 cp -r linux64/* ${RPM_TMP}/opt/TjMott.Writer/
-if [ -f ${RPM_TMP}/opt/TjMott.Writer/TjMott.Writer.pdb ]; then rm ${RPM_TMP}/opt/TjMott.Writer/TjMott.Writer.pdb; fi
 
 # Copy program launcher and MIME type
 mkdir -p ${RPM_TMP}/usr/share/applications
@@ -36,20 +35,14 @@ mkdir -p ${RPM_TMP}/usr/share/mime/packages
 cp ${SETUP_DIR}/tjm-writer.desktop ${RPM_TMP}/usr/share/applications/
 cp ${SETUP_DIR}/application-tjm-writer.xml ${RPM_TMP}/usr/share/mime/packages/
 
-# Copy policykit policy to allow elevation when installing CEF
-mkdir -p ${RPM_TMP}/usr/share/polkit-1/actions/
-cp ${SETUP_DIR}/com.tjmott.tjm-writer.policy ${RPM_TMP}/usr/share/polkit-1/actions/
-
-
 # Build RPM spec file
 cat <<EOF > ${RPM_BUILD_ROOT}/SPECS/tjm-writer.spec
-Summary: A word processor with useful features for authors
+Summary: A cross-platform, open source word processor with useful features for authors
 Name: tjm-writer
 Version: ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_REVISION}
 Release: 1
 License: BSD 3-Clause
 Requires: dotnet-sdk-8.0
-Requires: libX11-devel
 Group: Office
 URL: https://www.tjmott.com
 BuildRoot: ${RPM_TMP}
