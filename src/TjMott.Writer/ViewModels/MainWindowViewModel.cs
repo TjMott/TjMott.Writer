@@ -29,7 +29,18 @@ namespace TjMott.Writer.ViewModels
         #endregion
 
         private Database _database;
-        public Database Database { get => _database; set => this.RaiseAndSetIfChanged(ref _database, value); }
+        public Database Database
+        { 
+            get => _database; 
+            set => this.RaiseAndSetIfChanged(ref _database, value);
+        }
+
+        private string _status = "";
+        public string Status
+        {
+            get => _status;
+            private set => this.RaiseAndSetIfChanged(ref _status, value);
+        }
 
         #region Theme selection
         public bool UseDefaultTheme
@@ -92,7 +103,7 @@ namespace TjMott.Writer.ViewModels
             OpenWindowsViewModel = new OpenWindowsViewModel(owner);
             NewFileCommand = ReactiveCommand.CreateFromTask<Window>(newFileAsync);
             OpenFileCommand = ReactiveCommand.CreateFromTask<Window>(openFileAsync);
-            QuitCommand = ReactiveCommand.CreateFromTask<Window>(quitAsync);
+            QuitCommand = ReactiveCommand.CreateFromTask<Window>(QuitAsync);
             ShowAboutCommand = ReactiveCommand.CreateFromTask<Window>(showAboutAsync);
             ShowReadmeCommand = ReactiveCommand.Create(showReadmeWindow);
             ShowWordTemplatesCommand = ReactiveCommand.Create(showWordTemplates);
@@ -174,6 +185,7 @@ namespace TjMott.Writer.ViewModels
 
         private async Task openDatabaseAsync(string filename, Window dialogOwner)
         {
+            Status = "Loading database " + filename + "...";
             Database = new Database(filename);
 
             if (Database.Metadata.DbVersion > Metadata.ExpectedVersion)
@@ -210,6 +222,7 @@ namespace TjMott.Writer.ViewModels
             AppSettings.Default.Save();
             loadUniversesMenu();
             Database.Universes.CollectionChanged += (o, e) => loadUniversesMenu();
+            Status = "";
         }
 
         private async Task showAboutAsync(Window owner)
@@ -217,7 +230,7 @@ namespace TjMott.Writer.ViewModels
             await new AboutWindow().ShowDialog(owner);
         }
 
-        private async Task quitAsync(Window dialogOwner)
+        public async Task QuitAsync(Window mainWindow)
         {
             if (OpenWindowsViewModel.AllWindows.Count() > 1)
             {
@@ -225,11 +238,19 @@ namespace TjMott.Writer.ViewModels
                     "You have several open windows. Please save and close your work before closing the main window.",
                     MsBox.Avalonia.Enums.ButtonEnum.Ok,
                     MsBox.Avalonia.Enums.Icon.Warning,
-                    WindowStartupLocation.CenterOwner).ShowWindowDialogAsync(dialogOwner);
+                    WindowStartupLocation.CenterOwner).ShowWindowDialogAsync(mainWindow);
                 return;
             }
+
+            Status = "Performing database cleanup...";
+            AppSettings.Default.mainWindowWidth = mainWindow.Width;
+            AppSettings.Default.mainWindowHeight = mainWindow.Height;
+            AppSettings.Default.Save();
+
             if (Database != null)
                 await Database.Close();
+
+            (mainWindow as MainWindow).UnsubscribeClosingEvent();
             (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime).Shutdown();
         }
 
@@ -253,11 +274,13 @@ namespace TjMott.Writer.ViewModels
 
         private async Task selectUniverseAsync(Universe u)
         {
+            Status = "Switching to universe " + u.Name + "...";
             foreach (var item in UniverseMenuItems)
             {
                 item.IsChecked = item.Universe == u;
             }
             await Database.SelectUniverse(u);
+            Status = "";
         }
 
         private void loadUniversesMenu()

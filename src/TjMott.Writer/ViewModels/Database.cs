@@ -160,25 +160,18 @@ namespace TjMott.Writer.ViewModels
                 s.UniverseVm = SelectedUniverseViewModel;
                 SelectedUniverseViewModel.UpdateStoryInTree(s);
             }
-            
         }
 
         public async Task Close()
         {
-
             if (Connection != null)
             {
                 await commitTransaction();
-            }
-
-            if (Connection != null)
-            {
                 await Vacuum();
-            }
-
-            _connection.Close();
-            _connection.Dispose();
-            _connection = null;
+                _connection.Close();
+                _connection.Dispose();
+                _connection = null;
+            }            
         }
 
         public async Task CreateUniverse(Window owner)

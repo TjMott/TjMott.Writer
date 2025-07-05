@@ -97,6 +97,7 @@
 			<TextBlock Margin="5,0,30,0" Text="{Binding Database.FileName}" />
 			<TextBlock Text="Universe:" />
 			<TextBlock Margin="5,0,30,0" Text="{Binding Database.SelectedUniverse.Name}" />
+			<TextBlock Text="{Binding Status}" />
 		</StackPanel>
 
 	</Grid>

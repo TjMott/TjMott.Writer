@@ -1,7 +1,6 @@
 using Avalonia.Controls;
 using System.ComponentModel;
 using TjMott.Writer.ViewModels;
-using System.Linq;
 
 namespace TjMott.Writer.Views
 {
@@ -18,25 +17,19 @@ namespace TjMott.Writer.Views
             Title += " v" + GetType().Assembly.GetName().Version.ToString();
         }
 
+        public void UnsubscribeClosingEvent()
+        {
+            Closing -= Window_Closing;
+        }
+
         public async void Window_Closing(object sender, CancelEventArgs args)
         {
+            args.Cancel = true;
+            
             MainWindowViewModel vm = (MainWindowViewModel)DataContext;
 
-            if (vm.OpenWindowsViewModel.AllWindows.Count() > 1)
-            {
-                args.Cancel = true;
-                await MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard("Open Windows",
-                    "You have several open windows. Please save and close your work before closing the main window.",
-                    MsBox.Avalonia.Enums.ButtonEnum.Ok,
-                    MsBox.Avalonia.Enums.Icon.Warning,
-                    WindowStartupLocation.CenterOwner).ShowWindowDialogAsync(this);
-                return;
-            }
-
-
-            AppSettings.Default.mainWindowWidth = Width;
-            AppSettings.Default.mainWindowHeight = Height;
-            AppSettings.Default.Save();
+            // VM will deal with open windows, committing the database, etc.
+            await vm.QuitAsync(this);
         }
     }
 }
