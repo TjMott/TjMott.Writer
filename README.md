@@ -27,7 +27,6 @@ Mobile (Android/iOS) support is not on my radar. There are dependencies that onl
 3. Once downloaded, you may have to right-click the file, go to "Properties", and check the "Unblock" checkbox before Windows will allow you to install it.
 4. Double-click to install.
 5. Now you can launch TJ Mott's Writer from your Start Menu. 
-6. On first run, it will need to download and install CEF. Let it do so, then re-launch the application and it'll be ready to use.
 
 #### Debian-based Linuxes (Debian, Ubuntu, Mint)
 
@@ -35,7 +34,6 @@ Mobile (Android/iOS) support is not on my radar. There are dependencies that onl
 2. Download the latest `.deb` file from [my releases page](https://github.com/TjMott/TjMott.Writer/releases).
 3. Install the deb file: `sudo dpkg -i tjm-writer_1.0.0-1_amd64.deb`
 4. Now you can launch TJ Mott's Writer from your launcher, or by executing `/opt/TjMott.Writer/TjMott.Writer`
-5. On first run, it will need to download and install CEF. Let it do so, then re-launch the application and it'll be ready to use.
 
 #### Red Hat-based Linuxes (Red Hat, Fedora, CentOS, Rocky)
 
@@ -43,7 +41,6 @@ Mobile (Android/iOS) support is not on my radar. There are dependencies that onl
 2. Download the latest `.rpm` file from [my releases page](https://github.com/TjMott/TjMott.Writer/releases).
 3. Install the rpm: `sudo rpm -i tjm-writer-1.0.0-1.x86_64.rpm`
 4. Now you can launch TJ Mott's Writer from your launcher, or by executing `/opt/TjMott.Writer/TjMott.Writer`
-5. On first run, it will need to download and install CEF. Let it do so, then re-launch the application and it'll be ready to use.
 
 #### Portable Installation
 
