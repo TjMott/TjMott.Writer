@@ -74,6 +74,15 @@
                 visibility: hidden;
             }
 
+            html {
+                background: white;
+            }
+
+            .ql-container {
+                color: black !important;
+                background: white !important;
+            }
+
             .print-only {
                 visibility: visible;
             }
@@ -120,6 +129,11 @@
 	<script>
 	//https://stackoverflow.com/questions/43728080/how-to-add-font-types-on-quill-js-with-toolbar-options
 
+        doSmartAutoreplace = true;
+        function enableSmartAutoReplace(enabled) {
+            doSmartAutoreplace = enabled;
+        }
+
         // Global array of system fonts, to be populated by C# code.
         fonts = [];
 
@@ -155,20 +169,11 @@
             return retain;
         }
 
-        function getDeleteIndex(ops) {
-            d = 0;
-            ops.forEach((op, idx) => {
-                if (op.delete) {
-                    d = op.delete;
-                }
-            });
-            return d;
-        }
-
         function quillTextChanged(newDelta, oldDelta, source) {
             
-            if (source == "user") {
+            if (source == "user" && doSmartAutoreplace == true) {
                 // Handle special character replacement.
+                // Most of the indexing here was figured out through trial-and-error. It generally seems to be correct.
                 newDelta.ops.forEach((op, idx) => {
                     if (op.insert) {
                         if (op.insert.includes("-")) {
@@ -179,10 +184,8 @@
 
                             if (charBefore == '-' && op.insert.startsWith("-")) {
                                 window.editor.deleteText(retainIdx - 1, 2, 'api');
-                                window.editor.clipboard.dangerouslyPasteHTML(retainIdx - 1, "&mdash;");
-                                // TODO: After paste, the cursor may be after where it should be if the cursor
-                                // was not on the end of the line. window.editor.setSelection doesn't seem to work predictably
-                                // after calling dangerouslyPasteHTML so I can't currently correct for this.
+                                window.editor.insertText(retainIdx - 1, "—");
+                                setTimeout(() => window.editor.setSelection(retainIdx), 5); // Reposition cursor after changes are done.
                             }
                         }
                         else if (op.insert.includes(".")) {
@@ -191,10 +194,8 @@
                             charBefore2 = window.editor.getText(retainIdx - 2, 1);
                             if (charBefore == '.' && charBefore2 == '.' && op.insert.startsWith(".")) {
                                 window.editor.deleteText(retainIdx - 2, 3, 'api');
-                                window.editor.clipboard.dangerouslyPasteHTML(retainIdx - 2, "&hellip;");
-                                // TODO: After paste, the cursor may be after where it should be if the cursor
-                                // was not on the end of the line. window.editor.setSelection doesn't seem to work predictably
-                                // after calling dangerouslyPasteHTML so I can't currently correct for this.
+                                window.editor.insertText(retainIdx - 2, "…");
+                                setTimeout(() => window.editor.setSelection(retainIdx - 1), 5); // Reposition cursor after changes are done.
                             }
                         }
                         else if (op.insert.includes('"')) {
@@ -203,16 +204,15 @@
 
                             if (op.insert.startsWith('"') && charBefore != " " && charBefore != "" && charBefore != "\r" && charBefore != "\n" && charBefore != "\t" && charBefore != "”") {
                                 window.editor.deleteText(retainIdx, 1, 'api');
-                                window.editor.clipboard.dangerouslyPasteHTML(retainIdx, "&rdquo;");
+                                window.editor.insertText(retainIdx, "”");
+                                setTimeout(() => window.editor.setSelection(retainIdx + 1), 5); // Reposition cursor after changes are done.
 
                             }
                             else if (op.insert.startsWith('"') && charBefore != "“") {
                                 window.editor.deleteText(retainIdx, 1, 'api');
-                                window.editor.clipboard.dangerouslyPasteHTML(retainIdx, "&ldquo;");
+                                window.editor.insertText(retainIdx, "“");
+                                setTimeout(() => window.editor.setSelection(retainIdx + 1), 5); // Reposition cursor after changes are done.
                             }
-                            // TODO: After paste, the cursor may be after where it should be if the cursor
-                            // was not on the end of the line. window.editor.setSelection doesn't seem to work predictably
-                            // after calling dangerouslyPasteHTML so I can't currently correct for this.
                         }
                         else if (op.insert.includes("'")) {
                             retainIdx = getRetainIndex(newDelta.ops);
@@ -220,15 +220,14 @@
 
                             if (op.insert.startsWith("'") && charBefore != " " && charBefore != "" && charBefore != "\r" && charBefore != "\n" && charBefore != "\t" && charBefore != "’") {
                                 window.editor.deleteText(retainIdx, 1, 'api');
-                                window.editor.clipboard.dangerouslyPasteHTML(retainIdx, "&rsquo;");
+                                window.editor.insertText(retainIdx, "’");
+                                setTimeout(() => window.editor.setSelection(retainIdx + 1), 5); // Reposition cursor after changes are done.
                             }
                             else if (op.insert.startsWith("'") && charBefore != "‘") {
                                 window.editor.deleteText(retainIdx, 1, 'api');
-                                window.editor.clipboard.dangerouslyPasteHTML(retainIdx, "&lsquo;");
+                                window.editor.insertText(retainIdx, "‘");
+                                setTimeout(() => window.editor.setSelection(retainIdx + 1), 5); // Reposition cursor after changes are done.
                             }
-                            // TODO: After paste, the cursor may be after where it should be if the cursor
-                            // was not on the end of the line. window.editor.setSelection doesn't seem to work predictably
-                            // after calling dangerouslyPasteHTML so I can't currently correct for this.
                         }
                     }
                 });

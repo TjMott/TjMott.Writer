@@ -3,11 +3,8 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TjMott.Writer.Models.Attributes;
-using TjMott.Writer.ViewModels;
 
 namespace TjMott.Writer.Models.SQLiteClasses
 {

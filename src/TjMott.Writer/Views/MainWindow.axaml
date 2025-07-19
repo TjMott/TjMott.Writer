@@ -70,15 +70,22 @@
 						  CommandParameter="{Binding $parent[Window]}" />
 			</MenuItem>
 			<MenuItem Header="Debug" IsVisible="{Binding IsDebugMode}">
-				<MenuItem Header="Show Quill Hashes" Command="{Binding ShowQuillHashesCommand}" 
+				<MenuItem Header="Show Quill Hashes" 
+						  Command="{Binding ShowQuillHashesCommand}" 
+						  CommandParameter="{Binding $parent[Window]}" />
+				<MenuItem Header="Copy Quill Hashes to Clipboard"
+						  Command="{Binding CopyQuillHashesCommand}" 
 						  CommandParameter="{Binding $parent[Window]}" />
 				<MenuItem Header="Database">
 					<MenuItem Header="Reload" Command="{Binding Database.LoadAsync}" />
 					<MenuItem Header="Vacuum" Command="{Binding Database.Vacuum}" />
 					<Separator />
-					<MenuItem Header="Start Transaction" Command="{Binding Database.StartTransactionCommand}" />
-					<MenuItem Header="Commit Transaction" Command="{Binding Database.CommitTransactionCommand}" />
-					<MenuItem Header="Rollback Transaction" Command="{Binding Database.RollbackTransactionCommand}" />
+					<MenuItem Header="Start Transaction" 
+							  Command="{Binding Database.StartTransactionCommand}" />
+					<MenuItem Header="Commit Transaction"
+							  Command="{Binding Database.CommitTransactionCommand}" />
+					<MenuItem Header="Rollback Transaction" 
+							  Command="{Binding Database.RollbackTransactionCommand}" />
 				</MenuItem>
 			</MenuItem>
 		</Menu>

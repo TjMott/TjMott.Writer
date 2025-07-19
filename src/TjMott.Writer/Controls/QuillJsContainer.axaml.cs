@@ -25,7 +25,7 @@ namespace TjMott.Writer.Controls
         private Document _document;
         public Document Document
         {
-            get { return _document; }
+            get => _document;
             set
             {
                 SetAndRaise(DocumentProperty, ref _document, value);
@@ -42,7 +42,7 @@ namespace TjMott.Writer.Controls
         private double _zoomLevel = 1.0;
         public double ZoomLevel
         {
-            get { return _zoomLevel; }
+            get => _zoomLevel;
             set 
             { 
                 SetAndRaise(ZoomLevelProperty, ref _zoomLevel, value);
@@ -55,13 +55,30 @@ namespace TjMott.Writer.Controls
         private bool _allowUserEditing = true;
         public bool AllowUserEditing
         {
-            get { return _allowUserEditing; }
+            get => _allowUserEditing;
             set 
             { 
                 SetAndRaise(AllowUserEditingProperty, ref _allowUserEditing, value);
                 if (_editor != null)
                 {
                     setIsReadOnly(!value);
+                }
+            }
+        }
+
+        private static readonly DirectProperty<QuillJsContainer, bool> SmartAutoReplaceEnabledProperty =
+            AvaloniaProperty.RegisterDirect<QuillJsContainer, bool>(nameof(SmartAutoReplaceEnabled), o => o.SmartAutoReplaceEnabled, (o, v) => o.SmartAutoReplaceEnabled = v);
+
+        private bool _smartAutoReplaceEnabled = true;
+        public bool SmartAutoReplaceEnabled
+        {
+            get => _smartAutoReplaceEnabled;
+            set
+            {
+                SetAndRaise(SmartAutoReplaceEnabledProperty, ref _smartAutoReplaceEnabled, value);
+                if (_editor != null)
+                {
+                    _editor.ExecuteJavaScript($"window.enableSmartAutoReplace({value.ToString().ToLower()});");
                 }
             }
         }
@@ -129,6 +146,8 @@ namespace TjMott.Writer.Controls
                 _editor.ExecuteJavaScript("window.showToolbar(false);");
             _editor.IsVisible = true;
 
+            _editor.ExecuteJavaScript($"window.enableSmartAutoReplace({_smartAutoReplaceEnabled});");
+
             if (EditorLoaded != null)
                 EditorLoaded(this, new EventArgs());
         }
@@ -151,30 +170,6 @@ namespace TjMott.Writer.Controls
                     setTextZoom(_zoomLevel);
             }
         }
-
-        /*public async Task<string> GetText()
-        {
-            return await _editor.EvaluateJavaScript<string>("return window.editor.getText();");
-        }
-
-        public async Task<object> GetJsonDocument()
-        {
-            return await _editor.EvaluateJavaScript<string>("return window.editor.getContents();");
-        }
-
-        public async Task<string> GetJsonText()
-        {
-            return await _editor.EvaluateJavaScript<string>("return window.JSON.stringify(window.editor.getContents(), null, 4);");
-        }*/
-
-        public void SetJsonDocument(dynamic jsonObject)
-        {
-            /*dynamic scriptableObject = await _editor.GetMainFrame().GetScriptableObjectAsync(CancellationToken.None).ConfigureAwait(false);
-            dynamic window = scriptableObject.window;
-            dynamic quill = window.editor;
-            quill.setContents(json);*/
-        }
-        
 
         public void SetJsonText(string jsonString)
         {
@@ -283,16 +278,22 @@ namespace TjMott.Writer.Controls
         public async void Print(string title)
         {
             await Task.Yield(); // Shut up compiler warnings for now.
-            /*if (_editor != null && _document.IsUnlocked)
+            if (_editor != null && _document.IsUnlocked)
             {
-                dynamic scriptableObject = await _editor.GetMainFrame().GetScriptableObjectAsync(CancellationToken.None).ConfigureAwait(false);
-                dynamic window = scriptableObject.window;
-                window.setPrintTitle(title);
-                _editor.Print();
-            }*/
+                _editor.ExecuteJavaScript($"window.setPrintTitle({title});");
+                _editor.ExecuteJavaScript("window.print();");
+            }
         }
 
-        
+        public void EnableSmartAutoreplace()
+        {
+            SmartAutoReplaceEnabled = true;
+        }
+
+        public void DisableSmartAutoreplace()
+        {
+            SmartAutoReplaceEnabled = false;
+        }
 
         public async void Encrypt()
         {

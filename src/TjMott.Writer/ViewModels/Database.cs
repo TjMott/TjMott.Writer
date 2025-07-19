@@ -1,9 +1,10 @@
 ﻿using Avalonia.Controls;
 using Microsoft.Data.Sqlite;
 using ReactiveUI;
-using System.Collections.Generic;
+using System;
 using System.Linq;
 using System.Reactive;
+using System.Threading;
 using System.Threading.Tasks;
 using TjMott.Writer.Models.SQLiteClasses;
 using TjMott.Writer.Models.SqlScripts;
@@ -17,6 +18,7 @@ namespace TjMott.Writer.ViewModels
         private SqliteConnection _connection;
         private string _filename;
         private Universe _selectedUniverse;
+        private CancellationTokenSource _transactionCancelToken;
         #endregion
 
         #region Properties
@@ -128,6 +130,29 @@ namespace TjMott.Writer.ViewModels
             var defaultUniverse = universes.SingleOrDefault(i => i.id == Metadata.DefaultUniverseId);
             if (defaultUniverse != null)
                 await SelectUniverse(defaultUniverse);
+
+            // But to prevent data loss from uncommitted transactions and improper application
+            // shutdown, periodically commit and start a new one.
+            runTransactionWorkerAsync();
+        }
+
+        private async void runTransactionWorkerAsync()
+        {
+            try
+            {
+                _transactionCancelToken = new CancellationTokenSource();
+                while (!_transactionCancelToken.Token.IsCancellationRequested)
+                {
+                    await Task.Delay(TimeSpan.FromMinutes(5), _transactionCancelToken.Token);
+                    await commitTransaction();
+                    await startTransaction();
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                _transactionCancelToken.Dispose();
+                _transactionCancelToken = null;
+            }
         }
 
         public async Task LoadSelectedUniverseAsync()
@@ -166,6 +191,10 @@ namespace TjMott.Writer.ViewModels
         {
             if (Connection != null)
             {
+                if (_transactionCancelToken != null)
+                {
+                    await _transactionCancelToken.CancelAsync();
+                }
                 await commitTransaction();
                 await Vacuum();
                 _connection.Close();

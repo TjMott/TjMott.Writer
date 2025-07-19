@@ -24,6 +24,7 @@ namespace TjMott.Writer.ViewModels
         public ReactiveCommand<Window, Unit> QuitCommand { get; }
         public ReactiveCommand<Window, Unit> ShowAboutCommand { get; }
         public ReactiveCommand<Window, Unit> ShowQuillHashesCommand { get; }
+        public ReactiveCommand<Window, Unit> CopyQuillHashesCommand { get; }
         public ReactiveCommand<Unit, Unit> ShowReadmeCommand { get; }
         public ReactiveCommand<Unit, Unit> ShowWordTemplatesCommand { get; }
         #endregion
@@ -108,6 +109,7 @@ namespace TjMott.Writer.ViewModels
             ShowReadmeCommand = ReactiveCommand.Create(showReadmeWindow);
             ShowWordTemplatesCommand = ReactiveCommand.Create(showWordTemplates);
             ShowQuillHashesCommand = ReactiveCommand.CreateFromTask<Window>(showQuillHashesAsync);
+            CopyQuillHashesCommand = ReactiveCommand.CreateFromTask<Window>(copyQuillHashesAsync);
             initialize(owner);
         }
 
@@ -257,6 +259,16 @@ namespace TjMott.Writer.ViewModels
         private async Task showQuillHashesAsync(Window owner)
         {
             await new QuillHashWindow().ShowDialog(owner);
+        }
+
+        private async Task copyQuillHashesAsync(Window owner)
+        {
+            await QuillJsEditor.CopyHashesToClipboardAsync(owner);
+            await MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard("Hashes Copied",
+                "QuillJS hash code copied to clipboard!",
+                MsBox.Avalonia.Enums.ButtonEnum.Ok,
+                MsBox.Avalonia.Enums.Icon.Info,
+                WindowStartupLocation.CenterOwner).ShowWindowDialogAsync(owner);
         }
 
         private void showReadmeWindow()

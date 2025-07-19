@@ -163,8 +163,7 @@ namespace TjMott.Writer.Views
             decryptButton.IsEnabled = _sceneManuscript.IsEncrypted;
             
             // I don't know how to print with CefGlue, so leave disabled for now.
-            printButton.IsEnabled = false;
-            //printButton.IsEnabled = _sceneManuscript.IsUnlocked;
+            printButton.IsEnabled = _sceneManuscript.IsUnlocked;
         }
 
         private async void onKeyDown(object sender, Avalonia.Input.KeyEventArgs e)

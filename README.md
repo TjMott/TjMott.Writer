@@ -13,7 +13,9 @@ The change log is at the end of this readme.
 
 ## Supported Platforms
 
-TJ Mott's Writer is cross-platform and fully tested/supported on Windows 11 and Linux Mint 22. Unofficially, it should work on any Linux that supports .NET 8, and it'll probably work on Mac with a bit of code tweaking. Only 64-bit operating systems are supported.
+TJ Mott's Writer is cross-platform and fully tested/supported on Windows 11 and Linux Mint 22. Unofficially, it should work on any Linux that supports .NET 8, and it'll probably work on Mac. Only 64-bit operating systems are supported.
+
+Mobile (Android/iOS) support is not on my radar. There are dependencies that only work on desktop operating systems.
 
 
 ## Installation
@@ -56,11 +58,11 @@ If you are upgrading from the old Windows-only version (<= 0.4.0), please be awa
 
 If you're updating from <= 0.4.0, you may see some corruption with notes. Specifically, note titles get shuffled around and don't match the note contents--there's no data loss, the titles just aren't right. This appears to be a latent SQL trigger bug in an older version of the software. You'll have to correct these on your own after the upgrade, but they should not occur again.
 
-Finally, release 1.0.0 deprecates the old concept of notes. Note documents will be consolidated into a "Notes" category in the main view, so you won't lose any notes, they'll just be elsewhere and will no longer be a separate feature.
+Finally, release 1.0.0 deprecates the old concept of notes. Note documents will be consolidated into a "Notes" category in the main view, so you won't lose any notes, they'll just be treated as any other document and will no longer be a separate feature.
 
 ## Basic Concepts
 
-Here's a basic tutorial for the application. I hope it's fairly self-explanatory as you jump in and use it, but I will be adding more documentation/help as the project matures.
+Here's a basic tutorial for the application. I hope it's fairly self-explanatory as you jump in and use it. Keep in mind my labels fit my workflow; you can certainly use the app any way you want!
 
 ### Intended Workflow
 
@@ -102,11 +104,11 @@ Scene names and colors are for your internal use only, and are not included in e
 
 ### Document
 
-The actual text editor window operates on a QuillJS datatype called Delta. This is a JSON-based format for rich text documents. Scenes, copyright pages, and notes are all stored as this same Document format. Additionally, documents can be AES-encrypted, allowing you to protect documents or journal entries with a password. Documents can be printed.
+The actual text editor window operates on a QuillJS datatype called Delta. This is a JSON-based format for rich text documents. Scenes, copyright pages, and notes are all stored as this same Document format. Additionally, documents can be encrypted with AES256, allowing you to protect documents or journal entries with a password.
 
-### Sidebar Buttons vs. Context Menus
+### Menu Buttons vs. Context Menus
 
-There is a vertical button panel on the right side of the main window which will operate on the currently-selected item in the tree. Use these to open the editor, re-order items in the list, or export to word. You can also right-click on items in the tree and get more options in a context menu.
+There is a horizontal button panel on the bottom side of the main window which will operate on the currently-selected item in the tree. Use these to open the editor, re-order items in the list, or export to word. You can also right-click on items in the tree and get more options in a context menu.
 
 ### Export to Word .docx
 
@@ -126,7 +128,6 @@ It can also be used to compare the relative size of your supporting plots. Somet
 
 There is a word count display in the editor window which shows you the word count of the currently-opened document. But you can also use the sidebar button in the main window to get a word count for the selected item, whether it's a scene, story, or even an entire category!
 
-***
 
 ## SCARY TECHNICAL INFO FOR DEVELOPERS, POWER USERS, AND OTHER NERDS
 
@@ -148,7 +149,7 @@ The main editor control is built upon [Quill](https://quilljs.com/), a web-based
 
 I use the [Chromium Embedded Framework (CEF)](https://github.com/chromiumembedded) to create a browser frame which hosts the Quill editor. A Nuget package called [CefGlue](https://github.com/OutSystems/CefGlue) provides the bridge between the application's main C# logic and the editor's JavaScript/JSON.
 
-Using an HTML/JS editor inside an embedded Chromium frame might seem pretty weird, and it definitely wasn't my first choice. I'd have preferred a pure C# document editor. But I wasn't able to find anything out there that fit my needs and was cross-platform, nor was I ready to invest the time to write my own editor control. I played with Quill and it fit all my needs, hence the weird mashup of C#/.NET and HTML/JavaScript with Chromium glue.
+Using an HTML/JS editor inside an embedded Chromium frame might seem pretty weird, and it definitely wasn't my first choice. I'd have preferred a pure C# document editor. But I wasn't able to find a cross-platform option that fit my needs, nor was I ready to invest the time to write my own editor control. I played with Quill and it fit all my needs, hence the weird mashup of C#/.NET and HTML/JavaScript with Chromium glue.
 
 There are a few other Nuget dependencies which you can find in the .csproj file. Stuff like SQLite, font enumeration, creating Word .docx files, and extracting zip/tar.gz files.
 
@@ -156,13 +157,13 @@ There are a few other Nuget dependencies which you can find in the .csproj file.
 
 QuillJS is very full-featured and mature, but I have intentionally disabled some of its formatting options. The main issue is with writing/testing/supporting the code that converts from Quill's JSON format to Word's .docx format during export operations, and so I have limited the application to the formatting features that I actually need and use as a novelist. There may still be some cases that do not convert correctly during an export, so please check your .docx files carefully!
 
-If there are unimplemented formatting features you'd like, feel free to contact me or send me a pull request that adds it.
+If there are unimplemented formatting features you'd like, feel free to contact me or send me a pull request.
 
 If you want to explore Quill's JSON format, either open the .wdb in [DB Browser for SQLite](https://sqlitebrowser.org/) and poke around in the Document table, or use a debug build of the application and choose the "Show JSON" item from the scene context menu in the main treeview. This information will be very helpful if you decide to add formatting/conversion code of your own.
 
 ### Building From Source
 
-Building from source is pretty easy. You can download the source for an official release from https://github.com/TjMott/TjMott.Writer/releases as a zip or tarball, or use a git client to clone the repo and checkout a tag. All compile-time dependencies are managed by Nuget and should be automatically downloaded when you build. If you have the .NET 6 SDK installed, all you should have to do is run the appropriate build script for your operating system.
+Building from source is pretty easy. You can download the source for an official release from https://github.com/TjMott/TjMott.Writer/releases as a zip or tarball, or use a git client to clone the repo and checkout a tag. All compile-time dependencies are managed by Nuget and should be automatically downloaded when you build. If you have the .NET 8 SDK installed, all you should have to do is run the appropriate build script for your operating system.
 
 I highly suggest only building from tags. Using a build from master for anything other than testing/experimentation should be avoided because the .wdb schema may be in flux. Tagged releases will always include SQL scripts to update the .wdb schema from previous tagged releases. But if you work off master, the database schema may not be final and the upgrade scripts may be wrong or nonexistent. It's quite possible you'll encounter runtime errors or data loss if you use a .wdb from a previous version/build, and very likely you'll create a .wdb that can't be opened by future releases.
 
@@ -194,31 +195,33 @@ I take data privacy seriously. Once fully installed, TJ Mott's Writer should not
 
 A previous implementation using CefNet provided a lot of switches for my app to enable privacy features and prevent CEF from sending telemetry and other web requests to the Internet. Unfortunately, CefNet became unmaintained and the source was removed from GitHub. I had to migrate to CefGlue to update from AvaloniaUI 0.10 to the modern 11 version, and CefGlue doesn't provide nearly as much control over the embedded browser's behavior. I will make all reasonable efforts to provide data privacy, but I'm not responsible for any data leaks or IP theft that occur as a result of CEF doing unsavory things at runtime.
 
-***
-
 ## Change Log
 
 ###Version 1.0.0
 
 ### Changes
 
-* Upgraded to modern AvaloniaUI (version 11.3.2, was on old beta 0.10.X release).
+* Upgraded from old beta 0.10 AvaloniaUI to 11.3.2.
 * Updated Quill editor from 1.3.7 to 2.0.3.
 * Migrated from CefNet to CefGlue due to lack of Avalonia 11 support from CefNet.
+* CEF binaries are now packaged in the installer. No more CEF install process on first run.
 * Lots of performance updates and improved features due to Avalonia framework updates, e.g. proper light/dark theme support.
 * Updated to .NET 8.0.
 * Main view reworked to improve loading speed when using a large works database.
 * Greatly improved SQLite performance.
+* Fixed cursor jumping to wrong position after auto-replacing certain characters (em dashes, left/right quotes, ellipses, etc.).
+* Added menu option to enable or disable character autoreplace (quotes, em dashes, ellipses..etc).
 * Document encryption now follows the standard practice of random data encryption keys for each item, which are encrypted with a password-derived key encryption key.
 * Removed "Notes" feature to reduce maintenance footprint. Existing notes will be consolidated into a category in the main documents view.
+* Editor assets hash verification fixed--you will get a warning if something (e.g. malware) modifies the editor HTML/JS/CSS files.
 
 #### Known Issues
 
-* Editor autoreplace for smart quotes, ellipses, and em dashes may jump cursor position ahead if your cursor is not at the end of a line when the autoreplace happens. Potentially a QuillJS bug -- quill.setSelection is unpredictable after calling quill.clipboard.dangerouslyPasteHTML.
-* Editor autoreplace may not work as expected if you paste in a chunk of text containing autoreplaceable characters.
+* Editor will not auto-replace when pasting in text containing characters that are normally auto-replaced when typed in directly (em dashes, left/right quotes, ellipses, etc.).
 * The in-app Readme does not work (normally shows this document). This is due to a broken package dependency that really needs to update for the latest Avalonia.
+* Printing does not work in Linux.
 * Export to Word does not generate Table of Contents correctly.
-* Linux console is pretty spammy about gpu_process issues. Something from CefGlue, but doesn't seem to harm this application.
+* Linux console is pretty spammy about gpu_process issues. Something from CefGlue, but it doesn't seem to hurt anything.
 
 ### Version 0.5.2
 

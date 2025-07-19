@@ -142,5 +142,17 @@ namespace TjMott.Writer {
                 this["selectedTheme"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool smartAutoreplaceEnabled {
+            get {
+                return ((bool)(this["smartAutoreplaceEnabled"]));
+            }
+            set {
+                this["smartAutoreplaceEnabled"] = value;
+            }
+        }
     }
 }
