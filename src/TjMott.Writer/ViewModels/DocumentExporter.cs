@@ -63,12 +63,7 @@ namespace TjMott.Writer.ViewModels
                 else if (script == "super")
                     format.Script = Script.superscript;
             }
-            if (attributes.ContainsKey("list"))
-            {
-                string list = attributes["list"].Value<string>();
-                // Not really sure how to do this.
-            }
-
+            
             // Paragraph stuff.
             if (paragraph != null)
             {

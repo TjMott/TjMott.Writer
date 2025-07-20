@@ -1,20 +1,21 @@
-﻿using System;
+﻿using Avalonia.Controls;
+using Avalonia.Media;
+using Newtonsoft.Json.Linq;
+using ReactiveUI;
+using System;
 using System.ComponentModel;
+using System.Linq;
+using System.Reactive;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Xml.Linq;
 using TjMott.Writer.Models;
 using TjMott.Writer.Models.SQLiteClasses;
-using Avalonia.Media;
-using ReactiveUI;
-using System.Reactive;
 using TjMott.Writer.Views;
-using System.Threading.Tasks;
-using Avalonia.Controls;
-using Xceed.Words.NET;
-using System.Threading;
-using Newtonsoft.Json.Linq;
 using Xceed.Document.NET;
-using Document = TjMott.Writer.Models.SQLiteClasses.Document;
+using Xceed.Words.NET;
 using static TjMott.Writer.ViewModels.IExportToWordDocument;
-using System.Linq;
+using Document = TjMott.Writer.Models.SQLiteClasses.Document;
 
 namespace TjMott.Writer.ViewModels
 {
@@ -206,8 +207,24 @@ namespace TjMott.Writer.ViewModels
                 // Override styles with this op's styles.
                 if (op.ContainsKey("attributes"))
                 {
-                    DocumentExporter.ApplyFormatting(f, para, op["attributes"] as JObject);
+                    JObject attributes = op["attributes"] as JObject;
+                    DocumentExporter.ApplyFormatting(f, para, attributes);
+
+                    if (attributes.ContainsKey("list"))
+                    {
+                        string list = attributes["list"].Value<string>();
+                        if (list == "ordered")
+                        {
+
+                        }
+                        else if (list == "bullet")
+                        {
+
+                        }
+                        // Not really sure how to do this.
+                    }
                 }
+
                 string text = op["insert"].Value<string>().Replace("\r", "");
                 string[] parts = text.Split("\n");
                 for (int i = 0; i < parts.Length; i++)
