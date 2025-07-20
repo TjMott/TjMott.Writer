@@ -295,6 +295,18 @@ namespace TjMott.Writer.Controls
             SmartAutoReplaceEnabled = false;
         }
 
+        public void FixNonBreakingSpaces()
+        {
+            // This fixes up any text that was corrupted by https://github.com/slab/quill/issues/4535
+            // Replace non-breaking spaces "\u00a0" with standard spaces.
+            if (_editor != null && _document.IsUnlocked)
+            {
+                string jsonText = Document.PublicJson;
+                jsonText = jsonText.Replace("\u00A0", " ");
+                SetJsonText(jsonText);
+            }
+        }
+
         public async void Encrypt()
         {
             if (HasUnsavedEdits())

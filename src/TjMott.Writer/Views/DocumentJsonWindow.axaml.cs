@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using System.Text.Json;
 using TjMott.Writer.Models.SQLiteClasses;
 
 namespace TjMott.Writer.Views
@@ -44,8 +45,12 @@ namespace TjMott.Writer.Views
         private async void reload()
         {
             await _document.LoadAsync();
-            TextBox tb = this.FindControl<TextBox>("jsonTextBox");
-            tb.Text = _document.PublicJson;
+
+            // Pretty-print the text.
+            using var jsonDoc = JsonDocument.Parse(_document.PublicJson);
+            var options = new JsonSerializerOptions() { WriteIndented = true };
+
+            jsonTextBox.Text = JsonSerializer.Serialize(jsonDoc, options);
         }
     }
 }

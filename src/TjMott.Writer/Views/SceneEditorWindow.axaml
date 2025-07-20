@@ -37,6 +37,9 @@
 				<MenuItem x:Name="disableAutoReplaceButton" Header="Disable Character Autoreplace"
 						  Command="{Binding ElementName=manuscriptEditor, Path=DisableSmartAutoreplace}"
 						  IsVisible="{Binding ElementName=manuscriptEditor, Path=SmartAutoReplaceEnabled}" />
+				<MenuItem x:Name="fixNonBreakingSpacesButton" Header="Replace Non-Breaking Spaces"
+						  Command="{Binding ElementName=manuscriptEditor, Path=FixNonBreakingSpaces}"
+						  ToolTip.Tip="Use this to fix up non-breaking spaces if you have text lines that wrap very strangely. See Readme for more info." />
 			</MenuItem>
 		</Menu>
 
