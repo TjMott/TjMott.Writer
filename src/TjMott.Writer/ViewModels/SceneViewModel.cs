@@ -132,23 +132,6 @@ namespace TjMott.Writer.ViewModels
             await d.ShowDialog<bool>(owner);
         }
 
-        /*public void ExportToWord(Docx.DocX doc)
-        {
-            FlowDocument flowDoc = new FlowDocument(Model.Connection);
-            flowDoc.id = Model.FlowDocumentId;
-            flowDoc.Load();
-
-            FlowDocumentViewModel vm = new FlowDocumentViewModel(flowDoc, DialogOwner);
-
-            foreach (WinDoc.Block block in vm.Document.Blocks)
-            {
-                if (block is WinDoc.Paragraph)
-                {
-                    FlowDocumentExporter.AddParagraph((WinDoc.Paragraph)block, doc);
-                }
-            }
-        }*/
-
         public bool CanEncrypt()
         {
             Document fd = new Document(Model.Connection);
@@ -210,6 +193,9 @@ namespace TjMott.Writer.ViewModels
                     JObject attributes = op["attributes"] as JObject;
                     DocumentExporter.ApplyFormatting(f, para, attributes);
 
+                    // TODO: List formatting.
+                    // Quill likes to not put the list attribute on the first list item,
+                    // so this isn't really usable yet.
                     if (attributes.ContainsKey("list"))
                     {
                         string list = attributes["list"].Value<string>();
