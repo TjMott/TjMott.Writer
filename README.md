@@ -200,6 +200,7 @@ A previous implementation using CefNet provided a lot of switches for my app to 
 
 * Downgraded Quill editor from 2.0.3 to 2.0.2 due to this bug: https://github.com/slab/quill/issues/4535
 * Added an item to the document editor "Options" menu to replace non-breaking spaces with breaking spaces. If you edited documents with version 1.0.0 of this application, and they exhibit some really strange text-wrapping behavior in the editor, use this feature to fix it up.
+* Enabled list formatting in editor. However, this does not export to Word correctly, so any exported docs will need some cleanup.
 
 ###Version 1.0.0
 
