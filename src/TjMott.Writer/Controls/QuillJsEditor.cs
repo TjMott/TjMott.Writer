@@ -96,7 +96,7 @@ namespace TjMott.Writer.Controls
             // on all of these and issue a warning if something doesn't match.
             AssetHashes.Clear();
 
-            AssetHashes.Add(new AssetHash("D4C5E6989B9F174C66512E493CB54FA0C3BC0F375791ED7C0685B1FB371D4D0D", "Assets", "editor.html"));
+            AssetHashes.Add(new AssetHash("12BD53EC55730B0D9C8CF79800B3F3F060CAC2016E0DE5005954A67E6F73D5F5", "Assets", "editor.html"));
             AssetHashes.Add(new AssetHash("9E6D61ADD4615AD9166389ED0CBB5F0F5B59D37EE37284FC577595857BEAA1AF", "Assets", "quilljs", "quill.bubble.css"));
             AssetHashes.Add(new AssetHash("0FDAFD0AE4FAAE9E835F8FBACA1BE406CAB134867C69006452E32F7ADAC73199", "Assets", "quilljs", "quill.bubble.css.map"));
             AssetHashes.Add(new AssetHash("904BC913857BB1311218A90570886991BF958D979E52C6699D1175C1D4B48236", "Assets", "quilljs", "quill.core.css"));

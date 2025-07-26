@@ -8,7 +8,6 @@ using System.Linq;
 using System.Reactive;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using TjMott.Writer.Models;
 using TjMott.Writer.Models.SQLiteClasses;
 using TjMott.Writer.Views;
